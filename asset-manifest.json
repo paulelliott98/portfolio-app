@@ -1,13 +1,14 @@
 {
   "files": {
-    "main.css": "/my-portfolio/static/css/main.7737874f.css",
-    "main.js": "/my-portfolio/static/js/main.2574742a.js",
+    "main.css": "/my-portfolio/static/css/main.3825f148.css",
+    "main.js": "/my-portfolio/static/js/main.8f5c9d9b.js",
+    "static/media/instagram-logo.png": "/my-portfolio/static/media/instagram-logo.bb8a77bfaa323012e852.png",
     "index.html": "/my-portfolio/index.html",
-    "main.7737874f.css.map": "/my-portfolio/static/css/main.7737874f.css.map",
-    "main.2574742a.js.map": "/my-portfolio/static/js/main.2574742a.js.map"
+    "main.3825f148.css.map": "/my-portfolio/static/css/main.3825f148.css.map",
+    "main.8f5c9d9b.js.map": "/my-portfolio/static/js/main.8f5c9d9b.js.map"
   },
   "entrypoints": [
-    "static/css/main.7737874f.css",
-    "static/js/main.2574742a.js"
+    "static/css/main.3825f148.css",
+    "static/js/main.8f5c9d9b.js"
   ]
 }
