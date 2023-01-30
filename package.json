@@ -1,6 +1,6 @@
 {
   "name": "my-portfolio",
-  "homepage": "https://paulgan98.github.io/my-portfolio",
+  "homepage": "https://paulgan98.github.io/",
   "version": "0.1.0",
   "private": false,
   "dependencies": {
@@ -9,7 +9,6 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/react-transition-group": "^4.4.5",
     "animate.css": "^4.1.1",
-    "daisyui": "^2.17.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intersection-observer": "^9.4.1",
@@ -17,7 +16,6 @@
     "react-scripts": "5.0.1",
     "react-scroll": "^1.8.9",
     "react-transition-group": "^4.4.5",
-    "react-tsparticles": "^2.1.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

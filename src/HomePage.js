@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./styles.css";
 import Project from "./Project";
 import Navbar from "./Navbar";
+import FlipCard from "./FlipCard";
 import { CSSTransition } from "react-transition-group";
 import { useInView } from "react-intersection-observer";
 import "animate.css";
@@ -74,6 +75,7 @@ export default function HomePage() {
   const [ref2, inView2] = useInView(); // projects
   const [ref3, inView3] = useInView(); // about bio
   const [ref4, inView4] = useInView(); // about languages and things I love
+  const [ref5, inView5] = useInView(); // contact
 
   // animations
   const anim = (type, view) => {
@@ -86,13 +88,13 @@ export default function HomePage() {
         break;
 
       case "slideRight":
-        animIn = "animate__fadeInRight animate__fast";
-        animOut = "animate__fadeOutRight animate__fast";
+        animIn = "animate__fadeInRight animate__faster";
+        animOut = "animate__fadeOutRight animate__faster";
         break;
 
       case "slideUp":
-        animIn = "animate__fadeInUp animate__fast";
-        animOut = "animate__fadeOutUp animate__fast";
+        animIn = "animate__fadeInUp animate__faster";
+        animOut = "animate__fadeOutUp animate__faster";
         break;
 
       case "slideDown":
@@ -140,17 +142,16 @@ export default function HomePage() {
     }
   };
 
-  useEffect(() => {}, []);
-
   return (
     <div class="prevent-select">
       <Navbar />
+
+      {/* <div class="fixed mt-20">{navClass}</div> */}
+
       <div>
         <section class="scroll-window" id="home">
-          <div class="section-title">
-            <h4>home</h4>
-          </div>
-          <div class="intro prevent-select">
+          <div class="nav-fill"></div>
+          <div class="intro pt-40 prevent-select">
             <div ref={ref}></div>
             <h5 class={anim("slideUp", inView)} style={animDelay(0)}>
               Hi, my name is
@@ -249,11 +250,11 @@ export default function HomePage() {
                 <li>Pytorch Data Science— Scikit-learn, Pandas</li>
                 <li>Web Scraping and Automation— Selenium, BeautifulSoup</li>
                 <li>Web Development— ReactJS, HubSpot CMS</li>
-                <li>Game Development— Pygame</li>
+                <li>Game Development— Pygame, JavaScript</li>
               </ul>
               <p>
-                JavaScript I am currently working my very first job as an
-                associate software engineer at Nisum.
+                I am currently working my very first job as an associate
+                software engineer at Nisum.
               </p>
             </div>
           </div>
@@ -290,8 +291,43 @@ export default function HomePage() {
           </div>
         </section>
       </div>
-      {/* <section class="scroll-window" id="contact"></section> */}
-      <footer class="footer"></footer>
+      <section class="scroll-window" id="contact">
+        <div class="section-title">
+          <h4>contact</h4>
+        </div>
+        <div class="flex justify-center">
+          <div ref={ref5}></div>
+          <FlipCard
+            classes={anim("slideLeft", inView5)}
+            style={animDelay(0.2)}
+            href="https://github.com/paulgan98"
+            title="github"
+            path={require("./images/github-mark-white.png")}
+            alt="github logo"
+          />
+          <FlipCard
+            classes={anim("slideLeft", inView5)}
+            style={animDelay(0.5)}
+            href="https://www.linkedin.com/in/paul-gan-85781b18b/"
+            title="linkedin"
+            path={require("./images/linkedin-logo.png")}
+            alt="linkedin logo"
+          />
+          <FlipCard
+            classes={anim("slideLeft", inView5)}
+            style={animDelay(0.8)}
+            href="https://www.instagram.com/paulypavilion/"
+            title="instagram"
+            path={require("./images/instagram-logo.png")}
+            alt="instagram logo"
+          />
+        </div>
+      </section>
+      <footer class="footer">
+        <div>
+          <span>A React App by Paul Gan</span>
+        </div>
+      </footer>
     </div>
   );
 }
