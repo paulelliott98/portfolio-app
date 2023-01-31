@@ -10,9 +10,11 @@ export default function FlipCard({ classes, style, href, title, path, alt }) {
         rel="noopener noreferrer"
       >
         <div class="flip-card-inner">
-          <img class="logo" title={title} src={path} alt={alt} />
+          <div class="flip-card-front">
+            <img class="logo" title={title} src={path} alt={alt} />
+          </div>
           <div class="flip-card-back">
-            {/* <h5 class="mt-4">{title}</h5> */}
+            <img class="logo" title={title} src={path} alt={alt} />
             <p class="mt-4">{title}</p>
           </div>
         </div>

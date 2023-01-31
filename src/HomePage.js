@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./styles.css";
 import Project from "./Project";
 import Navbar from "./Navbar";
+import Snake from "./Snake";
 import FlipCard from "./FlipCard";
 import { CSSTransition } from "react-transition-group";
 import { useInView } from "react-intersection-observer";
@@ -145,24 +146,28 @@ export default function HomePage() {
   return (
     <div class="prevent-select">
       <Navbar />
-
-      {/* <div class="fixed mt-20">{navClass}</div> */}
-
       <div>
-        <section class="scroll-window" id="home">
+        <section class="scroll-window-home" id="home">
           <div class="nav-fill"></div>
-          <div class="intro pt-40 prevent-select">
-            <div ref={ref}></div>
-            <h5 class={anim("slideUp", inView)} style={animDelay(0)}>
-              Hi, my name is
-            </h5>
-            <h1 class={anim("slideUp", inView)} style={animDelay(0.2)}>
-              Paul Gan
-            </h1>
-            <h5 class={anim("slideUp", inView)} style={animDelay(0.4)}>
-              I am a software developer and I enjoy taking on fun and
-              challenging projects!
-            </h5>
+
+          <div class="flex flex-row content-center items-center justify-around pt-28">
+            <div class="intro prevent-select">
+              <div ref={ref}></div>
+              <h5 class={anim("slideUp", inView)} style={animDelay(0)}>
+                Hi, my name is
+              </h5>
+              <h1 class={anim("slideUp", inView)} style={animDelay(0.2)}>
+                Paul Gan
+              </h1>
+              <h5 class={anim("slideUp", inView)} style={animDelay(0.4)}>
+                I am a software developer and I enjoy taking on fun and
+                challenging projects!
+              </h5>
+            </div>
+            <div class={anim("fade", inView)}>
+              <Snake w={292} h={292} />
+              {/* <Snake w={150} h={17} /> */}
+            </div>
           </div>
         </section>
 
@@ -293,7 +298,7 @@ export default function HomePage() {
       </div>
       <section class="scroll-window" id="contact">
         <div class="section-title">
-          <h4>contact</h4>
+          <h4>get in touch</h4>
         </div>
         <div class="flex justify-center">
           <div ref={ref5}></div>
@@ -307,7 +312,7 @@ export default function HomePage() {
           />
           <FlipCard
             classes={anim("slideLeft", inView5)}
-            style={animDelay(0.5)}
+            style={animDelay(0.4)}
             href="https://www.linkedin.com/in/paul-gan-85781b18b/"
             title="linkedin"
             path={require("./images/linkedin-logo.png")}
@@ -315,11 +320,19 @@ export default function HomePage() {
           />
           <FlipCard
             classes={anim("slideLeft", inView5)}
-            style={animDelay(0.8)}
+            style={animDelay(0.6)}
             href="https://www.instagram.com/paulypavilion/"
             title="instagram"
             path={require("./images/instagram-logo.png")}
             alt="instagram logo"
+          />
+          <FlipCard
+            classes={anim("slideLeft", inView5)}
+            style={animDelay(0.8)}
+            href="mailto:paulgan98@gmail.com"
+            title="email"
+            path={require("./images/email-logo.png")}
+            alt="email logo"
           />
         </div>
       </section>
