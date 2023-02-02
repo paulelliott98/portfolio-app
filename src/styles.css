@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap");
-@import url("https://fonts.cdnfonts.com/css/ibm-plex-mono-3");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,6 +13,7 @@
   --heading-color-2: #ddfe90;
   --heading-color-3: #6bcfe4;
   --nav-height: 70px;
+  --nav-bg-color: #1f234177;
 }
 
 html {
@@ -33,7 +34,7 @@ html {
 }
 
 body {
-  font-family: "IBM Plex Mono", sans-serif;
+  font-family: "IBM Plex Mono", monospace;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -50,9 +51,119 @@ code {
     monospace;
 }
 
-/* canvas-container {
-  padding-block-start: 30px;
+input[type="range"] {
+  -webkit-appearance: none;
+  background: transparent;
+}
+
+/* chrome */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  margin-block-start: -5px;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--text-color-main);
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+/* firefox */
+input[type="range"]::-moz-range-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--text-color-main);
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+/* IE */
+input[type="range"]::-ms-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--text-color-main);
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+/* chrome */
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: var(--heading-color-main);
+  border-radius: 1px;
+}
+/* firefox */
+input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: var(--heading-color-main);
+  border-radius: 1px;
+}
+
+/* IE */
+input[type="range"]::-ms-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: var(--heading-color-main);
+  border-radius: 1px;
+}
+
+canvas {
+  background-color: var(--bg-color-2);
+}
+
+.snake-top-bar,
+.snake-bottom-bar {
+  padding: 8px;
+  background-color: var(--bg-color-2);
+  border: 0.5px solid var(--text-color-grey);
+}
+
+.snake-top-bar {
+  /* opacity: 0;
+  transition: all 0.5s ease; */
+  border-radius: 5px 5px 0px 0px;
+}
+
+.snake-bottom-bar {
+  /* border-top: 0.5px solid white; */
+  border-radius: 0px 0px 5px 5px;
+}
+
+.canvas-container-inner {
+  background-color: var(--nav-bg-color);
+}
+
+.play-again {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-left: 0.5px solid var(--text-color-grey);
+  border-right: 0.5px solid var(--text-color-grey);
+}
+
+/* .canvas-container:hover > .snake-top-bar {
+  opacity: 1;
 } */
+
+@keyframes fade {
+  0% {
+    visibility: hidden;
+  }
+  100% {
+    visibility: visible;
+  }
+}
 
 /* Transitions */
 .fade-enter,
@@ -145,8 +256,7 @@ h4 {
 .scroll-window-home {
   width: 100vw;
   min-height: calc(100vh - var(--nav-height));
-  padding-inline-start: 15vw;
-  padding-inline-end: 5vw;
+  padding-inline: 15vw;
 }
 
 .section-title {
@@ -158,7 +268,7 @@ h4 {
 
 h5 {
   color: var(--text-color-main);
-  font-family: "IBM Plex Mono", sans-serif;
+  font-family: "IBM Plex Mono", monospace;
   font-style: normal;
   font-weight: 400;
   font-size: 20px;
@@ -166,7 +276,7 @@ h5 {
 }
 
 .intro {
-  width: 40%;
+  width: 50%;
 }
 
 .link {
@@ -182,7 +292,7 @@ h5 {
 }
 
 p {
-  font-family: "IBM Plex Mono", sans-serif;
+  font-family: "IBM Plex Mono", monospace;
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
@@ -206,9 +316,7 @@ li {
   width: 100%;
   height: var(--nav-height);
   z-index: 9999;
-  /* background-color: #161a39ee; */
-  background-color: #1f234177;
-  /* background: linear-gradient(#161a3955, #161a3900); */
+  background-color: var(--nav-bg-color);
   box-shadow: 0px 3px 3px #161a39;
   justify-content: flex-end;
   align-items: center;
@@ -424,7 +532,7 @@ footer {
     font-size: 16px;
   }
 
-  canvas-container {
+  .canvas-container {
     display: none;
   }
 
@@ -470,7 +578,8 @@ footer {
     background-color: none;
   }
 
-  .scroll-window {
+  .scroll-window,
+  .scroll-window-home {
     padding-inline: 5vw;
   }
 

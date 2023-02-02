@@ -150,7 +150,7 @@ export default function HomePage() {
         <section class="scroll-window-home" id="home">
           <div class="nav-fill"></div>
 
-          <div class="flex flex-row content-center items-center justify-around pt-28">
+          <div class="flex flex-row content-center items-center justify-between self-center mt-40">
             <div class="intro prevent-select">
               <div ref={ref}></div>
               <h5 class={anim("slideUp", inView)} style={animDelay(0)}>
@@ -166,7 +166,7 @@ export default function HomePage() {
             </div>
             <div class={anim("fade", inView)}>
               <Snake w={292} h={292} />
-              {/* <Snake w={150} h={17} /> */}
+              {/* <Snake w={300} h={25} /> */}
             </div>
           </div>
         </section>
