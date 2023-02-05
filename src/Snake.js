@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 
 export default function Snake(props) {
+  const [pause, setPause] = useState(false);
+
   const canvasRef = useRef(null);
   const scale = window.devicePixelRatio || 1;
   const blockDim = 20;
@@ -12,8 +14,8 @@ export default function Snake(props) {
 
   // final canvas dimensions after accounting for gaps
   const [adjustedW, adjustedH] = [
-    nCols * (gap + blockDim) + gap + 1,
-    nRows * (gap + blockDim) + gap + 1,
+    nCols * (gap + blockDim) + gap - 0.5,
+    nRows * (gap + blockDim) + gap - 0.5,
   ];
 
   // game variables
@@ -26,9 +28,9 @@ export default function Snake(props) {
   };
 
   // difficulty settings and frame rate
-  const k = 120;
+  const k = 200;
   const multScale = 0.5;
-  const [minDifficulty, maxDifficulty] = [k / 5, (3 * k) / 5];
+  const [minDifficulty, maxDifficulty] = [0, (3 * k) / 5];
   const [difficulty, setDifficulty] = useState(
     Math.floor((maxDifficulty + minDifficulty) / 2)
   );
@@ -82,6 +84,8 @@ export default function Snake(props) {
         // clear canvas
         context.clearRect(0, 0, canvas.width, canvas.height);
 
+        const arr = arena;
+
         // draw fruit
         ctx.beginPath();
         ctx.arc(
@@ -94,11 +98,16 @@ export default function Snake(props) {
         ctx.fillStyle = getFillColor(-1);
         ctx.fill();
 
+        const diff = gap + (getLastFrame() / updateDelay) * blockDim;
         var corners = [];
 
         for (let j = 0; j < nRows; j++) {
           for (let i = 0; i < nCols; i++) {
-            const type = arena[j][i];
+            const type = arr[j][i];
+
+            if (type <= 0) {
+              continue;
+            }
 
             const color = getFillColor(type);
             const [r, c] = [
@@ -106,56 +115,50 @@ export default function Snake(props) {
               gap + i * (blockDim + gap),
             ];
 
-            // ctx.font = "8px Arial";
-            // ctx.fillStyle = "red";
-            // ctx.fillText(type.toString(), c + 7, r + 13);
-
-            if (type <= 0) {
-              continue;
-            }
-
-            var offsets = getDrawOffsets(j, i, arena);
+            var offsets = getDrawOffsets(j, i, arr);
 
             // if block is corner block, add to corners array
-            const corner = getCornerDirection(j, i, arena, len, nextDir);
+            const corner = getCornerDirection(j, i, arr, len, dir);
             if (corner.length !== 0) {
-              if (type !== len) {
-                corners.push([corner, color, r, c]);
-              } else {
-                corners.push([corner, len - 1, r, c]);
-              }
+              // if (type !== len) {
+              //   corners.push([corner, color, r, c]);
+              // }
+              // else {
+              //   corners.push([corner, len - 1, r, c]);
+              // }
+              corners.push([corner, color, r, c, j, i]);
             }
 
-            // if not corner
-            if (corner.length === 0) {
+            // if not corner or is head
+            if (corner.length === 0 || type === len) {
               ctx.beginPath();
               ctx.fillStyle = color;
               ctx.rect(
                 c + offsets[0],
                 r + offsets[1],
-                blockDim + 1 + offsets[2],
-                blockDim + 1 + offsets[3]
+                blockDim + offsets[2],
+                blockDim + offsets[3]
               );
-            }
-
-            ctx.fill();
-
-            // if block is warping to other side of canvas, draw the partial block
-            const partialRect = getPartialRect(
-              c + offsets[0],
-              r + offsets[1],
-              blockDim + 1,
-              blockDim + 1
-            );
-            if (partialRect) {
-              ctx.rect(...partialRect);
               ctx.fill();
+
+              // if block is warping to other side of canvas and block is not a corner block,
+              // draw the partial block
+              const partialRect = getPartialRect(
+                c + offsets[0],
+                r + offsets[1],
+                blockDim,
+                blockDim
+              );
+              if (partialRect) {
+                ctx.rect(...partialRect);
+                ctx.fill();
+              }
             }
           }
         }
 
         for (let i in corners) {
-          var [corner, color, y, x] = corners[i];
+          var [corner, color, y, x, cornerj, corneri] = corners[i];
           const pi = Math.PI;
           var [start, end] = [0, 2 * pi];
           var [cx, cy] = [x, y];
@@ -163,30 +166,55 @@ export default function Snake(props) {
           // right to bottom
           if (corner[0] && corner[1]) {
             [start, end] = [pi, 1.5 * pi];
-            cx += blockDim + 1;
-            cy += blockDim + 1;
+            cx += blockDim;
+            cy += blockDim;
+            ctx.clearRect(x, y, blockDim, blockDim);
           }
           // bottom to left
           else if (corner[1] && corner[2]) {
             [start, end] = [1.5 * pi, 0];
-            cy += blockDim + 1;
+            cy += blockDim;
+            ctx.clearRect(x, y, blockDim, blockDim);
           }
           // left to top
           else if (corner[2] && corner[3]) {
             [start, end] = [0, 0.5 * pi];
+            ctx.clearRect(x, y, blockDim, blockDim);
           }
           // top to right
           else if (corner[3] && corner[0]) {
             [start, end] = [0.5 * pi, pi];
-            cx += blockDim + 1;
+            cx += blockDim;
+            ctx.clearRect(x, y, blockDim, blockDim);
           }
 
-          // draw quarter circle
+          // draw quarter circle (corner)
           ctx.fillStyle = color;
           ctx.beginPath();
           ctx.moveTo(cx, cy);
-          ctx.arc(cx, cy, blockDim + 1, start, end, false);
+          ctx.arc(cx, cy, blockDim, start, end, false);
           ctx.fill();
+
+          // fill in rect between head and corner
+          if (Math.abs(arr[cornerj][corneri] - len) === 1) {
+            const b = getBody(cornerj, corneri, -1, arr);
+            // console.log(b.dir.toString());
+            ctx.beginPath();
+            if (b.dir === 1) {
+              ctx.rect(x + blockDim, y, diff, blockDim);
+              console.log("right");
+            } else if (b.dir === 2) {
+              ctx.rect(x, y + blockDim, blockDim, diff);
+              console.log("down");
+            } else if (b.dir === 3) {
+              ctx.rect(x - diff, y, diff, blockDim);
+              console.log("left");
+            } else if (b.dir === 4) {
+              ctx.rect(x, y - diff, blockDim, diff);
+              console.log("up");
+            }
+            ctx.fill();
+          }
         }
       };
 
@@ -223,7 +251,13 @@ export default function Snake(props) {
       // returning new rect (col, row, width, height) on opposite side of canvas
       function getPartialRect(x, y, w, h) {
         // if entire body is within canvas boundary, return null
-        if (x >= 0 && x + w <= adjustedW && y >= 0 && y + h <= adjustedH) {
+        const pixelInaccuracy = 2;
+        if (
+          x >= -pixelInaccuracy &&
+          x + w <= adjustedW + pixelInaccuracy &&
+          y >= -pixelInaccuracy &&
+          y + h <= adjustedH + pixelInaccuracy
+        ) {
           return null;
         }
 
@@ -253,7 +287,7 @@ export default function Snake(props) {
 
         const n = arr[r][c];
 
-        var diff = gap + (getLastFrame() / updateDelay) * blockDim;
+        const diff = gap + (getLastFrame() / updateDelay) * blockDim;
 
         // if head, get offset using dir
         if (n === len) {
@@ -261,7 +295,8 @@ export default function Snake(props) {
           else if (getDir() === 2) offset[1] += diff;
           else if (getDir() === 3) offset[0] -= diff;
           else offset[1] -= diff;
-          return offset;
+
+          // return offset;
         }
 
         // else body
@@ -287,23 +322,27 @@ export default function Snake(props) {
         else if (prev.dir === 3) offset[0] -= diff;
         else offset[1] -= diff;
 
+        var [prevIsCorner, nextIsCorner] = [false, false];
+
         // if prev block is a corner block set width and height offsets
-        // aka this is the block after
+        // aka this is the block after (closer to tail)
         if (getCornerDirection(prev.r, prev.c, arr, len).length !== 0) {
+          prevIsCorner = true;
+
           // corner block on right
           if (prev.dir === 1) {
             offset[2] = -diff;
           }
-          // corner block on bottom
+          // corner block below
           else if (prev.dir === 2) {
             offset[3] = -diff;
           }
           // corner block on left
           else if (prev.dir === 3) {
-            offset[2] -= diff;
-            offset[0] += diff;
+            offset[0] = 0;
+            offset[2] = -diff;
           }
-          // corner block on top
+          // corner block above
           else if (prev.dir === 4) {
             offset[1] = 0;
             offset[3] = -diff;
@@ -313,8 +352,10 @@ export default function Snake(props) {
         if (!next) return offset;
 
         // if next block is a corner block, set width and height offsets
-        // aka this is the block before
+        // aka this is the block before (closer to head)
         if (getCornerDirection(next.r, next.c, arr, len).length !== 0) {
+          nextIsCorner = true;
+
           // corner block right
           if (next.dir === 1) {
             offset[2] = diff;
@@ -335,6 +376,12 @@ export default function Snake(props) {
           }
         }
 
+        // if block between two corners, return 0 offsets
+        if (Math.abs(prev.dir - next.dir) === 2 && prevIsCorner && nextIsCorner)
+          return [0, 0, 0, 0];
+
+        // if (prev.dir === 1 || prev.dir === 3) offset[2] += 1;
+        // else if (prev.dir === 2 || prev.dir === 4) offset[3] += 1;
         return offset;
       }
 
@@ -395,19 +442,15 @@ export default function Snake(props) {
       }
 
       function isValidNextDir(d) {
-        const invalidMappings = new Map();
-        invalidMappings.set(1, 3);
-        invalidMappings.set(3, 1);
-        invalidMappings.set(2, 4);
-        invalidMappings.set(4, 2);
-        if (invalidMappings.get(dir) === d) {
-          return false;
-        }
-        return true;
+        return Math.abs(dir - d) === 2 ? false : true;
       }
 
       function handleKeyDown(e) {
         const input = e.keyCode;
+
+        // pause
+        if (input === 49) setPause(!pause);
+
         if (gameState !== -1) {
           return;
         }
@@ -435,11 +478,12 @@ export default function Snake(props) {
         }
 
         if (nextDirection === -1) {
-          // || !isValidNextDir(nextDirection)
           return;
         }
 
-        setNextDir(nextDirection);
+        if (!pause) {
+          setNextDir(nextDirection);
+        }
       }
 
       // returns number of next frame
@@ -460,6 +504,8 @@ export default function Snake(props) {
 
       // update game state
       function update() {
+        if (pause) return;
+
         // if game over, return
         if (gameState !== -1) {
           setUpdateDelay(0);
@@ -527,16 +573,15 @@ export default function Snake(props) {
         // 1 2 3 0 x
         // 0 1 2 3 x
         // 0 1 2 3 4
-
         // update head
         if (grow) {
           arr[nr][nc] = len + 1;
         } else {
           arr[nr][nc] = len;
         }
+        setPos({ r: nr, c: nc }); // update head position
 
-        setPos({ r: nr, c: nc }); // update pos state
-        setArena(arr); // update arena's state
+        setArena(arr); // update arena array
       }
 
       // create HD canvas
@@ -586,6 +631,7 @@ export default function Snake(props) {
       scale,
       updateDelay,
       fruitPos,
+      pause,
     ]
   );
 
