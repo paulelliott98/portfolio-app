@@ -1,506 +1,803 @@
 import React, { useEffect, useState, useRef } from "react";
 
-export default function Snake({ w, h }) {
+export default function Snake(props) {
   const canvasRef = useRef(null);
   const scale = window.devicePixelRatio || 1;
   const blockDim = 20;
   const gap = 0;
   const [nRows, nCols] = [
-    Math.floor((h - gap) / (gap + blockDim)),
-    Math.floor((w - gap) / (gap + blockDim)),
+    Math.floor((props.h - gap) / (gap + blockDim)),
+    Math.floor((props.w - gap) / (gap + blockDim)),
   ];
+
+  // final canvas dimensions after accounting for gaps
   const [adjustedW, adjustedH] = [
-    nCols * (gap + blockDim) + gap,
-    nRows * (gap + blockDim) + gap,
+    nCols * (gap + blockDim) + gap + 1,
+    nRows * (gap + blockDim) + gap + 1,
   ];
-  const [enableListener, setEnableListener] = useState(true);
 
   // game variables
   const startDir = 1;
-  const startLen = 12;
+  const startLen = 8;
   const maxLen = nCols * nRows;
   const startPos = {
     c: startLen,
     r: Math.floor(nRows / 2),
   };
 
-  // difficulty
-  const [minDiff, maxDiff] = [20, 70];
-  const [diff, setDiff] = useState(
-    Math.floor((maxDiff - minDiff) / 2) + minDiff
+  // difficulty settings and frame rate
+  const k = 120;
+  const multScale = 0.5;
+  const [minDifficulty, maxDifficulty] = [k / 5, (3 * k) / 5];
+  const [difficulty, setDifficulty] = useState(
+    Math.floor((maxDifficulty + minDifficulty) / 2)
   );
-  const [updateDelay, setUpdateDelay] = useState(150 - diff);
-  const [multiplier, setMultiplier] = useState(Math.floor(0.5 * diff));
+  const [updateDelay, setUpdateDelay] = useState(k - difficulty);
+  const [frame, setFrame] = useState(0);
+  const [multiplier, setMultiplier] = useState(
+    Math.floor(multScale * difficulty)
+  );
 
-  var [len, setLen] = useState(startLen);
-  var [score, setScore] = useState(0);
-  var [pos, setPos] = useState(startPos);
-  var [dir, setDir] = useState(startDir);
-  var [prevDir, setPrevDir] = useState(startDir);
-  var [arena, setArena] = useState(createArena());
-  const [instructions, setInstructions] = useState(true);
+  const [len, setLen] = useState(startLen);
+  const [score, setScore] = useState(0);
+  const [pos, setPos] = useState(startPos);
+  const [dir, setDir] = useState(startDir);
+  const [nextDir, setNextDir] = useState(startDir);
+
+  var a = createArena(nRows, nCols);
+  a = addSnake(startLen, pos, a);
+  var f = spawnFruit(a);
+
+  const [arena, setArena] = useState(a);
+  const [fruitPos, setFruitPos] = useState(f);
+  const [instructions, setInstructions] = useState(false);
   const [gameState, setGameState] = useState(-1);
-  const [keyQueue, setKeyQueue] = useState([]);
-
-  // takes in arena as input, returns new arena with fruit
-  function spawnFruit(a) {
-    var arr = [...a];
-    var [row, col] = [getRandomInt(0, nRows - 1), getRandomInt(0, nCols - 1)];
-
-    // if empty space return
-    // else keep looping through each position in arena in order until empty space (0) is encountered
-    var [i, j] = [row, col];
-    const nCells = nRows * nCols;
-    var count = 0;
-    while (count < nCells) {
-      if (arr[i][j] === 0) {
-        arr[i][j] = -1;
-        return arr;
-      }
-      j++;
-      if (j >= nCols) {
-        j = 0;
-        i++;
-      }
-      if (i >= nRows) {
-        i = 0;
-      }
-      count++;
-    }
-  }
-
-  function createArena() {
-    var arr = [];
-    for (let j = 0; j < nRows; j++) {
-      var row = [];
-      for (let i = 0; i < nCols; i++) {
-        row.push(0);
-      }
-      arr.push(row);
-    }
-
-    for (let i = 0; i < startLen; i++) {
-      arr[pos.r][pos.c - i] = startLen - i;
-    }
-
-    // arr[pos.r][pos.c - 0] = 3;
-    // arr[pos.r][pos.c - 1] = 2;
-    // arr[pos.r][pos.c - 2] = 1;
-    arr = spawnFruit(arr);
-    return arr;
-  }
-
-  // generate random int in [min, max]
-  function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  function getDisplayText() {
-    if (gameState === 1) {
-      return "You win!";
-    } else if (gameState === 0) {
-      return "Game Over!";
-    } else if (instructions) {
-      return "wasd / ijkl to move";
-    }
-  }
 
   function resetArena() {
     setPos(startPos);
     setDir(startDir);
-    setPrevDir(startDir);
+    setNextDir(startDir);
     setLen(startLen);
     setScore(0);
-    setArena(createArena());
-    spawnFruit(arena);
-    setInstructions(true);
-    setGameState(-1);
-    setKeyQueue([]);
+    setFrame(0);
+    setInstructions(false);
+    setUpdateDelay(k - difficulty);
+
+    // var newArena = [...arena];
+    // for (let r = 0; r < nRows; r++) {
+    //   for (let c = 0; c < nCols; c++) {
+    //     newArena[r][c] = 0;
+    //   }
+    // }
+    // newArena = addSnake(startLen, pos, newArena);
+    var newArena = createArena(nRows, nCols);
+    f = spawnFruit(newArena);
+    setArena(newArena);
+    setFruitPos(f);
   }
 
-  useEffect(() => {
-    // return r and c indices for upcoming head position
-    function nextCell() {
-      var [r, c] = [pos.r, pos.c];
-      switch (getDir()) {
-        case 0:
-          break;
-        case 1: // right
-          c += 1;
-          break;
-        case 2: // down
-          r += 1;
-          break;
-        case 3: // left
-          c -= 1;
-          break;
-        case 4: // up
-          r -= 1;
-          break;
-        default:
-          break;
-      }
+  useEffect(
+    () => {
+      const drawArena = (ctx, canvas) => {
+        // clear canvas
+        context.clearRect(0, 0, canvas.width, canvas.height);
 
-      // if out of bounds, wrap around
-      if (r >= nRows) {
-        r = 0;
-      } else if (r < 0) {
-        r = nRows - 1;
-      } else if (c >= nCols) {
-        c = 0;
-      } else if (c < 0) {
-        c = nCols - 1;
-      }
-
-      return [r, c];
-    }
-
-    // return dir
-    function getDir() {
-      return dir;
-    }
-
-    function isValidNextDir(d) {
-      const invalidMappings = new Map();
-      invalidMappings.set(1, 3);
-      invalidMappings.set(3, 1);
-      invalidMappings.set(2, 4);
-      invalidMappings.set(4, 2);
-      if (invalidMappings.get(prevDir) === d) {
-        return false;
-      }
-      return true;
-    }
-
-    function rgb(r, g, b) {
-      return ["rgb(", r, ",", g, ",", b, ")"].join("");
-    }
-
-    function getFillColor(n) {
-      var c = "";
-
-      if (n === len) {
-        // head
-        c = "#fff";
-      } else if (n === -1) {
-        // fruit
-        c = "#c792e9";
-      } else if (n === 0) {
-        // background
-        // c = "#323551";
-        // c = getComputedStyle(document.documentElement).getPropertyValue(
-        //   "--bg-color-2"
-        // );
-        c = "#1a1e40";
-      } else {
-        // body
-        const offset = (len - n) * 5;
-        c = rgb(
-          Math.max(0, 221 - offset),
-          Math.max(0, 254 - offset),
-          Math.max(0, 144 - offset)
+        // draw fruit
+        ctx.beginPath();
+        ctx.arc(
+          gap + fruitPos[1] * (blockDim + gap) + 0.5 * blockDim,
+          gap + fruitPos[0] * (blockDim + gap) + 0.5 * blockDim,
+          blockDim / 4,
+          0,
+          2 * Math.PI
         );
-      }
-      return c;
-    }
+        ctx.fillStyle = getFillColor(-1);
+        ctx.fill();
 
-    function drawArena(ctx) {
-      for (let j = 0; j < nRows; j++) {
-        for (let i = 0; i < nCols; i++) {
-          const type = arena[j][i];
-          const [x, y] = [
-            gap + i * (blockDim + gap),
-            gap + j * (blockDim + gap),
-          ];
-          ctx.fillStyle = getFillColor(type);
-          ctx.beginPath();
-          ctx.rect(x, y, blockDim, blockDim);
-          ctx.fill();
+        var corners = [];
 
-          // if head, draw eyes
-          // if (type === len) {
-          //   const n = dir === 0 ? 0 : dir - 1;
-          //   const angle = (n * 90 * Math.PI) / 180;
-          //   const translateX = x;
-          //   const translateY = y;
-          //   const offset = 3;
-          //   const offsetX = 3;
-          //   const r = 2;
-          //   ctx.fillStyle = "#000000";
-          //   ctx.translate(translateX, translateY);
-          //   ctx.rotate(angle);
-          //   ctx.beginPath();
-          //   ctx.arc(
-          //     blockDim / 2 + offsetX,
-          //     blockDim / 2 - offset,
-          //     r,
-          //     0,
-          //     2 * Math.PI
-          //   );
-          //   ctx.arc(
-          //     blockDim / 2 + offsetX,
-          //     blockDim / 2 + offset,
-          //     r,
-          //     0,
-          //     2 * Math.PI
-          //   );
-          //   ctx.fill();
-          //   ctx.rotate(-angle);
-          //   ctx.translate(-translateX, -translateY);
-          // }
-        }
-      }
-    }
+        for (let j = 0; j < nRows; j++) {
+          for (let i = 0; i < nCols; i++) {
+            const type = arena[j][i];
 
-    //   function drawGameOver(ctx) {
-    //     for (let j = 0; j < nRows; j++) {
-    //       for (let i = 0; i < nCols; i++) {
-    // ctx.fillStyle = getComputedStyle(
-    //   document.documentElement
-    // ).getPropertyValue("--bg-color-2");
+            const color = getFillColor(type);
+            const [r, c] = [
+              gap + j * (blockDim + gap),
+              gap + i * (blockDim + gap),
+            ];
 
-    //         ctx.beginPath();
-    //         ctx.rect(
-    //           gap + i * (blockDim + gap),
-    //           gap + j * (blockDim + gap),
-    //           blockDim,
-    //           blockDim
-    //         );
-    //         ctx.fill();
-    //       }
-    //     }
-    //   }
+            // ctx.font = "8px Arial";
+            // ctx.fillStyle = "red";
+            // ctx.fillText(type.toString(), c + 7, r + 13);
 
-    // create HD canvas
-    function createHiPPICanvas(w, h) {
-      let cv = canvasRef.current;
-      cv.width = w * scale;
-      cv.height = h * scale;
-      cv.style.width = w + "px";
-      cv.style.height = h + "px";
-      cv.getContext("2d").scale(scale, scale);
-      return cv;
-    }
-
-    function handleKeyDown(e) {
-      if (!enableListener) {
-        return;
-      }
-
-      setEnableListener(false);
-
-      if (e.repeat) {
-        return;
-      }
-
-      const input = e.keyCode;
-      if (gameState !== -1) {
-        return;
-      }
-
-      const wasdCodes = [68, 83, 65, 87];
-      const ijklCodes = [76, 75, 74, 73];
-
-      var nextDir = -1;
-
-      if (
-        (input === wasdCodes[2] || input === ijklCodes[2]) &&
-        getDir() === 0
-      ) {
-        return;
-      }
-
-      if (input === wasdCodes[0] || input === ijklCodes[0]) {
-        nextDir = 1;
-      } else if (input === wasdCodes[1] || input === ijklCodes[1]) {
-        nextDir = 2;
-      } else if (input === wasdCodes[2] || input === ijklCodes[2]) {
-        nextDir = 3;
-      } else if (input === wasdCodes[3] || input === ijklCodes[3]) {
-        nextDir = 4;
-      }
-
-      if (nextDir === -1) {
-        return;
-      }
-
-      if (!isValidNextDir(nextDir)) {
-        return;
-      }
-
-      setDir(nextDir);
-    }
-
-    // update game state
-    function update() {
-      // remove instructions text if player starts playing
-      if (instructions && getDir() !== startDir) {
-        setInstructions(false);
-      }
-
-      // check win
-      if (len === maxLen) {
-        setGameState(1);
-        return;
-      }
-
-      // if snake is stationary or game over, return
-      if (getDir() === 0 || gameState !== -1) {
-        return;
-      }
-
-      // clone of arena array. This will be updated to be our new arena state
-      var arr = [...arena];
-
-      // store next head position
-      var [nr, nc] = nextCell();
-
-      // if next cell is fruit, grow snake, increase score, and spawn another fruit
-      var grow = arr[nr][nc] === -1 ? true : false;
-      if (grow) {
-        setLen(len + 1);
-        setScore((len + 1 - startLen) * multiplier);
-
-        arr = spawnFruit(arr);
-      }
-
-      // update body
-      for (let r = 0; r < nRows; r++) {
-        for (let c = 0; c < nCols; c++) {
-          // decrease number in each body cell by 1
-          if (arr[r][c] > 0) {
-            if (!grow) {
-              arr[r][c] -= 1;
+            if (type <= 0) {
+              continue;
             }
+
+            var offsets = getDrawOffsets(j, i, arena);
+
+            // if block is corner block, add to corners array
+            const corner = getCornerDirection(j, i, arena, len, nextDir);
+            if (corner.length !== 0) {
+              if (type !== len) {
+                corners.push([corner, color, r, c]);
+              } else {
+                corners.push([corner, len - 1, r, c]);
+              }
+            }
+
+            // if not corner
+            if (corner.length === 0) {
+              ctx.beginPath();
+              ctx.fillStyle = color;
+              ctx.rect(
+                c + offsets[0],
+                r + offsets[1],
+                blockDim + 1 + offsets[2],
+                blockDim + 1 + offsets[3]
+              );
+            }
+
+            ctx.fill();
+
+            // if block is warping to other side of canvas, draw the partial block
+            const partialRect = getPartialRect(
+              c + offsets[0],
+              r + offsets[1],
+              blockDim + 1,
+              blockDim + 1
+            );
+            if (partialRect) {
+              ctx.rect(...partialRect);
+              ctx.fill();
+            }
+          }
+        }
+
+        for (let i in corners) {
+          var [corner, color, y, x] = corners[i];
+          const pi = Math.PI;
+          var [start, end] = [0, 2 * pi];
+          var [cx, cy] = [x, y];
+
+          // right to bottom
+          if (corner[0] && corner[1]) {
+            [start, end] = [pi, 1.5 * pi];
+            cx += blockDim + 1;
+            cy += blockDim + 1;
+          }
+          // bottom to left
+          else if (corner[1] && corner[2]) {
+            [start, end] = [1.5 * pi, 0];
+            cy += blockDim + 1;
+          }
+          // left to top
+          else if (corner[2] && corner[3]) {
+            [start, end] = [0, 0.5 * pi];
+          }
+          // top to right
+          else if (corner[3] && corner[0]) {
+            [start, end] = [0.5 * pi, pi];
+            cx += blockDim + 1;
+          }
+
+          // draw quarter circle
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.arc(cx, cy, blockDim + 1, start, end, false);
+          ctx.fill();
+        }
+      };
+
+      function rgb(r, g, b) {
+        return ["rgb(", r, ",", g, ",", b, ")"].join("");
+      }
+
+      function getFillColor(n) {
+        var c = "";
+
+        if (n === len) {
+          // head
+          c = "#fff";
+        } else if (n === -1) {
+          // fruit
+          c = "#c792e9";
+        } else if (n === 0) {
+          // background
+          c = "#1f234177";
+        } else {
+          // body
+          const offset = (len - n) * 5;
+          c = rgb(
+            Math.max(0, 221 - offset),
+            Math.max(0, 254 - offset),
+            Math.max(0, 144 - offset)
+          );
+          // c = rgb(221, 254, 144);
+        }
+        return c;
+      }
+
+      // identify part of snake body that has been cut off by canvas boundary
+      // returning new rect (col, row, width, height) on opposite side of canvas
+      function getPartialRect(x, y, w, h) {
+        // if entire body is within canvas boundary, return null
+        if (x >= 0 && x + w <= adjustedW && y >= 0 && y + h <= adjustedH) {
+          return null;
+        }
+
+        if (x < 0) {
+          return [adjustedW + x, y, -x, h];
+        } else if (x + w > adjustedW) {
+          return [0, y, x + w - adjustedW, h];
+        } else if (y < 0) {
+          return [x, adjustedH + y, w, -y];
+        } else if (y + h > adjustedH) {
+          return [x, 0, w, y + h - adjustedH];
+        }
+
+        return null;
+      }
+
+      // 0 0 0 0 0
+      // 0 0 4 5 0
+      // 0 2 3 0 0
+      // 0 1 0 0 0
+      // 0 0 0 0 0
+      // snake body animation to make position change appear smooth
+      function getDrawOffsets(r, c, arr) {
+        const offset = [0, 0, 0, 0]; // offsetCol, offsetRow
+
+        if (gameState !== -1) return offset;
+
+        const n = arr[r][c];
+
+        var diff = gap + (getLastFrame() / updateDelay) * blockDim;
+
+        // if head, get offset using dir
+        if (n === len) {
+          if (getDir() === 1) offset[0] += diff;
+          else if (getDir() === 2) offset[1] += diff;
+          else if (getDir() === 3) offset[0] -= diff;
+          else offset[1] -= diff;
+          return offset;
+        }
+
+        // else body
+
+        // get body values in 4 adjacent cells
+        var adjVals = [0, 0, 0, 0]; // right, bottom, left, top
+        var adjC = getAdjacentCoords(r, c, arr);
+
+        for (let i = 0; i < adjVals.length; i++) {
+          const rc = getrc(i + 1);
+          const row = rc[0] ? adjC[i] : r;
+          const col = rc[1] ? adjC[i] : c;
+          adjVals[i] = arr[row][col];
+        }
+
+        // look for previous and next body cells
+        const [prev, next] = [getBody(r, c, -1, arr), getBody(r, c, 1, arr)];
+        if (!prev) return offset;
+
+        // if prev is not corner block
+        if (prev.dir === 1) offset[0] += diff;
+        else if (prev.dir === 2) offset[1] += diff;
+        else if (prev.dir === 3) offset[0] -= diff;
+        else offset[1] -= diff;
+
+        // if prev block is a corner block set width and height offsets
+        // aka this is the block after
+        if (getCornerDirection(prev.r, prev.c, arr, len).length !== 0) {
+          // corner block on right
+          if (prev.dir === 1) {
+            offset[2] = -diff;
+          }
+          // corner block on bottom
+          else if (prev.dir === 2) {
+            offset[3] = -diff;
+          }
+          // corner block on left
+          else if (prev.dir === 3) {
+            offset[2] -= diff;
+            offset[0] += diff;
+          }
+          // corner block on top
+          else if (prev.dir === 4) {
+            offset[1] = 0;
+            offset[3] = -diff;
+          }
+        }
+
+        if (!next) return offset;
+
+        // if next block is a corner block, set width and height offsets
+        // aka this is the block before
+        if (getCornerDirection(next.r, next.c, arr, len).length !== 0) {
+          // corner block right
+          if (next.dir === 1) {
+            offset[2] = diff;
+          }
+          // corner block below
+          else if (next.dir === 2) {
+            offset[3] = diff;
+          }
+          // corner block left
+          else if (next.dir === 3) {
+            offset[0] = 0;
+            offset[2] = diff;
+          }
+          // corner block above
+          else if (next.dir === 4) {
+            offset[1] = 0;
+            offset[3] = diff;
+          }
+        }
+
+        return offset;
+      }
+
+      // return r, c indices and dir (1,2,3 or 4) of prev (-1) or next (1) body segment
+      function getBody(r, c, prevOrNext, arr) {
+        if (prevOrNext !== 1 && prevOrNext !== -1) return null;
+        const n = arr[r][c];
+        const adjC = getAdjacentCoords(r, c, arr);
+        for (let i = 0; i < 4; i++) {
+          const rc = getrc(i + 1);
+          const row = rc[0] ? adjC[i] : r;
+          const col = rc[1] ? adjC[i] : c;
+          if (arr[row][col] === n - prevOrNext && arr[row][col] !== 0) {
+            return { r: row, c: col, dir: i + 1 };
           }
         }
       }
 
-      // 1 2 3 0 x
-      // 0 1 2 3 x
-      // 0 1 2 3 4
-
-      // check collision
-      // if next cell is body (not 0 or -1), end game
-      if (arr[nr][nc] > 0) {
-        setGameState(0);
-        return;
+      // return dir
+      function getDir() {
+        return dir;
       }
 
-      // update head
-      if (grow) {
-        arr[nr][nc] = len + 1;
-      } else {
-        arr[nr][nc] = len;
+      // return r and c indices for upcoming head position
+      function nextCell() {
+        var [r, c] = [pos.r, pos.c];
+        switch (getDir()) {
+          case 0:
+            break;
+          case 1: // right
+            c += 1;
+            break;
+          case 2: // down
+            r += 1;
+            break;
+          case 3: // left
+            c -= 1;
+            break;
+          case 4: // up
+            r -= 1;
+            break;
+          default:
+            break;
+        }
+
+        // if out of bounds, wrap around
+        if (r >= nRows) {
+          r = 0;
+        } else if (r < 0) {
+          r = nRows - 1;
+        } else if (c >= nCols) {
+          c = 0;
+        } else if (c < 0) {
+          c = nCols - 1;
+        }
+
+        return [r, c];
       }
-      setPos({ r: nr, c: nc }); // update pos state
 
-      setArena(arr); // update arena's state
-      setPrevDir(dir);
-      setEnableListener(true);
-    }
-    // draw the grid
-    const draw = (ctx) => {
-      drawArena(ctx);
-      //   if (gameState !== -1) {
-      //     drawGameOver(ctx);
-      //   } else {
-      //     drawArena(ctx);
-      //   }
-    };
+      function isValidNextDir(d) {
+        const invalidMappings = new Map();
+        invalidMappings.set(1, 3);
+        invalidMappings.set(3, 1);
+        invalidMappings.set(2, 4);
+        invalidMappings.set(4, 2);
+        if (invalidMappings.get(dir) === d) {
+          return false;
+        }
+        return true;
+      }
 
-    window.addEventListener("keydown", handleKeyDown);
+      function handleKeyDown(e) {
+        const input = e.keyCode;
+        if (gameState !== -1) {
+          return;
+        }
 
-    const interval = setInterval(() => {
-      update();
-    }, updateDelay);
+        const wasdCodes = [68, 83, 65, 87];
+        const ijklCodes = [76, 75, 74, 73];
 
-    const canvas = createHiPPICanvas(adjustedW, adjustedH);
-    const context = canvas.getContext("2d");
-    draw(context);
+        var nextDirection = -1;
 
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-    // sfg
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    dir,
-    arena,
-    gameState,
-    instructions,
-    keyQueue,
-    len,
-    maxLen,
-    nCols,
-    nRows,
-    pos,
-    scale,
-    score,
-    enableListener,
-    prevDir,
-    updateDelay,
-    multiplier,
-    adjustedH,
-    adjustedW,
-  ]);
+        if (
+          (input === wasdCodes[2] || input === ijklCodes[2]) &&
+          getDir() === 0
+        ) {
+          return;
+        }
+
+        if (input === wasdCodes[0] || input === ijklCodes[0]) {
+          nextDirection = 1;
+        } else if (input === wasdCodes[1] || input === ijklCodes[1]) {
+          nextDirection = 2;
+        } else if (input === wasdCodes[2] || input === ijklCodes[2]) {
+          nextDirection = 3;
+        } else if (input === wasdCodes[3] || input === ijklCodes[3]) {
+          nextDirection = 4;
+        }
+
+        if (nextDirection === -1) {
+          // || !isValidNextDir(nextDirection)
+          return;
+        }
+
+        setNextDir(nextDirection);
+      }
+
+      // returns number of next frame
+      function getNextFrame() {
+        if (frame + 1 > updateDelay) {
+          return 1;
+        }
+        return frame + 1;
+      }
+
+      // returns number of previous frame
+      function getLastFrame() {
+        if (frame - 1 < 1) {
+          return updateDelay;
+        }
+        return frame;
+      }
+
+      // update game state
+      function update() {
+        // if game over, return
+        if (gameState !== -1) {
+          setUpdateDelay(0);
+          return;
+        }
+
+        // if game still ongoing, update frame
+        if (gameState === -1) {
+          setFrame(getNextFrame()); // advance frame
+        }
+
+        // allow update function to proceed only on first frame
+        if (frame !== 1) {
+          return;
+        }
+
+        // check win
+        if (len === maxLen) {
+          setGameState(1);
+          return;
+        }
+
+        if (isValidNextDir(nextDir)) {
+          setDir(nextDir);
+        } else {
+          setNextDir(dir);
+        }
+
+        // clone of arena array. This will be updated to be our new arena state
+        var arr = [...arena];
+
+        // store next head position
+        var [nr, nc] = nextCell();
+
+        // if next cell is fruit, grow snake, increase score, and spawn another fruit
+        var grow = arr[nr][nc] === -1 ? true : false;
+        if (grow) {
+          setLen(len + 1);
+          setScore((len + 1 - startLen) * multiplier);
+
+          const f = spawnFruit(arr);
+          arr[f[0]][f[1]] = -1;
+          setFruitPos(f);
+        }
+
+        // update body
+        for (let r = 0; r < nRows; r++) {
+          for (let c = 0; c < nCols; c++) {
+            // decrease number in each body cell by 1
+            if (arr[r][c] > 0) {
+              if (!grow) {
+                arr[r][c] -= 1;
+              }
+            }
+          }
+        }
+
+        // check collision
+        // if next cell is body (not 0 or -1), end game
+        if (arr[nr][nc] > 0 && arr[nr][nc] !== len) {
+          setGameState(0);
+          return;
+        }
+
+        // 1 2 3 0 x
+        // 0 1 2 3 x
+        // 0 1 2 3 4
+
+        // update head
+        if (grow) {
+          arr[nr][nc] = len + 1;
+        } else {
+          arr[nr][nc] = len;
+        }
+
+        setPos({ r: nr, c: nc }); // update pos state
+        setArena(arr); // update arena's state
+      }
+
+      // create HD canvas
+      function createHiPPICanvas(w, h) {
+        let cv = canvasRef.current;
+        cv.width = w * scale;
+        cv.height = h * scale;
+        cv.style.width = w + "px";
+        cv.style.height = h + "px";
+        cv.getContext("2d").scale(scale, scale);
+        return cv;
+      }
+
+      window.addEventListener("keydown", handleKeyDown);
+
+      if (!canvasRef.current) return;
+
+      const canvas = createHiPPICanvas(adjustedW, adjustedH);
+      const context = canvas.getContext("2d");
+
+      const interval = setInterval(() => {
+        update();
+      }, 1);
+
+      drawArena(context, canvas);
+
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    },
+    // dependencies
+    [
+      adjustedH,
+      adjustedW,
+      arena,
+      dir,
+      frame,
+      gameState,
+      len,
+      maxLen,
+      multiplier,
+      nCols,
+      nRows,
+      nextDir,
+      pos,
+      scale,
+      updateDelay,
+      fruitPos,
+    ]
+  );
 
   return (
-    <div class="canvas-container">
-      <div class="flex items-center justify-between snake-top-bar">
-        <label for="difficulty">Difficulty:</label>
+    <div
+      className="flex flex-col snake-container"
+      style={{
+        width: canvasRef.current ? canvasRef.current.style.width : adjustedW,
+      }}
+    >
+      <div className="flex items-center justify-between snake-top-bar">
+        <label htmlFor="difficulty">Difficulty:</label>
         <input
           type="range"
           id="difficulty"
           name="difficulty"
-          min={minDiff}
-          max={maxDiff}
+          min={minDifficulty}
+          max={maxDifficulty}
           step={1}
-          defaultValue={diff}
+          defaultValue={difficulty}
           onInput={(e) => {
             e.preventDefault();
-            setUpdateDelay(150 - e.target.value);
-            setDiff(e.target.value);
-            setMultiplier(Math.floor(0.5 * diff));
+            setUpdateDelay(k - e.target.value);
+            setDifficulty(e.target.value);
+            setMultiplier(Math.floor(multScale * e.target.value));
           }}
         />
       </div>
       <div
-        class="relative flex items-center justify-center canvas-container-inner"
+        className="relative flex items-center justify-center canvas-container-inner"
         style={{
-          width: canvasRef.current ? canvasRef.current.style.width : adjustedW,
           height: canvasRef.current
             ? canvasRef.current.style.height
             : adjustedH,
         }}
       >
-        <canvas class="absolute" id="canvas" ref={canvasRef}></canvas>
+        <canvas className="absolute" id="canvas" ref={canvasRef}></canvas>
         <div
-          class="absolute play-again"
+          className="absolute play-again"
           style={{ background: gameState === -1 ? "" : "#1f2341f5" }}
         >
-          {gameState === 0 || gameState === 1 ? (
+          {gameState !== -1 ? (
             <a
               href="/#"
               rel="noopener noreferrer"
               onClick={(e) => {
                 e.preventDefault();
-                setGameState(-1);
                 resetArena();
+                setGameState(-1);
               }}
             >
-              <p class="inline-block text-end content-end">Play Again</p>
+              <p className="inline-block text-end content-end">Play Again</p>
             </a>
           ) : null}
         </div>
       </div>
-      <div class="flex justify-between snake-bottom-bar">
-        <p class="inline-block">Score: {score}</p>
-        <p class="inline-block text-end content-end">{getDisplayText()}</p>
+      <div className="snake-bottom-bar">
+        <div className="flex justify-between ">
+          <p className="inline-block">Score: {score}</p>
+          <p
+            className="inline-block text-end content-end"
+            onMouseOver={() => {
+              if (getDisplayText(gameState) === "Instructions") {
+                setInstructions(true);
+              }
+            }}
+            onMouseLeave={() => {
+              setInstructions(false);
+            }}
+          >
+            {getDisplayText(gameState)}
+          </p>
+        </div>
+        <div
+          className="justify-end text-end"
+          style={{ display: instructions ? "flex" : "none" }}
+        >
+          <div>
+            <p>up- w/i </p>
+            <p>down- s/k</p>
+            <p>left- a/j</p>
+            <p>right- d/l</p>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+
+// returns array containing coords of right, bottom, left, and top cells
+function getAdjacentCoords(r, c, arena) {
+  const nRows = arena.length;
+  const nCols = arena[0].length;
+  const rc = c + 1 < nCols ? c + 1 : 0;
+  const lc = c - 1 >= 0 ? c - 1 : nCols - 1;
+  const bc = r + 1 < nRows ? r + 1 : 0;
+  const tc = r - 1 >= 0 ? r - 1 : nRows - 1;
+  return [rc, bc, lc, tc];
+}
+
+// 1: right, 2: bottom, 3: left, 4: top
+// returned array indicates if the r/c coord changes
+// e.g. to move right/left, row doesnt change, but col does, so return [0, 1]
+function getrc(dir) {
+  if (dir === 1 || dir === 3) {
+    return [0, 1];
+  }
+  return [1, 0];
+}
+
+// return array of 4 binary values corresponding to directions of adjacent body blocks
+// e.g. [1,1,0,0] means adjacent body blocks are in right and bottom of current cell
+function getCornerDirection(r, c, a, len, nextDir) {
+  const n = a[r][c];
+
+  // if tail block, not a corner block
+  if (n === 1) {
+    return [];
+  }
+
+  const adjC = getAdjacentCoords(r, c, a);
+  var adj = [0, 0, 0, 0]; // right, bottom, left, top
+
+  // if head
+  if (n === len) {
+    adj[nextDir - 1] = 1;
+  }
+
+  for (let i = 0; i < adj.length; i++) {
+    const rc = getrc(i + 1);
+    const row = rc[0] ? adjC[i] : r;
+    const col = rc[1] ? adjC[i] : c;
+
+    // compare values in adjacent cell and current cell
+    if (Math.abs(a[row][col] - n) === 1) {
+      adj[i] = 1;
+    }
+  }
+
+  for (let i = 0; i < adj.length - 1; i++) {
+    if (adj[i] && adj[i + 1]) {
+      return adj;
+    }
+  }
+
+  if (adj[3] && adj[0]) {
+    return adj;
+  }
+
+  return [];
+}
+
+function getDisplayText(gameState) {
+  if (gameState === 1) {
+    return "You win!";
+  } else if (gameState === 0) {
+    return "Game Over!";
+  } else {
+    return "Instructions";
+  }
+}
+
+function createArena(nRows, nCols) {
+  var arr = [];
+  for (let j = 0; j < nRows; j++) {
+    var row = [];
+    for (let i = 0; i < nCols; i++) {
+      row.push(0);
+    }
+    arr.push(row);
+  }
+  return arr;
+}
+
+function addSnake(startLen, pos, arr) {
+  for (let i = 0; i < startLen; i++) {
+    arr[pos.r][pos.c - i] = startLen - i;
+  }
+  return arr;
+}
+
+// generate random int in [min, max]
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// takes in arena as input, returns fruit position
+const spawnFruit = (a) => {
+  var arr = [...a];
+  const [nRows, nCols] = [a.length, a[0].length];
+  var [row, col] = [getRandomInt(0, nRows - 1), getRandomInt(0, nCols - 1)];
+
+  // if empty space return
+  // else keep looping through each position in arena in order until empty space (0) is encountered
+  var [i, j] = [row, col];
+  const nCells = nRows * nCols;
+  var count = 0;
+  while (count < nCells) {
+    if (arr[i][j] === 0) {
+      arr[i][j] = -1;
+      return [i, j];
+    }
+    j++;
+    if (j >= nCols) {
+      j = 0;
+      i++;
+    }
+    if (i >= nRows) {
+      i = 0;
+    }
+    count++;
+  }
+};

@@ -18,7 +18,7 @@ export default function HomePage() {
       dx: [
         "As part of an effort to create pigeon art in Dr. Blaisdell’s lab at UCLA, this project showcases an implementation of the algorithm for extracting the regions of a planar graph described in a ",
         <a
-          class="link"
+          className="link"
           target="_blank"
           rel="noopener noreferrer"
           href="https://www.sciencedirect.com/science/article/abs/pii/016786559390104L"
@@ -39,7 +39,7 @@ export default function HomePage() {
         "\n",
         " Check it out ",
         <a
-          class="link"
+          className="link"
           target="_blank"
           rel="noopener noreferrer"
           href="https://paulgan98.github.io/prime-spiral/"
@@ -144,43 +144,43 @@ export default function HomePage() {
   };
 
   return (
-    <div class="prevent-select">
+    <div className="prevent-select">
       <Navbar />
       <div>
-        <section class="scroll-window-home" id="home">
-          <div class="nav-fill"></div>
+        <section className="scroll-window-home" id="home">
+          <div className="nav-fill"></div>
 
-          <div class="flex flex-row content-center items-center justify-between self-center mt-40">
-            <div class="intro prevent-select">
+          <div className="flex justify-between self-center">
+            <div className="intro mt-40">
               <div ref={ref}></div>
-              <h5 class={anim("slideUp", inView)} style={animDelay(0)}>
+              <h5 className={anim("slideUp", inView)} style={animDelay(0)}>
                 Hi, my name is
               </h5>
-              <h1 class={anim("slideUp", inView)} style={animDelay(0.2)}>
+              <h1 className={anim("slideUp", inView)} style={animDelay(0.2)}>
                 Paul Gan
               </h1>
-              <h5 class={anim("slideUp", inView)} style={animDelay(0.4)}>
+              <h5 className={anim("slideUp", inView)} style={animDelay(0.4)}>
                 I am a software developer and I enjoy taking on fun and
                 challenging projects!
               </h5>
             </div>
-            <div class={anim("fade", inView)}>
+            <div className={"mt-28 " + anim("fade", inView)}>
               <Snake w={292} h={292} />
               {/* <Snake w={300} h={25} /> */}
             </div>
           </div>
         </section>
 
-        <section class="scroll-window" id="projects">
-          <div class="section-title">
+        <section className="scroll-window" id="projects">
+          <div className="section-title">
             <h4>projects</h4>
           </div>
           <div ref={ref2}></div>
-          <div class="flex justify-between">
-            <div class="projects-list">
+          <div className="flex justify-between">
+            <div className="projects-list">
               {projects.map((p) => (
                 <a
-                  class={anim("slideLeft", inView2)}
+                  className={anim("slideLeft", inView2)}
                   style={{
                     ...{
                       backgroundColor:
@@ -204,7 +204,7 @@ export default function HomePage() {
               ))}
             </div>
             <div
-              class={"project-container " + anim("fade", inView2)}
+              className={"project-container " + anim("fade", inView2)}
               style={animDelay(0.8)}
             >
               {projects
@@ -225,17 +225,17 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section class="scroll-window" id="about">
-          <div class="section-title">
+        <section className="scroll-window" id="about">
+          <div className="section-title">
             <h4>about</h4>
           </div>
-          <div ref={ref3} class="flex">
+          <div ref={ref3} className="flex">
             <div
-              class={"container " + anim("fade", inView3)}
+              className={"container " + anim("fade", inView3)}
               style={animDelay(0.5)}
             >
               <h2>Bio</h2>
-              <div class="divider"></div>
+              <div className="divider"></div>
               <p>
                 Hello and welcome to my website! I am a motivated graduate of
                 UCLA’s class of 2022 (Go Bruins!) with a major in molecular,
@@ -251,11 +251,13 @@ export default function HomePage() {
                 many areas including:
               </p>
               <ul>
-                <li>Object Detection— Tensorflow</li>
-                <li>Pytorch Data Science— Scikit-learn, Pandas</li>
-                <li>Web Scraping and Automation— Selenium, BeautifulSoup</li>
-                <li>Web Development— ReactJS, HubSpot CMS</li>
-                <li>Game Development— Pygame, JavaScript</li>
+                <li key="0">Object Detection— Tensorflow</li>
+                <li key="1">Pytorch Data Science— Scikit-learn, Pandas</li>
+                <li key="2">
+                  Web Scraping and Automation— Selenium, BeautifulSoup
+                </li>
+                <li key="3">Web Development— ReactJS, HubSpot CMS</li>
+                <li key="4">Game Development— Pygame, JavaScript</li>
               </ul>
               <p>
                 I am currently working my very first job as an associate
@@ -263,44 +265,44 @@ export default function HomePage() {
               </p>
             </div>
           </div>
-          <div class="flex justify-between">
+          <div className="flex justify-between">
             <div
               ref={ref4}
-              class={"container max-w-49 " + anim("fade", inView4)}
+              className={"container max-w-49 " + anim("fade", inView4)}
               style={animDelay(0.5)}
             >
               <h2>programming languages</h2>
-              <div class="divider"></div>
+              <div className="divider"></div>
               <ul>
-                <li>python</li>
-                <li>java</li>
-                <li>c++</li>
-                <li>javascript</li>
+                <li key="0">python</li>
+                <li key="1">java</li>
+                <li key="2">c++</li>
+                <li key="3">javascript</li>
               </ul>
             </div>
             <div
-              class={"container max-w-49 " + anim("fade", inView4)}
+              className={"container max-w-49 " + anim("fade", inView4)}
               style={animDelay(0.7)}
             >
               <h2>things I love</h2>
-              <div class="divider"></div>
+              <div className="divider"></div>
               <ul>
-                <li>rainy days</li>
-                <li>snow</li>
-                <li>working out</li>
-                <li>Harry Potter, Marvel, Star Wars</li>
-                <li>video games</li>
-                <li>listening to music and podcasts</li>
+                <li key="0">rainy days</li>
+                <li key="1">snow</li>
+                <li key="2">working out</li>
+                <li key="3">Harry Potter, Marvel, Star Wars</li>
+                <li key="4">video games</li>
+                <li key="5">listening to music and podcasts</li>
               </ul>
             </div>
           </div>
         </section>
       </div>
-      <section class="scroll-window" id="contact">
-        <div class="section-title">
+      <section className="scroll-window" id="contact">
+        <div className="section-title">
           <h4>get in touch</h4>
         </div>
-        <div class="flex justify-center">
+        <div className="flex justify-center">
           <div ref={ref5}></div>
           <FlipCard
             classes={anim("slideLeft", inView5)}
@@ -336,7 +338,7 @@ export default function HomePage() {
           />
         </div>
       </section>
-      <footer class="footer">
+      <footer className="footer">
         <div>
           <span>A React App by Paul Gan</span>
         </div>

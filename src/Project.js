@@ -6,12 +6,12 @@ export default function Project({ codingLang, name, dx, gitUrl }) {
     <section>
       <h3>{codingLang}</h3>
       <h2>{name}</h2>
-      <div class="divider"></div>
+      <div className="divider"></div>
       <p>{dx}</p>
-      <div class="mt-5">
+      <div className="mt-5">
         <a href={gitUrl} target="_blank" rel="noopener noreferrer">
           <img
-            class="github-logo"
+            className="github-logo"
             title="github"
             src={require("./images/github-mark-white.png")}
             alt="github logo"

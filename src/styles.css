@@ -276,7 +276,7 @@ h5 {
 }
 
 .intro {
-  width: 50%;
+  max-width: 500px;
 }
 
 .link {
@@ -329,7 +329,8 @@ li {
   padding-inline-end: 50px;
 }
 
-.navbar a {
+.navbar a,
+.play-again a {
   flex-direction: row;
   margin-inline: 20px;
   letter-spacing: 0.2vw;
@@ -337,7 +338,8 @@ li {
   transition: ease-out 0.2s;
 }
 
-.navbar a:hover {
+.navbar a:hover,
+.play-again a:hover {
   color: var(--heading-color-main);
   transform: scale(1.08);
 }
@@ -551,7 +553,7 @@ footer {
   }
 
   .intro {
-    width: 100%;
+    max-width: 100%;
   }
 
   .section-title h4::before {
@@ -585,5 +587,9 @@ footer {
 
   .flip-card:hover .flip-card-inner {
     transform: none;
+  }
+
+  .snake-container {
+    display: none;
   }
 }
