@@ -21,8 +21,8 @@ export default function Snake(props) {
   ];
 
   // game variables
-  const startDir = 1;
-  const startLen = 8;
+  const startDir = 0;
+  const startLen = 3;
   const maxLen = nCols * nRows;
   const startPos = {
     c: startLen,
@@ -39,7 +39,7 @@ export default function Snake(props) {
   const [updateDelay, setUpdateDelay] = useState(k - difficulty);
   const [frame, setFrame] = useState(0);
   const [multiplier, setMultiplier] = useState(
-    Math.floor(multScale * difficulty)
+    Math.floor(Math.sqrt(multScale * difficulty) * 10)
   );
 
   const [len, setLen] = useState(startLen);
@@ -55,10 +55,11 @@ export default function Snake(props) {
 
   const [arena, setArena] = useState(a);
   const [fruitPos, setFruitPos] = useState(f);
-  const [instructions, setInstructions] = useState(false);
   const [gameState, setGameState] = useState(-1);
+  const [instructions, setInstructions] = useState(false);
+  const [showDifficulty, setShowDifficulty] = useState(false);
 
-  function resetArena() {
+  const resetArena = () => {
     setPos(startPos);
     setDir(startDir);
     setNextDir(startDir);
@@ -68,24 +69,21 @@ export default function Snake(props) {
     setInstructions(false);
     setUpdateDelay(k - difficulty);
 
-    // var newArena = [...arena];
-    // for (let r = 0; r < nRows; r++) {
-    //   for (let c = 0; c < nCols; c++) {
-    //     newArena[r][c] = 0;
-    //   }
-    // }
-    // newArena = addSnake(startLen, pos, newArena);
     var newArena = createArena(nRows, nCols);
+    newArena = addSnake(startLen, pos, newArena);
     f = spawnFruit(newArena);
+
     setArena(newArena);
     setFruitPos(f);
-  }
+
+    setGameState(-1);
+  };
 
   useEffect(
     () => {
       const drawArena = (ctx, canvas) => {
         // clear canvas
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         const arr = arena;
 
@@ -215,7 +213,6 @@ export default function Snake(props) {
 
         if (showArenaVals) drawArrayVals(ctx);
       };
-
       const drawArrayVals = (ctx) => {
         for (let j = 0; j < nRows; j++) {
           for (let i = 0; i < nCols; i++) {
@@ -296,7 +293,7 @@ export default function Snake(props) {
         var offset = [0, 0, 0, 0]; // offsetCol, offsetRow
 
         // if game over or corner block
-        if (gameState !== -1) return offset;
+        if (gameState !== -1 || dir === 0) return offset;
 
         const n = arr[r][c];
 
@@ -576,6 +573,8 @@ export default function Snake(props) {
           setNextDir(dir);
         }
 
+        if (dir === 0) return;
+
         // clone of arena array. This will be updated to be our new arena state
         var arr = [...arena];
 
@@ -586,7 +585,7 @@ export default function Snake(props) {
         var grow = arr[nr][nc] === -1 ? true : false;
         if (grow) {
           setLen(len + 1);
-          setScore((len + 1 - startLen) * multiplier);
+          setScore(score + multiplier);
 
           const f = spawnFruit(arr);
           arr[f[0]][f[1]] = -1;
@@ -675,6 +674,7 @@ export default function Snake(props) {
       fruitPos,
       pause,
       showArenaVals,
+      score,
     ]
   );
 
@@ -684,24 +684,43 @@ export default function Snake(props) {
       style={{
         width: canvasRef.current ? canvasRef.current.style.width : adjustedW,
       }}
+      onMouseOver={() => {
+        setShowDifficulty(true);
+      }}
+      onMouseLeave={() => {
+        setShowDifficulty(false);
+      }}
     >
-      <div className="flex items-center justify-between snake-top-bar">
-        <label htmlFor="difficulty">Difficulty:</label>
-        <input
-          type="range"
-          id="difficulty"
-          name="difficulty"
-          min={minDifficulty}
-          max={maxDifficulty}
-          step={1}
-          defaultValue={difficulty}
-          onInput={(e) => {
-            e.preventDefault();
-            setUpdateDelay(k - e.target.value);
-            setDifficulty(e.target.value);
-            setMultiplier(Math.floor(multScale * e.target.value));
-          }}
-        />
+      <div className="snake-top-bar">
+        <div
+          className="flex justify-center h-5"
+          style={{ display: showDifficulty ? "none" : "flex" }}
+        >
+          <p>Snake</p>
+        </div>
+        <div
+          className="flex items-center justify-between h-5"
+          style={{ display: showDifficulty ? "flex" : "none" }}
+        >
+          <label htmlFor="difficulty">Difficulty:</label>
+          <input
+            type="range"
+            id="difficulty"
+            name="difficulty"
+            min={minDifficulty}
+            max={maxDifficulty}
+            step={1}
+            defaultValue={difficulty}
+            onInput={(e) => {
+              e.preventDefault();
+              setUpdateDelay(k - e.target.value);
+              setDifficulty(e.target.value);
+              setMultiplier(
+                Math.floor(Math.sqrt(multScale * e.target.value) * 10)
+              );
+            }}
+          />
+        </div>
       </div>
       <div
         className="relative flex items-center justify-center canvas-container-inner"
@@ -723,7 +742,6 @@ export default function Snake(props) {
               onClick={(e) => {
                 e.preventDefault();
                 resetArena();
-                setGameState(-1);
               }}
             >
               <p className="inline-block text-end content-end">Play Again</p>

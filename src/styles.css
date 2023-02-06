@@ -249,7 +249,7 @@ h4 {
 
 .scroll-window {
   width: 100vw;
-  min-height: calc(100vh - var(--nav-height));
+  min-height: calc(80vh - var(--nav-height));
   padding-inline: 15vw;
 }
 
@@ -532,6 +532,10 @@ footer {
   p,
   li {
     font-size: 16px;
+  }
+
+  .snake {
+    display: none;
   }
 
   .canvas-container {

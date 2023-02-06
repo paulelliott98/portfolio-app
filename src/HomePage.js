@@ -164,7 +164,7 @@ export default function HomePage() {
                 challenging projects!
               </h5>
             </div>
-            <div className={"mt-28 " + anim("fade", inView)}>
+            <div className={"mt-28 snake " + anim("fade", inView)}>
               <Snake w={292} h={292} />
               {/* <Snake w={300} h={25} /> */}
             </div>
