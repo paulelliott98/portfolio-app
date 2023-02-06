@@ -160,9 +160,13 @@ export default function HomePage() {
                 Paul Gan
               </h1>
               <h5 className={anim("slideUp", inView)} style={animDelay(0.4)}>
-                I am a software developer and I enjoy taking on fun and
-                challenging projects!
+                I am a software engineer and self-taught web developer who
+                transforms great ideas into awesome digital experiences.
               </h5>
+              {/* <br></br>
+              <h5 className={anim("slideUp", inView)} style={animDelay(0.6)}>
+                Come check out some of my work!
+              </h5> */}
             </div>
             <div className={"mt-28 snake " + anim("fade", inView)}>
               <Snake w={292} h={292} />

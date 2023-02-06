@@ -8,7 +8,7 @@ export default function Snake(props) {
   const scale = window.devicePixelRatio || 1;
   const blockDim = 20;
   const gap = 0;
-  const drawAdjustment = 0.2;
+  const drawAdjustment = 0;
   const [nRows, nCols] = [
     Math.floor((props.h - gap) / (gap + blockDim)),
     Math.floor((props.w - gap) / (gap + blockDim)),
@@ -21,7 +21,7 @@ export default function Snake(props) {
   ];
 
   // game variables
-  const startDir = 0;
+  const startDir = 1;
   const startLen = 3;
   const maxLen = nCols * nRows;
   const startPos = {
@@ -70,7 +70,7 @@ export default function Snake(props) {
     setUpdateDelay(k - difficulty);
 
     var newArena = createArena(nRows, nCols);
-    newArena = addSnake(startLen, pos, newArena);
+    newArena = addSnake(startLen, startPos, newArena);
     f = spawnFruit(newArena);
 
     setArena(newArena);
@@ -139,23 +139,16 @@ export default function Snake(props) {
               ctx.fill();
             }
 
-            // if block is warping to other side of canvas and block is not a corner block,
+            // if block is warping to other side of canvas,
             // draw the partial block
-            var partialRect = getPartialRect(
+            drawPartialRect(
               c + offsets[0],
               r + offsets[1],
-              blockDim,
-              blockDim
+              blockDim + offsets[2],
+              blockDim + offsets[3],
+              getFillColor(type),
+              ctx
             );
-
-            // if (type === len && dir !== prevDir) partialRect = null;
-
-            if (partialRect) {
-              ctx.beginPath();
-              ctx.fillStyle = getFillColor(type);
-              ctx.rect(...partialRect);
-              ctx.fill();
-            }
           }
         }
 
@@ -197,22 +190,38 @@ export default function Snake(props) {
 
           // fill in rect between head and corner
           if (Math.abs(arr[cornerj][corneri] - len) === 1 && prevDir === dir) {
+            var temp = [0, 0, 0, 0];
+            if (dir === 1) temp = [x + blockDim, y, diff, blockDim];
+            else if (dir === 2) temp = [x, y + blockDim, blockDim, diff];
+            else if (dir === 3) temp = [x - diff, y, diff, blockDim];
+            else if (dir === 4) temp = [x, y - diff, blockDim, diff];
+
             ctx.beginPath();
-            if (dir === 1) {
-              ctx.rect(x + blockDim, y, diff, blockDim);
-            } else if (dir === 2) {
-              ctx.rect(x, y + blockDim, blockDim, diff);
-            } else if (dir === 3) {
-              ctx.rect(x - diff, y, diff, blockDim);
-            } else if (dir === 4) {
-              ctx.rect(x, y - diff, blockDim, diff);
-            }
+            ctx.rect(...temp);
             ctx.fill();
+
+            if (dir === 1) temp[2] += blockDim;
+            else if (dir === 2) temp[3] += blockDim;
+            else if (dir === 3) temp[2] -= diff;
+            else temp[3] -= diff;
+            drawPartialRect(...temp, color, ctx);
           }
         }
 
         if (showArenaVals) drawArrayVals(ctx);
       };
+
+      const drawPartialRect = (i, j, w, h, color, ctx) => {
+        var partialRect = getPartialRect(i, j, w, h);
+
+        if (partialRect) {
+          ctx.beginPath();
+          ctx.fillStyle = color;
+          ctx.rect(...partialRect);
+          ctx.fill();
+        }
+      };
+
       const drawArrayVals = (ctx) => {
         for (let j = 0; j < nRows; j++) {
           for (let i = 0; i < nCols; i++) {
@@ -750,7 +759,7 @@ export default function Snake(props) {
         </div>
       </div>
       <div className="snake-bottom-bar">
-        <div className="flex justify-between ">
+        <div className="flex justify-between">
           <p className="inline-block">Score: {score}</p>
           <p
             className="inline-block text-end content-end"
@@ -870,10 +879,11 @@ function createArena(nRows, nCols) {
 }
 
 function addSnake(startLen, pos, arr) {
+  var a = [...arr];
   for (let i = 0; i < startLen; i++) {
-    arr[pos.r][pos.c - i] = startLen - i;
+    a[pos.r][pos.c - i] = startLen - i;
   }
-  return arr;
+  return a;
 }
 
 // generate random int in [min, max]
