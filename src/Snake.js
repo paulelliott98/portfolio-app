@@ -2,11 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 
 export default function Snake(props) {
   const [pause, setPause] = useState(false);
+  const [showArenaVals, setShowArenaVals] = useState(false);
 
   const canvasRef = useRef(null);
   const scale = window.devicePixelRatio || 1;
   const blockDim = 20;
   const gap = 0;
+  const drawAdjustment = 0.2;
   const [nRows, nCols] = [
     Math.floor((props.h - gap) / (gap + blockDim)),
     Math.floor((props.w - gap) / (gap + blockDim)),
@@ -14,8 +16,8 @@ export default function Snake(props) {
 
   // final canvas dimensions after accounting for gaps
   const [adjustedW, adjustedH] = [
-    nCols * (gap + blockDim) + gap - 0.5,
-    nRows * (gap + blockDim) + gap - 0.5,
+    nCols * (gap + blockDim) + gap,
+    nRows * (gap + blockDim) + gap,
   ];
 
   // game variables
@@ -28,9 +30,9 @@ export default function Snake(props) {
   };
 
   // difficulty settings and frame rate
-  const k = 200;
+  const k = 180;
   const multScale = 0.5;
-  const [minDifficulty, maxDifficulty] = [0, (3 * k) / 5];
+  const [minDifficulty, maxDifficulty] = [10, (3 * k) / 5];
   const [difficulty, setDifficulty] = useState(
     Math.floor((maxDifficulty + minDifficulty) / 2)
   );
@@ -43,6 +45,7 @@ export default function Snake(props) {
   const [len, setLen] = useState(startLen);
   const [score, setScore] = useState(0);
   const [pos, setPos] = useState(startPos);
+  const [prevDir, setPrevDir] = useState(startDir);
   const [dir, setDir] = useState(startDir);
   const [nextDir, setNextDir] = useState(startDir);
 
@@ -120,13 +123,9 @@ export default function Snake(props) {
             // if block is corner block, add to corners array
             const corner = getCornerDirection(j, i, arr, len, dir);
             if (corner.length !== 0) {
-              // if (type !== len) {
-              //   corners.push([corner, color, r, c]);
-              // }
-              // else {
-              //   corners.push([corner, len - 1, r, c]);
-              // }
-              corners.push([corner, color, r, c, j, i]);
+              if (type === len)
+                corners.push([corner, getFillColor(len - 1), r, c, j, i]);
+              else corners.push([corner, color, r, c, j, i]);
             }
 
             // if not corner or is head
@@ -140,19 +139,24 @@ export default function Snake(props) {
                 blockDim + offsets[3]
               );
               ctx.fill();
+            }
 
-              // if block is warping to other side of canvas and block is not a corner block,
-              // draw the partial block
-              const partialRect = getPartialRect(
-                c + offsets[0],
-                r + offsets[1],
-                blockDim,
-                blockDim
-              );
-              if (partialRect) {
-                ctx.rect(...partialRect);
-                ctx.fill();
-              }
+            // if block is warping to other side of canvas and block is not a corner block,
+            // draw the partial block
+            var partialRect = getPartialRect(
+              c + offsets[0],
+              r + offsets[1],
+              blockDim,
+              blockDim
+            );
+
+            // if (type === len && dir !== prevDir) partialRect = null;
+
+            if (partialRect) {
+              ctx.beginPath();
+              ctx.fillStyle = getFillColor(type);
+              ctx.rect(...partialRect);
+              ctx.fill();
             }
           }
         }
@@ -161,32 +165,30 @@ export default function Snake(props) {
           var [corner, color, y, x, cornerj, corneri] = corners[i];
           const pi = Math.PI;
           var [start, end] = [0, 2 * pi];
-          var [cx, cy] = [x, y];
+          var [cx, cy] = [x, y]; // origin to draw quarter circle at
 
           // right to bottom
           if (corner[0] && corner[1]) {
             [start, end] = [pi, 1.5 * pi];
             cx += blockDim;
             cy += blockDim;
-            ctx.clearRect(x, y, blockDim, blockDim);
           }
           // bottom to left
           else if (corner[1] && corner[2]) {
             [start, end] = [1.5 * pi, 0];
             cy += blockDim;
-            ctx.clearRect(x, y, blockDim, blockDim);
           }
           // left to top
           else if (corner[2] && corner[3]) {
             [start, end] = [0, 0.5 * pi];
-            ctx.clearRect(x, y, blockDim, blockDim);
           }
           // top to right
           else if (corner[3] && corner[0]) {
             [start, end] = [0.5 * pi, pi];
             cx += blockDim;
-            ctx.clearRect(x, y, blockDim, blockDim);
           }
+
+          ctx.clearRect(x, y, blockDim, blockDim);
 
           // draw quarter circle (corner)
           ctx.fillStyle = color;
@@ -196,24 +198,33 @@ export default function Snake(props) {
           ctx.fill();
 
           // fill in rect between head and corner
-          if (Math.abs(arr[cornerj][corneri] - len) === 1) {
-            const b = getBody(cornerj, corneri, -1, arr);
-            // console.log(b.dir.toString());
+          if (Math.abs(arr[cornerj][corneri] - len) === 1 && prevDir === dir) {
             ctx.beginPath();
-            if (b.dir === 1) {
+            if (dir === 1) {
               ctx.rect(x + blockDim, y, diff, blockDim);
-              console.log("right");
-            } else if (b.dir === 2) {
+            } else if (dir === 2) {
               ctx.rect(x, y + blockDim, blockDim, diff);
-              console.log("down");
-            } else if (b.dir === 3) {
+            } else if (dir === 3) {
               ctx.rect(x - diff, y, diff, blockDim);
-              console.log("left");
-            } else if (b.dir === 4) {
+            } else if (dir === 4) {
               ctx.rect(x, y - diff, blockDim, diff);
-              console.log("up");
             }
             ctx.fill();
+          }
+        }
+
+        if (showArenaVals) drawArrayVals(ctx);
+      };
+
+      const drawArrayVals = (ctx) => {
+        for (let j = 0; j < nRows; j++) {
+          for (let i = 0; i < nCols; i++) {
+            const [r, c] = [
+              gap + j * (blockDim + gap),
+              gap + i * (blockDim + gap),
+            ];
+            ctx.fillStyle = "red";
+            ctx.fillText(arena[j][i], c + 7, r + 13);
           }
         }
       };
@@ -251,7 +262,7 @@ export default function Snake(props) {
       // returning new rect (col, row, width, height) on opposite side of canvas
       function getPartialRect(x, y, w, h) {
         // if entire body is within canvas boundary, return null
-        const pixelInaccuracy = 2;
+        const pixelInaccuracy = 0;
         if (
           x >= -pixelInaccuracy &&
           x + w <= adjustedW + pixelInaccuracy &&
@@ -262,13 +273,14 @@ export default function Snake(props) {
         }
 
         if (x < 0) {
-          return [adjustedW + x, y, -x, h];
+          return [adjustedW + x - drawAdjustment, y, -x, h];
         } else if (x + w > adjustedW) {
-          return [0, y, x + w - adjustedW, h];
-        } else if (y < 0) {
-          return [x, adjustedH + y, w, -y];
+          return [drawAdjustment, y, x + w - adjustedW, h];
+        }
+        if (y < 0) {
+          return [x, adjustedH + y - drawAdjustment, w, -y];
         } else if (y + h > adjustedH) {
-          return [x, 0, w, y + h - adjustedH];
+          return [x, drawAdjustment, w, y + h - adjustedH];
         }
 
         return null;
@@ -281,26 +293,45 @@ export default function Snake(props) {
       // 0 0 0 0 0
       // snake body animation to make position change appear smooth
       function getDrawOffsets(r, c, arr) {
-        const offset = [0, 0, 0, 0]; // offsetCol, offsetRow
+        var offset = [0, 0, 0, 0]; // offsetCol, offsetRow
 
+        // if game over or corner block
         if (gameState !== -1) return offset;
 
         const n = arr[r][c];
 
-        const diff = gap + (getLastFrame() / updateDelay) * blockDim;
+        // const diff = gap + (frame / updateDelay) * blockDim - blockDim;
+        const diff = gap + (frame / updateDelay) * blockDim;
 
-        // if head, get offset using dir
+        // if head, get offset using prevDir
         if (n === len) {
-          if (getDir() === 1) offset[0] += diff;
-          else if (getDir() === 2) offset[1] += diff;
-          else if (getDir() === 3) offset[0] -= diff;
-          else offset[1] -= diff;
-
-          // return offset;
+          if (prevDir === 1) {
+            offset[0] += diff;
+          } else if (prevDir === 2) {
+            offset[1] += diff;
+          } else if (prevDir === 3) {
+            offset[0] -= diff;
+          } else {
+            offset[1] -= diff;
+          }
+          if (prevDir !== dir) {
+            offset = [0, 0, 0, 0];
+            if (dir === 1) {
+              offset[2] = diff;
+            } else if (dir === 2) {
+              offset[3] = diff;
+            } else if (dir === 3) {
+              offset[0] = -diff;
+              offset[2] = diff;
+            } else {
+              offset[1] = -diff;
+              offset[3] = diff;
+            }
+          }
+          return offset;
         }
 
         // else body
-
         // get body values in 4 adjacent cells
         var adjVals = [0, 0, 0, 0]; // right, bottom, left, top
         var adjC = getAdjacentCoords(r, c, arr);
@@ -314,19 +345,21 @@ export default function Snake(props) {
 
         // look for previous and next body cells
         const [prev, next] = [getBody(r, c, -1, arr), getBody(r, c, 1, arr)];
-        if (!prev) return offset;
-
-        // if prev is not corner block
-        if (prev.dir === 1) offset[0] += diff;
-        else if (prev.dir === 2) offset[1] += diff;
-        else if (prev.dir === 3) offset[0] -= diff;
-        else offset[1] -= diff;
 
         var [prevIsCorner, nextIsCorner] = [false, false];
 
+        // set offsets based on direction
+        if (prev) {
+          var d = prev.dir;
+          if (d === 1) offset[0] += diff;
+          else if (d === 2) offset[1] += diff;
+          else if (d === 3) offset[0] -= diff;
+          else offset[1] -= diff;
+        }
+
         // if prev block is a corner block set width and height offsets
-        // aka this is the block after (closer to tail)
-        if (getCornerDirection(prev.r, prev.c, arr, len).length !== 0) {
+        // aka this is the block after corner block (closer to tail)
+        if (prev && getCornerDirection(prev.r, prev.c, arr, len).length !== 0) {
           prevIsCorner = true;
 
           // corner block on right
@@ -349,11 +382,9 @@ export default function Snake(props) {
           }
         }
 
-        if (!next) return offset;
-
         // if next block is a corner block, set width and height offsets
         // aka this is the block before (closer to head)
-        if (getCornerDirection(next.r, next.c, arr, len).length !== 0) {
+        if (next && getCornerDirection(next.r, next.c, arr, len).length !== 0) {
           nextIsCorner = true;
 
           // corner block right
@@ -376,12 +407,21 @@ export default function Snake(props) {
           }
         }
 
-        // if block between two corners, return 0 offsets
-        if (Math.abs(prev.dir - next.dir) === 2 && prevIsCorner && nextIsCorner)
+        // if block between two corners, or block is a corner block, return 0 offsets
+        if (
+          (prevIsCorner &&
+            nextIsCorner &&
+            Math.abs(prev.dir - next.dir) === 2) ||
+          getCornerDirection(r, c, arr, len, dir).length !== 0
+        )
           return [0, 0, 0, 0];
 
-        // if (prev.dir === 1 || prev.dir === 3) offset[2] += 1;
-        // else if (prev.dir === 2 || prev.dir === 4) offset[3] += 1;
+        // add a small offset to cover gaps between body segments
+        if (prev) {
+          if (prev.dir === 1 || prev.dir === 3) offset[2] += 0.2;
+          else offset[3] += 0.2;
+        }
+
         return offset;
       }
 
@@ -450,6 +490,7 @@ export default function Snake(props) {
 
         // pause
         if (input === 49) setPause(!pause);
+        if (input === 187) setShowArenaVals(!showArenaVals);
 
         if (gameState !== -1) {
           return;
@@ -518,7 +559,7 @@ export default function Snake(props) {
         }
 
         // allow update function to proceed only on first frame
-        if (frame !== 1) {
+        if (frame !== updateDelay) {
           return;
         }
 
@@ -528,6 +569,7 @@ export default function Snake(props) {
           return;
         }
 
+        setPrevDir(dir);
         if (isValidNextDir(nextDir)) {
           setDir(nextDir);
         } else {
@@ -580,7 +622,6 @@ export default function Snake(props) {
           arr[nr][nc] = len;
         }
         setPos({ r: nr, c: nc }); // update head position
-
         setArena(arr); // update arena array
       }
 
@@ -618,7 +659,9 @@ export default function Snake(props) {
       adjustedH,
       adjustedW,
       arena,
+      prevDir,
       dir,
+      nextDir,
       frame,
       gameState,
       len,
@@ -626,12 +669,12 @@ export default function Snake(props) {
       multiplier,
       nCols,
       nRows,
-      nextDir,
       pos,
       scale,
       updateDelay,
       fruitPos,
       pause,
+      showArenaVals,
     ]
   );
 
@@ -744,7 +787,7 @@ function getrc(dir) {
 
 // return array of 4 binary values corresponding to directions of adjacent body blocks
 // e.g. [1,1,0,0] means adjacent body blocks are in right and bottom of current cell
-function getCornerDirection(r, c, a, len, nextDir) {
+function getCornerDirection(r, c, a, len, dir) {
   const n = a[r][c];
 
   // if tail block, not a corner block
@@ -755,9 +798,9 @@ function getCornerDirection(r, c, a, len, nextDir) {
   const adjC = getAdjacentCoords(r, c, a);
   var adj = [0, 0, 0, 0]; // right, bottom, left, top
 
-  // if head
+  // if head block
   if (n === len) {
-    adj[nextDir - 1] = 1;
+    adj[dir - 1] = 1;
   }
 
   for (let i = 0; i < adj.length; i++) {
@@ -771,6 +814,8 @@ function getCornerDirection(r, c, a, len, nextDir) {
     }
   }
 
+  // compare adjacent directions
+  // e.g. if dirs 1 (right) and 2 (down) both have value 1, they form a corner
   for (let i = 0; i < adj.length - 1; i++) {
     if (adj[i] && adj[i + 1]) {
       return adj;
