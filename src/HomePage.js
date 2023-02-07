@@ -104,8 +104,6 @@ export default function HomePage() {
         break;
 
       case "fade":
-        // animIn = "animate__animated animate__fadeIn animate__fast";
-        // animOut = "animate__animated animate__fadeOut animate__fast";
         animIn = "fadeIn";
         animOut = "fadeOut";
         break;

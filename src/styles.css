@@ -184,7 +184,7 @@ h1 {
   font-style: normal;
   font-weight: 400;
   font-size: 100px;
-  line-height: 130%;
+  line-height: 160%;
   margin-inline-start: -5px;
   align-items: center;
   letter-spacing: -0.05em;
@@ -223,16 +223,19 @@ h4 {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
-  margin-block: 10px;
   gap: 12px;
+  margin-block: 18px;
+  padding-block-start: 0.5px;
 }
 
 .tech-item-div {
   padding-block: 4px;
   padding-inline: 12px;
   background-color: var(--bg-color-3);
-  border-radius: 12px;
+  border-radius: 14px;
   transition: all ease 0.3s;
+  display: flex;
+  align-items: center;
 }
 
 .tech-item-div:hover {

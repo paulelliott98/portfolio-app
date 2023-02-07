@@ -13,6 +13,7 @@ export default function Snake(props) {
     Math.floor((props.h - gap) / (gap + blockDim)),
     Math.floor((props.w - gap) / (gap + blockDim)),
   ];
+
   // final canvas dimensions after accounting for gaps
   const [adjustedW, adjustedH] = [
     nCols * (gap + blockDim) + gap,
