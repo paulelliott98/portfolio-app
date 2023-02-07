@@ -183,11 +183,11 @@ h1 {
   font-family: "Poppins", sans-serif;
   font-style: normal;
   font-weight: 400;
-  font-size: 100px;
-  line-height: 160%;
+  font-size: 8vw;
   margin-inline-start: -5px;
   align-items: center;
   letter-spacing: -0.05em;
+  white-space: nowrap;
 }
 
 /* project name */
@@ -295,6 +295,7 @@ h5 {
 
 .intro {
   max-width: 500px;
+  margin-inline-end: 30px;
 }
 
 .link {
@@ -592,7 +593,7 @@ footer {
 
 @media screen and (max-width: 992px) {
   h1 {
-    font-size: 80px;
+    font-size: 82px;
   }
 
   h2,
