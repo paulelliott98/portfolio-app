@@ -5,15 +5,14 @@ export default function Snake(props) {
   const [showArenaVals, setShowArenaVals] = useState(false);
 
   const canvasRef = useRef(null);
+  const drawAdjustment = 0.05;
   const scale = window.devicePixelRatio || 1;
   const blockDim = 20;
   const gap = 0;
-  const drawAdjustment = 0;
   const [nRows, nCols] = [
     Math.floor((props.h - gap) / (gap + blockDim)),
     Math.floor((props.w - gap) / (gap + blockDim)),
   ];
-
   // final canvas dimensions after accounting for gaps
   const [adjustedW, adjustedH] = [
     nCols * (gap + blockDim) + gap,
@@ -179,7 +178,12 @@ export default function Snake(props) {
             cx += blockDim;
           }
 
-          ctx.clearRect(x, y, blockDim, blockDim);
+          ctx.clearRect(
+            x,
+            y,
+            blockDim + drawAdjustment,
+            blockDim + drawAdjustment
+          );
 
           // draw quarter circle (corner)
           ctx.fillStyle = color;
@@ -560,14 +564,10 @@ export default function Snake(props) {
         }
 
         // if game still ongoing, update frame
-        if (gameState === -1) {
-          setFrame(getNextFrame()); // advance frame
-        }
+        if (gameState === -1) setFrame(getNextFrame()); // advance frame
 
         // allow update function to proceed only on first frame
-        if (frame !== updateDelay) {
-          return;
-        }
+        if (frame !== updateDelay) return;
 
         // check win
         if (len === maxLen) {
@@ -601,24 +601,34 @@ export default function Snake(props) {
           setFruitPos(f);
         }
 
-        // update body
-        for (let r = 0; r < nRows; r++) {
-          for (let c = 0; c < nCols; c++) {
-            // decrease number in each body cell by 1
-            if (arr[r][c] > 0) {
-              if (!grow) {
-                arr[r][c] -= 1;
-              }
-            }
-          }
-        }
-
         // check collision
         // if next cell is body (not 0 or -1), end game
         if (arr[nr][nc] > 0 && arr[nr][nc] !== len) {
           setGameState(0);
           return;
         }
+
+        // update body
+        if (!grow) {
+          var b = { r: pos.r, c: pos.c };
+          while (arena[b.r][b.c] > 0) {
+            let nextB = getBody(b.r, b.c, 1, arena);
+            arr[b.r][b.c] -= 1;
+            if (!nextB) break;
+            b = nextB;
+          }
+        }
+
+        // for (let r = 0; r < nRows; r++) {
+        //   for (let c = 0; c < nCols; c++) {
+        //     // decrease number in each body cell by 1
+        //     if (arr[r][c] > 0) {
+        //       if (!grow) {
+        //         arr[r][c] -= 1;
+        //       }
+        //     }
+        //   }
+        // }
 
         // 1 2 3 0 x
         // 0 1 2 3 x

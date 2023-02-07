@@ -161,7 +161,7 @@ export default function HomePage() {
               </h1>
               <h5 className={anim("slideUp", inView)} style={animDelay(0.4)}>
                 I am a software engineer and self-taught web developer who
-                transforms great ideas into awesome digital experiences.
+                transforms great ideas into remarkable digital experiences.
               </h5>
               {/* <br></br>
               <h5 className={anim("slideUp", inView)} style={animDelay(0.6)}>
@@ -169,7 +169,7 @@ export default function HomePage() {
               </h5> */}
             </div>
             <div className={"mt-28 snake " + anim("fade", inView)}>
-              <Snake w={292} h={292} />
+              <Snake w={282} h={282} />
               {/* <Snake w={300} h={25} /> */}
             </div>
           </div>
@@ -344,7 +344,7 @@ export default function HomePage() {
       </section>
       <footer className="footer">
         <div>
-          <span>A React App by Paul Gan</span>
+          <span>A React App designed and built by Paul Gan</span>
         </div>
       </footer>
     </div>
