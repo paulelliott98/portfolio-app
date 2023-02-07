@@ -7,6 +7,7 @@
 :root {
   --bg-color-main: #161a39;
   --bg-color-2: #1a1e40dd;
+  --bg-color-3: #25284b;
   --text-color-main: #ffffff;
   --text-color-grey: #dcdaff65;
   --heading-color-main: #c792e9;
@@ -128,13 +129,10 @@ canvas {
 }
 
 .snake-top-bar {
-  /* opacity: 0;
-  transition: all 0.5s ease; */
   border-radius: 5px 5px 0px 0px;
 }
 
 .snake-bottom-bar {
-  /* border-top: 0.5px solid white; */
   border-radius: 0px 0px 5px 5px;
 }
 
@@ -151,10 +149,6 @@ canvas {
   border-left: 0.5px solid var(--text-color-grey);
   border-right: 0.5px solid var(--text-color-grey);
 }
-
-/* .canvas-container:hover > .snake-top-bar {
-  opacity: 1;
-} */
 
 @keyframes fade {
   0% {
@@ -209,8 +203,8 @@ h2 {
 /* coding language */
 h3 {
   color: var(--heading-color-3);
-  letter-spacing: 0.02em;
-  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
 }
 
 /* section title */
@@ -222,6 +216,27 @@ h4 {
   letter-spacing: 0.1em;
   display: flex;
   align-self: center;
+}
+
+.tech-stack-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-block: 10px;
+  gap: 12px;
+}
+
+.tech-item-div {
+  padding-block: 4px;
+  padding-inline: 12px;
+  background-color: var(--bg-color-3);
+  border-radius: 12px;
+  transition: all ease 0.3s;
+}
+
+.tech-item-div:hover {
+  transform: scale(1.1);
 }
 
 .section-title h4::before,
@@ -411,10 +426,30 @@ li {
 
 .github-logo {
   display: inline;
-  max-height: 30px;
-  max-width: auto;
-  margin-inline-end: 10px;
-  align-self: center;
+  height: 30px;
+  width: auto;
+}
+
+.github-logo img {
+  width: 100%;
+  height: 100%;
+}
+
+.github-logo-container {
+  padding-inline-start: 1px;
+  padding-block-end: 1px;
+  text-align: center;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.github-logo {
+  transition: all ease 0.3s;
+}
+
+.github-logo:hover {
+  transform: scale(1.4);
 }
 
 .header {
@@ -514,6 +549,40 @@ footer {
   justify-content: center;
   align-items: flex-end;
   font-size: 12px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.fadeIn {
+  animation: fadeIn 0.5s;
+  animation-fill-mode: both;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.fadeOut {
+  animation: fadeOut 0.5s;
+  animation-fill-mode: both;
 }
 
 /* narrow screens */

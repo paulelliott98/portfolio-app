@@ -1,15 +1,26 @@
 import React from "react";
 
-// reuseable component for projects
-export default function Project({ codingLang, name, dx, gitUrl }) {
+// reusable component for projects
+export default function Project({ techStack, name, dx, gitUrl }) {
   return (
     <section>
-      <h3>{codingLang}</h3>
       <h2>{name}</h2>
       <div className="divider"></div>
       <p>{dx}</p>
-      <div className="mt-5">
-        <a href={gitUrl} target="_blank" rel="noopener noreferrer">
+      <div className="tech-stack-container">
+        {techStack.map((item) => (
+          <div className="tech-item-div">
+            <h3>{item}</h3>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4">
+        <a
+          className="github-logo-container inline-block"
+          href={gitUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <img
             className="github-logo"
             title="github"

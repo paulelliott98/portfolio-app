@@ -33,7 +33,7 @@ export default function Snake(props) {
   const multScale = 0.5;
   const [minDifficulty, maxDifficulty] = [10, (3 * k) / 5];
   const [difficulty, setDifficulty] = useState(
-    Math.floor((maxDifficulty + minDifficulty) / 2)
+    Math.floor((2 * (maxDifficulty + minDifficulty)) / 3)
   );
   const [updateDelay, setUpdateDelay] = useState(k - difficulty);
   const [frame, setFrame] = useState(0);

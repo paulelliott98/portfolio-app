@@ -14,7 +14,7 @@ export default function HomePage() {
       id: 0,
       listName: "polygon detection",
       name: "Canvas with Polygon Detection",
-      codingLang: "python",
+      techStack: ["Python", "Tkinter"],
       dx: [
         "As part of an effort to create pigeon art in Dr. Blaisdell’s lab at UCLA, this project showcases an implementation of the algorithm for extracting the regions of a planar graph described in a ",
         <a
@@ -25,15 +25,15 @@ export default function HomePage() {
         >
           paper
         </a>,
-        " by  X.Y. Jiang and H. Bunke (1993). By drawing intersecting line segments on the canvas, users can see the algorithm in action as polygons are filled in with various colors.",
+        " by  X.Y. Jiang and H. Bunke (1993). Polygons are filled in with various colors as intersecting line segments are drawn onto the canvas.",
       ],
       gitUrl: "https://github.com/paulgan98/polygon-detection",
     },
     {
       id: 1,
-      listName: "prime spiral visualizer",
-      name: "Prime Spiral Visualizer",
-      codingLang: "javascript",
+      listName: "interactive prime spiral",
+      name: "Interactive Prime Spiral",
+      techStack: ["Javascript", "React"],
       dx: [
         "HTML canvas with drag scrolling and zoom for visualizing the beautiful and enigmatic patterns in the prime spiral. Made with ReactJS.",
         "\n",
@@ -54,7 +54,7 @@ export default function HomePage() {
       id: 2,
       listName: "connect four",
       name: "Connect Four",
-      codingLang: "python",
+      techStack: ["Python"],
       dx:
         "A console game with AI opponent implementing the minimax algorithm with alpha-beta pruning. Drawn with text and runs on the MacOS terminal.",
       gitUrl: "https://github.com/paulgan98/connect4",
@@ -63,9 +63,9 @@ export default function HomePage() {
       id: 3,
       listName: "snake",
       name: "Snake",
-      codingLang: "c++",
+      techStack: ["C++"],
       dx:
-        "The classic game of snake, drawn entirely with text for the MacOS and Windows terminal. The player maneuvers the snake's head using arrow keys to eat fruits that spawn randomly around the arena. The snake's body grows longer as it eats.",
+        "The classic game of snake, drawn entirely with text for the MacOS and Windows terminal. The player maneuvers the snake's head using arrow keys to eat fruits that spawn randomly around the arena. The snake's body grows longer with each fruit eaten.",
       gitUrl: "https://github.com/paulgan98/snake",
     },
   ];
@@ -84,47 +84,47 @@ export default function HomePage() {
     var animOut = "";
     switch (type) {
       case "slideLeft":
-        animIn = "animate__fadeInLeft animate__fast";
-        animOut = "animate__fadeOutLeft animate__fast";
+        animIn = "animate__animated animate__fadeInLeft animate__fast";
+        animOut = "animate__animated animate__fadeOutLeft animate__fast";
         break;
 
       case "slideRight":
-        animIn = "animate__fadeInRight animate__faster";
-        animOut = "animate__fadeOutRight animate__faster";
+        animIn = "animate__animated animate__fadeInRight animate__faster";
+        animOut = "animate__animated animate__fadeOutRight animate__faster";
         break;
 
       case "slideUp":
-        animIn = "animate__fadeInUp animate__faster";
-        animOut = "animate__fadeOutUp animate__faster";
+        animIn = "animate__animated animate__fadeInUp animate__faster";
+        animOut = "animate__animated animate__fadeOutUp animate__faster";
         break;
 
       case "slideDown":
-        animIn = "animate__fadeInDown animate__fast";
-        // animOut = "animate__fadeOutDown animate__fast";
+        animIn = "animate__animated animate__fadeInDown animate__fast";
+        // animOut = "animate__animated animate__fadeOutDown animate__fast";
         break;
 
       case "fade":
-        animIn = "animate__fadeIn animate__fast";
-        animOut = "animate__fadeOut animate__fast";
+        // animIn = "animate__animated animate__fadeIn animate__fast";
+        // animOut = "animate__animated animate__fadeOut animate__fast";
+        animIn = "fadeIn";
+        animOut = "fadeOut";
         break;
 
       case "flipX":
-        animIn = "animate__flipInX";
-        animOut = "animate__flipOutX";
+        animIn = "animate__animated animate__flipInX";
+        animOut = "animate__animated animate__flipOutX";
         break;
 
       case "flipY":
-        animIn = "animate__flipInY";
-        animOut = "animate__flipOutY";
+        animIn = "animate__animated animate__flipInY";
+        animOut = "animate__animated animate__flipOutY";
         break;
 
       default:
         break;
     }
 
-    return view
-      ? `animate__animated ${animIn}`
-      : `animate__animated ${animOut}`;
+    return view ? `${animIn}` : `${animOut}`;
   };
 
   // add animation delay in style
@@ -218,7 +218,7 @@ export default function HomePage() {
                 .map((p) => (
                   <CSSTransition in={animate} timeout={400} classNames="fade">
                     <Project
-                      codingLang={p.codingLang}
+                      techStack={p.techStack}
                       name={p.name}
                       dx={p.dx}
                       gitUrl={p.gitUrl}
@@ -247,8 +247,8 @@ export default function HomePage() {
               </p>
               <p>
                 Previously pre-dental, I eventually made up my mind to pursue my
-                passion for coding and switched into tech during my 4th year of
-                college.
+                passion for software development and switched into tech during
+                my 4th year of college.
               </p>
               <p>
                 Over the years, I’ve explored and completed personal projects in
