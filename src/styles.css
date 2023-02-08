@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,13 +9,72 @@
   --bg-color-main: #161a39;
   --bg-color-2: #1a1e40dd;
   --bg-color-3: #25284b;
-  --text-color-main: #ffffff;
+  --text-color-main: #eaeaea;
   --text-color-grey: #dcdaff65;
   --heading-color-name: rgb(221, 254, 144);
   --heading-color-main: #c792e9;
   --heading-color-2: #6bcfe4;
   --nav-height: 70px;
   --nav-bg-color: #1f234177;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "Poppins", sans-serif;
+}
+
+/* name */
+h1 {
+  color: var(--heading-color-name);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 8vw;
+  margin-inline-start: -5px;
+  align-items: center;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+
+/* project name */
+h2 {
+  color: var(--heading-color-main);
+  font-weight: 500;
+  font-size: 30px;
+  text-transform: lowercase;
+  letter-spacing: 0.03em;
+}
+
+/* coding language */
+h3 {
+  color: var(--heading-color-2);
+  font-weight: 400;
+  font-size: 12px;
+}
+
+/* section title */
+h4 {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 31px;
+  letter-spacing: 0.2em;
+  display: flex;
+  align-self: center;
+}
+
+h5 {
+  color: var(--text-color-main);
+  font-style: normal;
+  font-weight: 00;
+  font-size: 20px;
+  letter-spacing: 0.05em;
+}
+
+p {
+  font-size: 16px;
 }
 
 html {
@@ -35,8 +95,9 @@ html {
 }
 
 body {
-  font-family: "IBM Plex Mono", monospace;
-  font-weight: 400;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.05em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-color-main);
@@ -150,15 +211,6 @@ canvas {
   border-right: 0.5px solid var(--text-color-grey);
 }
 
-@keyframes fade {
-  0% {
-    visibility: hidden;
-  }
-  100% {
-    visibility: visible;
-  }
-}
-
 /* Transitions */
 .fade-enter,
 .fade-exit {
@@ -175,47 +227,6 @@ canvas {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
-}
-
-/* name */
-h1 {
-  color: var(--heading-color-name);
-  font-family: "Poppins", sans-serif;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 8vw;
-  margin-inline-start: -5px;
-  align-items: center;
-  letter-spacing: -0.05em;
-  white-space: nowrap;
-}
-
-/* project name */
-h2 {
-  color: var(--heading-color-main);
-  font-weight: 600;
-  font-size: 20px;
-  text-transform: lowercase;
-  letter-spacing: 0.03em;
-  line-height: 30px;
-}
-
-/* coding language */
-h3 {
-  color: var(--heading-color-2);
-  font-weight: 400;
-  font-size: 13px;
-}
-
-/* section title */
-h4 {
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 31px;
-  letter-spacing: 0.1em;
-  display: flex;
-  align-self: center;
 }
 
 .tech-stack-container {
@@ -284,15 +295,6 @@ h4 {
   width: 100%;
 }
 
-h5 {
-  color: var(--text-color-main);
-  font-family: "IBM Plex Mono", monospace;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 20px;
-  letter-spacing: -0.05em;
-}
-
 .intro {
   max-width: 500px;
   margin-inline-end: 30px;
@@ -308,14 +310,6 @@ h5 {
 
 .link:visited {
   color: var(--heading-color-2);
-}
-
-p {
-  font-family: "IBM Plex Mono", monospace;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 20px;
 }
 
 ul {
@@ -596,10 +590,12 @@ footer {
     font-size: 82px;
   }
 
-  h2,
+  h2 {
+    font-size: 18px;
+  }
+
   h3 {
-    font-size: 16px;
-    line-height: 18px;
+    font-size: 12px;
   }
 
   p,
@@ -645,6 +641,7 @@ footer {
 
   .projects-list a {
     font-size: 14px;
+    padding-inline-start: 4px;
   }
 
   .projects-list a:hover > div {

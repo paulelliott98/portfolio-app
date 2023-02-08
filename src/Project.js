@@ -5,7 +5,6 @@ export default function Project({ techStack, name, dx, gitUrl }) {
   return (
     <section>
       <h2>{name}</h2>
-
       <div className="divider"></div>
       <p>{dx}</p>
       <div className="tech-stack-container">

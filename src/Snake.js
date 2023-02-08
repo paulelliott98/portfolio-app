@@ -186,8 +186,8 @@ export default function Snake(props) {
           ctx.clearRect(
             x,
             y,
-            blockDim + drawAdjustment,
-            blockDim + drawAdjustment
+            blockDim + 3 * drawAdjustment,
+            blockDim + 3 * drawAdjustment
           );
 
           // draw quarter circle (corner)
