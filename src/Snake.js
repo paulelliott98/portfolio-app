@@ -650,7 +650,7 @@ export default function Snake(props) {
 
         // check collision
         // if next cell is body (not 0 or -1), end game
-        if (arr[nr][nc] > 0 && arr[nr][nc] !== len) {
+        if (arr[pos.r][pos.c] > 0 && arr[pos.r][pos.c] !== len) {
           setGameState(0);
           return;
         }
