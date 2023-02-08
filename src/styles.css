@@ -10,9 +10,9 @@
   --bg-color-3: #25284b;
   --text-color-main: #ffffff;
   --text-color-grey: #dcdaff65;
+  --heading-color-name: rgb(221, 254, 144);
   --heading-color-main: #c792e9;
-  --heading-color-2: #ddfe90;
-  --heading-color-3: #6bcfe4;
+  --heading-color-2: #6bcfe4;
   --nav-height: 70px;
   --nav-bg-color: #1f234177;
 }
@@ -179,7 +179,7 @@ canvas {
 
 /* name */
 h1 {
-  color: var(--heading-color-2);
+  color: var(--heading-color-name);
   font-family: "Poppins", sans-serif;
   font-style: normal;
   font-weight: 400;
@@ -202,7 +202,7 @@ h2 {
 
 /* coding language */
 h3 {
-  color: var(--heading-color-3);
+  color: var(--heading-color-2);
   font-weight: 400;
   font-size: 13px;
 }
@@ -307,7 +307,7 @@ h5 {
 }
 
 .link:visited {
-  color: var(--heading-color-3);
+  color: var(--heading-color-2);
 }
 
 p {

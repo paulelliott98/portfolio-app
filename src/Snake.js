@@ -137,6 +137,10 @@ export default function Snake(props) {
                 blockDim + offsets[3]
               );
               ctx.fill();
+
+              // draw eyes
+              if (type === len)
+                drawSnakeEyes(c + offsets[0], r + offsets[1], ctx);
             }
 
             // if block is warping to other side of canvas,
@@ -227,6 +231,47 @@ export default function Snake(props) {
         }
       };
 
+      const drawSnakeEyes = (row, col, ctx) => {
+        const n = dir === 0 ? 0 : dir - 1;
+        const angle = (n * 90 * Math.PI) / 180;
+
+        // when we rotate ctx to draw, the rotation origin is the upper left hand corner
+        // hence we need to account for draw position
+        var ctxOffset = [0, 0];
+        if (dir === 2) ctxOffset = [0, -blockDim];
+        else if (dir === 3) ctxOffset = [-blockDim, -blockDim];
+        else if (dir === 4) ctxOffset = [-blockDim, 0];
+
+        const offsetX = 3; // distance to front of head
+        const offsetY = 3; // distance between eyes
+
+        const radius = 1; // eye radius
+        ctx.fillStyle = "#000000"; // eye color
+
+        ctx.translate(row, col);
+        ctx.rotate(angle);
+        ctx.translate(ctxOffset[0], ctxOffset[1]);
+        ctx.beginPath();
+        ctx.arc(
+          blockDim / 2 + offsetX,
+          blockDim / 2 - offsetY,
+          radius,
+          0,
+          2 * Math.PI
+        );
+        ctx.arc(
+          blockDim / 2 + offsetX,
+          blockDim / 2 + offsetY,
+          radius,
+          0,
+          2 * Math.PI
+        );
+        ctx.fill();
+        ctx.translate(-ctxOffset[0], -ctxOffset[1]);
+        ctx.rotate(-angle);
+        ctx.translate(-row, -col);
+      };
+
       const drawArrayVals = (ctx) => {
         for (let j = 0; j < nRows; j++) {
           for (let i = 0; i < nCols; i++) {
@@ -244,6 +289,7 @@ export default function Snake(props) {
         return ["rgb(", r, ",", g, ",", b, ")"].join("");
       }
 
+      // return color of block based on int value in arena array
       function getFillColor(n) {
         var c = "";
 
@@ -258,13 +304,13 @@ export default function Snake(props) {
           c = "#1f234177";
         } else {
           // body
-          const offset = (len - n) * 5;
+          const rgbVals = [221, 254, 144];
+          const offset = (len - n) * 3;
           c = rgb(
-            Math.max(0, 221 - offset),
-            Math.max(0, 254 - offset),
-            Math.max(0, 144 - offset)
+            Math.max(0, rgbVals[0] - offset),
+            Math.max(0, rgbVals[1] - offset),
+            Math.max(0, rgbVals[2] - offset)
           );
-          // c = rgb(221, 254, 144);
         }
         return c;
       }
