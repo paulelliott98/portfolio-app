@@ -11,7 +11,6 @@ import "animate.css";
 export default function HomePage() {
   const projects = [
     {
-      id: 0,
       listName: "polygon detection",
       name: "Canvas with Polygon Detection",
       techStack: ["Python", "Tkinter"],
@@ -30,12 +29,19 @@ export default function HomePage() {
       gitUrl: "https://github.com/paulgan98/polygon-detection",
     },
     {
-      id: 1,
+      listName: "browser game bot",
+      name: "Browser Game Bot",
+      techStack: ["Python", "Pandas", "Pytesseract", "OpenCV", "Selenium"],
+      dx:
+        "A program that automatically performs clicks or key inputs in game between set time intervals. It is able to solve captcha challenges by cleaning up noise and then converting text in the captcha image into string format using Pytesseract. This was my first project using Selenium and Chromedriver where I had my first encounter with web elements behind the scenes. I will not be sharing the code to avoid disclosing any details about the game.",
+      gitUrl: "",
+    },
+    {
       listName: "interactive prime spiral",
       name: "Interactive Prime Spiral",
       techStack: ["Javascript", "React"],
       dx: [
-        "HTML canvas with drag scrolling and zoom for visualizing the beautiful and enigmatic patterns in the prime spiral. Made with ReactJS.",
+        "The prime or Ulam spiral is a visual depiction of prime numbers on an integer number line drawn in a square spiral shape, where every prime integer is marked with a dot. I implemented a HTML canvas with pan and zoom to help visualize the beautiful and enigmatic patterns in the spiral.",
         "\n",
         " Check it out ",
         <a
@@ -51,16 +57,14 @@ export default function HomePage() {
       gitUrl: "https://github.com/paulgan98/prime-spiral",
     },
     {
-      id: 2,
       listName: "connect four",
       name: "Connect Four",
       techStack: ["Python"],
       dx:
-        "A console game with AI opponent implementing the minimax algorithm with alpha-beta pruning. Drawn with text and runs on the MacOS terminal.",
+        "A console game with AI opponent implementing the minimax algorithm with alpha-beta pruning. While not completely unbeatable, the AI is capable of putting up a very good fight. The game is entirely rendered with text and made for the MacOS terminal.",
       gitUrl: "https://github.com/paulgan98/connect4",
     },
     {
-      id: 3,
       listName: "snake",
       name: "Snake",
       techStack: ["C++"],
@@ -175,7 +179,7 @@ export default function HomePage() {
               </h5> */}
             </div>
             <div className={"mt-28 snake " + anim("fade", inView)}>
-              <Snake w={282} h={282} />
+              {isSafari ? null : <Snake w={282} h={282} />}
               {/* <Snake w={300} h={25} /> */}
             </div>
           </div>
@@ -188,24 +192,24 @@ export default function HomePage() {
           <div ref={ref2}></div>
           <div className="flex justify-between">
             <div className="projects-list">
-              {projects.map((p) => (
+              {projects.map((p, index) => (
                 <a
                   className={anim("slideLeft", inView2)}
                   style={{
                     ...{
                       backgroundColor:
-                        active === p.id ? "var(--bg-color-2)" : "",
-                      color: active === p.id ? "var(--text-color-main)" : "",
+                        active === index ? "var(--bg-color-2)" : "",
+                      color: active === index ? "var(--text-color-main)" : "",
                       borderLeft:
-                        active === p.id
+                        active === index
                           ? "2px solid var(--heading-color-main)"
                           : "",
                     },
-                    ...animDelay(0.3 + p.id * 0.1),
+                    ...animDelay(0.3 + index * 0.1),
                   }}
                   href="/#"
                   rel="noopener noreferrer"
-                  onClick={(e) => handleDisplay(e, p.id)}
+                  onClick={(e) => handleDisplay(e, index)}
                 >
                   <div>
                     <span>{p.listName}</span>
@@ -218,8 +222,8 @@ export default function HomePage() {
               style={animDelay(0.8)}
             >
               {projects
-                .filter((p) => {
-                  return p.id === active;
+                .filter((_, index) => {
+                  return index === active;
                 })
                 .map((p) => (
                   <CSSTransition in={animate} timeout={400} classNames="fade">
@@ -267,7 +271,7 @@ export default function HomePage() {
                   Web Scraping and Automation— Selenium, BeautifulSoup
                 </li>
                 <li key="3">Web Development— ReactJS, HubSpot CMS</li>
-                <li key="4">Game Development— Pygame, JavaScript</li>
+                <li key="4">Game Development— Pygame, Javascript</li>
               </ul>
               <p>
                 I am currently working my very first job as an associate
@@ -281,7 +285,7 @@ export default function HomePage() {
               className={"container max-w-49 " + anim("fade", inView4)}
               style={animDelay(0.5)}
             >
-              <h2>programming languages</h2>
+              <h2>coding languages</h2>
               <div className="divider"></div>
               <ul>
                 <li key="0">python</li>

@@ -32,7 +32,7 @@ export default function Snake(props) {
   // difficulty settings and frame rate
   const k = 180;
   const multScale = 0.5;
-  const [minDifficulty, maxDifficulty] = [10, (3 * k) / 5];
+  const [minDifficulty, maxDifficulty] = [10, 109];
   const [difficulty, setDifficulty] = useState(
     Math.floor((2 * (maxDifficulty + minDifficulty)) / 3)
   );
@@ -76,6 +76,7 @@ export default function Snake(props) {
     setArena(newArena);
     setFruitPos(f);
 
+    setPause(false);
     setGameState(-1);
   };
 
@@ -285,35 +286,57 @@ export default function Snake(props) {
         }
       };
 
-      function rgb(r, g, b) {
-        return ["rgb(", r, ",", g, ",", b, ")"].join("");
-      }
-
       // return color of block based on int value in arena array
       function getFillColor(n) {
-        var c = "";
+        // head
+        if (n === len) return "#fff";
+        // fruit
+        else if (n === -1) return "#c792e9";
+        // background
+        else if (n === 0) return "#1f234177";
+        // body
+        else return getBodyColor(n);
+      }
 
-        if (n === len) {
-          // head
-          c = "#fff";
-        } else if (n === -1) {
-          // fruit
-          c = "#c792e9";
-        } else if (n === 0) {
-          // background
-          c = "#1f234177";
-        } else {
-          // body
-          const rgbVals = [221, 254, 144];
+      const getBodyColor = (n) => {
+        const currDate = new Date();
+        const [ms, month, day] = [
+          currDate.getMilliseconds(),
+          currDate.getMonth() + 1,
+          currDate.getDate(),
+        ];
+
+        // color definitions
+        var defaultGreen = [221, 254, 144]; // green
+        var [xmasGreen, xmasRed] = [rgb(39, 93, 40), rgb(231, 57, 62)]; // christmas season
+        var [valPurple, valPink] = [rgb(195, 194, 236), rgb(226, 123, 195)]; // valentines day
+
+        // christmas colors
+        if (month === 12) {
+          if (ms < 500) [xmasRed, xmasGreen] = [xmasGreen, xmasRed];
+          if (n % 2 === 0) return xmasRed;
+          else return xmasGreen;
+        }
+        // valentines day colors
+        else if (month === 2 && day === 14) {
+          if (ms < 333)
+            [valPink, valPurple, xmasRed] = [valPurple, xmasRed, valPink];
+          else if (ms >= 333 && ms < 666)
+            [valPink, valPurple, xmasRed] = [xmasRed, valPink, valPurple];
+          if (n % 3 === 0) return valPink;
+          else if (n % 3 === 1) return valPurple;
+          return xmasRed;
+        }
+        // else default
+        else {
           const offset = (len - n) * 3;
-          c = rgb(
-            Math.max(0, rgbVals[0] - offset),
-            Math.max(0, rgbVals[1] - offset),
-            Math.max(0, rgbVals[2] - offset)
+          return rgb(
+            Math.max(0, defaultGreen[0] - offset),
+            Math.max(0, defaultGreen[1] - offset),
+            Math.max(0, defaultGreen[2] - offset)
           );
         }
-        return c;
-      }
+      };
 
       // identify part of snake body that has been cut off by canvas boundary
       // returning new rect (col, row, width, height) on opposite side of canvas
@@ -601,20 +624,30 @@ export default function Snake(props) {
       }
 
       // update game state
-      function update() {
-        if (pause) return;
-
-        // if game over, return
-        if (gameState !== -1) {
-          setUpdateDelay(0);
-          return;
-        }
-
+      function update(ctx, c) {
         // if game still ongoing, update frame
-        if (gameState === -1) setFrame(getNextFrame()); // advance frame
+        if (gameState === -1 && !pause) {
+          setFrame(getNextFrame()); // advance frame
+        } else {
+          drawArena(ctx, c);
+        }
 
         // allow update function to proceed only on first frame
         if (frame !== updateDelay) return;
+
+        // if (pause) return;
+
+        // // if game over, return
+        // if (gameState !== -1) {
+        //   setUpdateDelay(0);
+        //   return;
+        // }
+
+        // // if game still ongoing, update frame
+        // if (gameState === -1) setFrame(getNextFrame()); // advance frame
+
+        // // allow update function to proceed only on first frame
+        // if (frame !== updateDelay) return;
 
         // check win
         if (len === maxLen) {
@@ -641,7 +674,7 @@ export default function Snake(props) {
         var grow = arr[nr][nc] === -1 ? true : false;
         if (grow) {
           setLen(len + 1);
-          setScore(score + multiplier);
+          setScore(score + 10 * multiplier);
 
           const f = spawnFruit(arr);
           arr[f[0]][f[1]] = -1;
@@ -665,17 +698,6 @@ export default function Snake(props) {
           setGameState(0);
           return;
         }
-
-        // for (let r = 0; r < nRows; r++) {
-        //   for (let c = 0; c < nCols; c++) {
-        //     // decrease number in each body cell by 1
-        //     if (arr[r][c] > 0) {
-        //       if (!grow) {
-        //         arr[r][c] -= 1;
-        //       }
-        //     }
-        //   }
-        // }
 
         // 1 2 3 0 x
         // 0 1 2 3 x
@@ -709,7 +731,7 @@ export default function Snake(props) {
       const context = canvas.getContext("2d");
 
       const interval = setInterval(() => {
-        update();
+        update(context, canvas);
       }, 1);
 
       drawArena(context, canvas);
@@ -768,7 +790,9 @@ export default function Snake(props) {
           className="flex items-center justify-between h-5"
           style={{ display: showDifficulty ? "flex" : "none" }}
         >
-          <label htmlFor="difficulty">Difficulty:</label>
+          <label htmlFor="difficulty">
+            {`Difficulty: ${difficulty - minDifficulty + 1}`}
+          </label>
           <input
             type="range"
             id="difficulty"
@@ -799,7 +823,7 @@ export default function Snake(props) {
         <canvas className="absolute" id="canvas" ref={canvasRef}></canvas>
         <div
           className="absolute play-again"
-          style={{ background: gameState === -1 ? "" : "#1f2341f5" }}
+          style={{ background: gameState === -1 ? "" : "#1f2341cc" }}
         >
           {gameState !== -1 ? (
             <a
@@ -846,6 +870,10 @@ export default function Snake(props) {
       </div>
     </div>
   );
+}
+
+function rgb(r, g, b) {
+  return ["rgb(", r, ",", g, ",", b, ")"].join("");
 }
 
 // returns array containing coords of right, bottom, left, and top cells

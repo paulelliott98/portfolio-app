@@ -1,5 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -9,7 +8,7 @@
   --bg-color-main: #161a39;
   --bg-color-2: #1a1e40dd;
   --bg-color-3: #25284b;
-  --text-color-main: #eaeaea;
+  --text-color-main: #fff;
   --text-color-grey: #dcdaff65;
   --heading-color-name: rgb(221, 254, 144);
   --heading-color-main: #c792e9;
@@ -18,17 +17,24 @@
   --nav-bg-color: #1f234177;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
-  font-family: "Poppins", sans-serif;
+body {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-color-main);
+  min-height: 100vh;
+  box-sizing: border-box;
+  color: var(--text-color-main);
+  animation-fill-mode: both;
+  overflow-x: hidden;
 }
 
 /* name */
 h1 {
   color: var(--heading-color-name);
+  font-family: "Poppins", sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 8vw;
@@ -50,7 +56,7 @@ h2 {
 /* coding language */
 h3 {
   color: var(--heading-color-2);
-  font-weight: 400;
+  font-weight: 500;
   font-size: 12px;
 }
 
@@ -73,10 +79,6 @@ h5 {
   letter-spacing: 0.05em;
 }
 
-p {
-  font-size: 16px;
-}
-
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
@@ -92,20 +94,6 @@ html::-webkit-scrollbar {
 html {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
-}
-
-body {
-  font-family: "DM Sans", sans-serif;
-  font-weight: 300;
-  letter-spacing: 0.05em;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-color-main);
-  min-height: 100vh;
-  box-sizing: border-box;
-  color: var(--text-color-main);
-  animation-fill-mode: both;
-  overflow-x: hidden;
 }
 
 code {
@@ -180,6 +168,10 @@ input[type="range"]::-ms-track {
 
 canvas {
   background-color: var(--bg-color-2);
+}
+
+.snake-container {
+  letter-spacing: 0.08em;
 }
 
 .snake-top-bar,
@@ -346,7 +338,7 @@ li {
 .play-again a {
   flex-direction: row;
   margin-inline: 20px;
-  letter-spacing: 0.2vw;
+  letter-spacing: 0.3vw;
   padding: 10px;
   transition: ease-out 0.2s;
 }
@@ -373,7 +365,7 @@ li {
 
 .projects-list a {
   color: var(--text-color-grey);
-  font-size: 16px;
+  font-weight: 500;
   display: block;
   min-height: 18px;
   background-color: var(--bg-color-2);

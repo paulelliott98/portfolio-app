@@ -14,19 +14,22 @@ export default function Project({ techStack, name, dx, gitUrl }) {
           </div>
         ))}
       </div>
-      <a
-        className="github-logo-container inline-block"
-        href={gitUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img
-          className="github-logo"
-          title="github"
-          src={require("./images/github-mark-white.png")}
-          alt="github logo"
-        />
-      </a>
+
+      {gitUrl === "" ? null : (
+        <a
+          className="github-logo-container inline-block"
+          href={gitUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            className="github-logo"
+            title="github"
+            src={require("./images/github-mark-white.png")}
+            alt="github logo"
+          />
+        </a>
+      )}
     </section>
   );
 }
