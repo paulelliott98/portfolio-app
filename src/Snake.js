@@ -648,13 +648,6 @@ export default function Snake(props) {
           setFruitPos(f);
         }
 
-        // check collision
-        // if next cell is body (not 0 or -1), end game
-        if (arr[pos.r][pos.c] > 0 && arr[pos.r][pos.c] !== len) {
-          setGameState(0);
-          return;
-        }
-
         // update body
         if (!grow) {
           var b = { r: pos.r, c: pos.c };
@@ -664,6 +657,13 @@ export default function Snake(props) {
             if (!nextB) break;
             b = nextB;
           }
+        }
+
+        // check collision
+        // if next cell is body (not 0 or -1), end game
+        if (arr[nr][nc] > 1 && arr[nr][nc] !== len) {
+          setGameState(0);
+          return;
         }
 
         // for (let r = 0; r < nRows; r++) {
