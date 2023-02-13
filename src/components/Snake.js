@@ -1,4 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
+
+var axiosInstance = axios.create({
+  baseURL:
+    !process.env.NODE_ENV || "development"
+      ? "http://localhost:8080"
+      : "https://www.paulgan.com",
+  timeout: 1000,
+});
 
 export default function Snake(props) {
   const [pause, setPause] = useState(false);
@@ -57,6 +66,7 @@ export default function Snake(props) {
   // set which page is shown on screen
   const [page, setPage] = useState("homeScreen");
   const [playerName, setPlayerName] = useState("");
+  const [highScores, setHighScores] = useState(null);
 
   const resetArena = () => {
     setPos(startPos);
@@ -203,19 +213,19 @@ export default function Snake(props) {
 
   const instructionsScreen = () => {
     return (
-      <div className="mx-6">
-        <div className="flex justify-center mt-6 mb-4">
+      <div className="flex flex-col justify-center h-full mx-10">
+        <div className="flex justify-center mb-5 font-bold">
           <span>Instructions</span>
         </div>
 
         <div className="instructions">
           <p>Change direction of snake head using the following keys:</p>
-          <div className="my-4 flex justify-between">
-            <div className="">
+          <div className="my-4 flex">
+            <div className="mr-10">
               <p>up - w/i </p>
               <p>down - s/k</p>
             </div>
-            <div className="">
+            <div className="mr-10">
               <p>left - a/j</p>
               <p>right - d/l</p>
             </div>
@@ -228,24 +238,35 @@ export default function Snake(props) {
 
   const highScoresScreen = () => {
     return (
-      <div className="mx-6">
-        <div className="flex justify-center mt-6 mb-4">
+      <div>
+        <div className="flex justify-center mt-3">
           <span className="font-bold">High Scores</span>
         </div>
-        <table>
-          <tr>
-            <th>Rank</th>
-            <th>Name</th>
-            <th>Score</th>
-            <th>Date</th>
-          </tr>
+        <div className="flex justify-center">
+          <table>
+            <thead>
+              <tr>
+                <th className="rank"></th>
+                <th className="name">Name</th>
+                <th className="score">Score</th>
+                <th className="date">Date</th>
+              </tr>
+            </thead>
 
-          {/* <tr>
-            <td>Alfreds Futterkiste</td>
-            <td>Maria Anders</td>
-            <td>Germany</td>
-          </tr> */}
-        </table>
+            <tbody>
+              {highScores.map((row, i) => {
+                return (
+                  <tr key={i + 1}>
+                    <td>{i + 1}</td>
+                    <td>{row.Name}</td>
+                    <td>{row.Score}</td>
+                    <td>{row.Date}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   };
@@ -279,6 +300,47 @@ export default function Snake(props) {
 
   useEffect(
     () => {
+      const getHighScoresData = async () => {
+        var scores = [];
+        await axiosInstance
+          .get("/high-score")
+          .then((r) => {
+            scores = r.data;
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .then(() => {
+            var numEmptyRows = 10;
+            if (scores) numEmptyRows = 10 - scores.length;
+            for (let i = 0; i < numEmptyRows; i++) {
+              scores.push({ Name: "-", Score: "-", Date: "-", Time: "-" });
+            }
+            setHighScores(scores);
+          });
+      };
+
+      // send game data to backend upon game over
+      const postScores = () => {
+        const d = new Date();
+        const [month, day, year] = [
+          d.getMonth() + 1,
+          d.getDate(),
+          d.getFullYear(),
+        ];
+        const [hour, minute, second] = [
+          d.getHours(),
+          d.getMinutes(),
+          d.getSeconds(),
+        ];
+        axiosInstance.post("/high-score", {
+          name: playerName,
+          score: score,
+          date: `${month}-${day}-${year}`,
+          time: `${hour}:${minute}:${second}`,
+        });
+      };
+
       const drawArena = (ctx, canvas) => {
         // clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -858,6 +920,7 @@ export default function Snake(props) {
 
         // check win
         if (len === maxLen) {
+          postScores();
           setGameState(1);
           setPage("playAgainScreen");
           return;
@@ -900,9 +963,10 @@ export default function Snake(props) {
           }
         }
 
-        // check collision
+        // check collision/loss
         // if next cell is body (not 0 or -1), end game
         if (arr[nr][nc] > 1 && arr[nr][nc] !== len) {
+          postScores();
           setGameState(0);
           setPage("playAgainScreen");
           return;
@@ -939,14 +1003,22 @@ export default function Snake(props) {
       const canvas = createHiPPICanvas(adjustedW, adjustedH);
       const context = canvas.getContext("2d");
 
+      getHighScoresData();
+
       const interval = setInterval(() => {
         update(context, canvas);
       }, 1);
+
+      // get high scores data every second
+      const getDataInterval = setInterval(() => {
+        if (page === "highScoresScreen") getHighScoresData();
+      }, 1000);
 
       drawArena(context, canvas);
 
       return () => {
         clearInterval(interval);
+        clearInterval(getDataInterval);
         window.removeEventListener("keydown", handleKeyDown);
       };
     },
@@ -973,6 +1045,8 @@ export default function Snake(props) {
       score,
       difficulty,
       minDifficulty,
+      playerName,
+      page,
     ]
   );
 

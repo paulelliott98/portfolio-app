@@ -97,8 +97,43 @@ html {
 }
 
 table {
-  font-size: 14px;
-  line-height: 16px;
+  width: 100%;
+  /* margin-block-start: 9px; */
+}
+
+th,
+td {
+  text-align: start;
+  padding-block: 6.65px;
+  padding-inline-start: 12px;
+}
+
+th {
+  font-size: 12px;
+}
+
+td {
+  font-size: 10px;
+}
+
+th.rank {
+  width: 5%;
+}
+
+th.name {
+  width: 45%;
+}
+
+th.score {
+  width: 20%;
+}
+
+th.date {
+  width: 25%;
+}
+
+tr:nth-child(even) {
+  background-color: var(--bg-color-2);
 }
 
 form {
@@ -106,9 +141,6 @@ form {
   font-size: 14px;
 }
 
-/* .text-black {
-  color: "#000000";
-} */
 input[type="text"] {
   margin: 8px;
   padding: 3px;
@@ -253,7 +285,7 @@ canvas {
 }
 
 .instructions {
-  font-size: 12px;
+  font-size: 14px;
   line-height: 16px;
 }
 
