@@ -25,7 +25,7 @@ export default function Project({ techStack, name, dx, gitUrl }) {
           <img
             className="github-logo"
             title="github"
-            src={require("./images/github-mark-white.png")}
+            src={require("../images/github-mark-white.png")}
             alt="github logo"
           />
         </a>

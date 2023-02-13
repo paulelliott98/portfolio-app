@@ -96,6 +96,31 @@ html {
   scrollbar-width: none; /* Firefox */
 }
 
+table {
+  font-size: 14px;
+  line-height: 16px;
+}
+
+form {
+  padding-inline: 20px;
+  font-size: 14px;
+}
+
+/* .text-black {
+  color: "#000000";
+} */
+input[type="text"] {
+  margin: 8px;
+  padding: 3px;
+  width: 80px;
+  height: 20px;
+  border-radius: 3px;
+}
+
+input[type="text"]:focus {
+  outline: none;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
@@ -132,7 +157,7 @@ input[type="range"]::-moz-range-thumb {
 /* IE */
 input[type="range"]::-ms-thumb {
   -webkit-appearance: none;
-  height: 16px;
+  height: 6px;
   width: 16px;
   border-radius: 50%;
   background: var(--text-color-main);
@@ -143,27 +168,30 @@ input[type="range"]::-ms-thumb {
 /* chrome */
 input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
-  height: 6px;
+  height: 4px;
+  margin-inline-start: 8px;
   cursor: pointer;
   background: var(--heading-color-main);
-  border-radius: 1px;
+  border-radius: 3px;
 }
 /* firefox */
 input[type="range"]::-moz-range-track {
   width: 100%;
-  height: 6px;
+  height: 4px;
+  margin-inline-start: 8px;
   cursor: pointer;
   background: var(--heading-color-main);
-  border-radius: 1px;
+  border-radius: 3px;
 }
 
 /* IE */
 input[type="range"]::-ms-track {
   width: 100%;
-  height: 6px;
+  height: 4px;
+  margin-inline-start: 8px;
   cursor: pointer;
   background: var(--heading-color-main);
-  border-radius: 1px;
+  border-radius: 3px;
 }
 
 canvas {
@@ -176,7 +204,7 @@ canvas {
 
 .snake-top-bar,
 .snake-bottom-bar {
-  padding: 8px;
+  padding: 12px;
   background-color: var(--bg-color-2);
   border: 0.5px solid var(--text-color-grey);
 }
@@ -193,14 +221,40 @@ canvas {
   background-color: var(--nav-bg-color);
 }
 
-.play-again {
+.game-options-text-container {
+  width: 100%;
+  height: 100%;
+  border-left: 0.5px solid var(--text-color-grey);
+  border-right: 0.5px solid var(--text-color-grey);
+}
+
+.game-options {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-left: 0.5px solid var(--text-color-grey);
-  border-right: 0.5px solid var(--text-color-grey);
+}
+
+.game-options a {
+  transition: ease 0.2s;
+  min-width: 140px;
+  display: flex;
+  justify-content: center;
+}
+
+.game-options a span {
+  text-align: center;
+}
+
+.main-menu a {
+  transition: ease 0.2s;
+}
+
+.instructions {
+  font-size: 12px;
+  line-height: 16px;
 }
 
 /* Transitions */
@@ -334,8 +388,7 @@ li {
   padding-inline-end: 50px;
 }
 
-.navbar a,
-.play-again a {
+.navbar a {
   flex-direction: row;
   margin-inline: 20px;
   letter-spacing: 0.3vw;
@@ -344,7 +397,8 @@ li {
 }
 
 .navbar a:hover,
-.play-again a:hover {
+.game-options a:hover,
+.main-menu a:hover {
   color: var(--heading-color-main);
   transform: scale(1.08);
 }

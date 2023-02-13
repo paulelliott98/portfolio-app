@@ -5,9 +5,9 @@ export default function Snake(props) {
   const [showArenaVals, setShowArenaVals] = useState(false);
 
   const canvasRef = useRef(null);
-  const drawAdjustment = 0.05;
+  const drawAdjustment = 0.1;
   const scale = window.devicePixelRatio || 1;
-  const blockDim = 20;
+  const blockDim = 27;
   const gap = 0;
   const [nRows, nCols] = [
     Math.floor((props.h - gap) / (gap + blockDim)),
@@ -28,20 +28,6 @@ export default function Snake(props) {
     c: startLen,
     r: Math.floor(nRows / 2),
   };
-
-  // difficulty settings and frame rate
-  const k = 180;
-  const multScale = 0.5;
-  const [minDifficulty, maxDifficulty] = [10, 109];
-  const [difficulty, setDifficulty] = useState(
-    Math.floor((2 * (maxDifficulty + minDifficulty)) / 3)
-  );
-  const [updateDelay, setUpdateDelay] = useState(k - difficulty);
-  const [frame, setFrame] = useState(0);
-  const [multiplier, setMultiplier] = useState(
-    Math.floor(Math.sqrt(multScale * difficulty) * 10)
-  );
-
   const [len, setLen] = useState(startLen);
   const [score, setScore] = useState(0);
   const [pos, setPos] = useState(startPos);
@@ -55,9 +41,22 @@ export default function Snake(props) {
 
   const [arena, setArena] = useState(a);
   const [fruitPos, setFruitPos] = useState(f);
-  const [gameState, setGameState] = useState(-1);
+  const [gameState, setGameState] = useState(-2);
   const [instructions, setInstructions] = useState(false);
   const [showDifficulty, setShowDifficulty] = useState(false);
+
+  // difficulty settings and frame rate
+  const k = 180;
+  const [minDifficulty, maxDifficulty] = [10, 109];
+  const [difficulty, setDifficulty] = useState(
+    Math.floor((2 * (maxDifficulty + minDifficulty)) / 3)
+  );
+  const [updateDelay, setUpdateDelay] = useState(k - difficulty);
+  const [frame, setFrame] = useState(0);
+
+  // set which page is shown on screen
+  const [page, setPage] = useState("homeScreen");
+  const [playerName, setPlayerName] = useState("");
 
   const resetArena = () => {
     setPos(startPos);
@@ -77,7 +76,205 @@ export default function Snake(props) {
     setFruitPos(f);
 
     setPause(false);
-    setGameState(-1);
+  };
+
+  // return jsx for current displayed page on canvas
+  const getPage = () => {
+    if (page === "homeScreen") return homeScreen();
+    else if (page === "enterNameScreen") return enterNameScreen();
+    else if (page === "playAgainScreen") return playAgainScreen();
+    else if (page === "instructionsScreen") return instructionsScreen();
+    else if (page === "highScoresScreen") return highScoresScreen();
+    else if (page === "game") return null;
+  };
+
+  const homeScreen = () => {
+    return (
+      <div className="game-options">
+        <a
+          href="/#"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            e.preventDefault();
+            if (playerName) {
+              setPage("game");
+              setGameState(-1);
+            } else {
+              setPage("enterNameScreen");
+            }
+          }}
+        >
+          <span>Play</span>
+        </a>
+        <a
+          href="/#"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            e.preventDefault();
+            setPage("instructionsScreen");
+          }}
+        >
+          <span>Instructions</span>
+        </a>
+        <a
+          href="/#"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            e.preventDefault();
+            setPage("highScoresScreen");
+          }}
+        >
+          <span>High Scores</span>
+        </a>
+        {playerName ? (
+          <a
+            href="/#"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              setPage("enterNameScreen");
+            }}
+          >
+            <span>Change Player</span>
+          </a>
+        ) : null}
+      </div>
+    );
+  };
+
+  const enterNameScreen = () => {
+    return (
+      <div className="game-options">
+        <form>
+          <label className="inline" for="name">
+            Player Name:
+          </label>
+          <input
+            className="text-black"
+            type="text"
+            id="name"
+            name="name"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                if (e.target.value) setPlayerName(e.target.value);
+                setPage("game");
+                setGameState(-1);
+              }
+            }}
+            maxlength="20"
+            autoComplete="off"
+            autoFocus
+          />
+        </form>
+      </div>
+    );
+  };
+
+  const playAgainScreen = () => {
+    return (
+      <div className="game-options">
+        <a
+          href="/#"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            e.preventDefault();
+            resetArena();
+            setPage("game");
+            setGameState(-1);
+          }}
+        >
+          <p className="inline-block text-end content-end">Play Again</p>
+        </a>
+        <a
+          href="/#"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            e.preventDefault();
+            resetArena();
+            setPage("homeScreen");
+            setGameState(-2);
+          }}
+        >
+          <p className="inline-block text-end content-end">Main Menu</p>
+        </a>
+      </div>
+    );
+  };
+
+  const instructionsScreen = () => {
+    return (
+      <div className="mx-6">
+        <div className="flex justify-center mt-6 mb-4">
+          <span>Instructions</span>
+        </div>
+
+        <div className="instructions">
+          <p>Change direction of snake head using the following keys:</p>
+          <div className="my-4 flex justify-between">
+            <div className="">
+              <p>up - w/i </p>
+              <p>down - s/k</p>
+            </div>
+            <div className="">
+              <p>left - a/j</p>
+              <p>right - d/l</p>
+            </div>
+          </div>
+          <p>Eat as many fruits as you can without colliding into the body!</p>
+        </div>
+      </div>
+    );
+  };
+
+  const highScoresScreen = () => {
+    return (
+      <div className="mx-6">
+        <div className="flex justify-center mt-6 mb-4">
+          <span className="font-bold">High Scores</span>
+        </div>
+        <table>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Score</th>
+            <th>Date</th>
+          </tr>
+
+          {/* <tr>
+            <td>Alfreds Futterkiste</td>
+            <td>Maria Anders</td>
+            <td>Germany</td>
+          </tr> */}
+        </table>
+      </div>
+    );
+  };
+
+  const getDisplayText = () => {
+    if (gameState === 1) {
+      return "You win!";
+    } else if (gameState === 0) {
+      return "Game Over!";
+    } else if (gameState === -2 && page === "homeScreen") {
+      return null;
+    } else {
+      return (
+        <div className="flex justify-end main-menu">
+          <a
+            className="anchor"
+            href="/#"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              setPage("homeScreen");
+              setGameState(-2);
+            }}
+          >
+            <span>Main Menu</span>
+          </a>
+        </div>
+      );
+    }
   };
 
   useEffect(
@@ -166,36 +363,59 @@ export default function Snake(props) {
           // right to bottom
           if (corner[0] && corner[1]) {
             [start, end] = [pi, 1.5 * pi];
-            cx += blockDim;
-            cy += blockDim;
+            cx += blockDim + 3 * drawAdjustment;
+            cy += blockDim + 3 * drawAdjustment;
+            ctx.clearRect(
+              x - 4 * drawAdjustment,
+              y - 4 * drawAdjustment,
+              blockDim,
+              blockDim
+            );
           }
           // bottom to left
           else if (corner[1] && corner[2]) {
             [start, end] = [1.5 * pi, 0];
             cy += blockDim;
+            cx -= 3 * drawAdjustment;
+            cy += 3 * drawAdjustment;
+            ctx.clearRect(
+              x + 4 * drawAdjustment,
+              y - 4 * drawAdjustment,
+              blockDim,
+              blockDim
+            );
           }
           // left to top
           else if (corner[2] && corner[3]) {
             [start, end] = [0, 0.5 * pi];
+            cx -= 3 * drawAdjustment;
+            cy -= 3 * drawAdjustment;
+            ctx.clearRect(
+              x + 4 * drawAdjustment,
+              y + 4 * drawAdjustment,
+              blockDim,
+              blockDim
+            );
           }
           // top to right
           else if (corner[3] && corner[0]) {
             [start, end] = [0.5 * pi, pi];
             cx += blockDim;
+            cx += 3 * drawAdjustment;
+            cy -= 3 * drawAdjustment;
+            ctx.clearRect(
+              x - 4 * drawAdjustment,
+              y + 4 * drawAdjustment,
+              blockDim,
+              blockDim
+            );
           }
-
-          ctx.clearRect(
-            x,
-            y,
-            blockDim + 3 * drawAdjustment,
-            blockDim + 3 * drawAdjustment
-          );
 
           // draw quarter circle (corner)
           ctx.fillStyle = color;
           ctx.beginPath();
           ctx.moveTo(cx, cy);
-          ctx.arc(cx, cy, blockDim, start, end, false);
+          ctx.arc(cx, cy, blockDim + 2.5 * drawAdjustment, start, end, false);
           ctx.fill();
 
           // fill in rect between head and corner
@@ -342,7 +562,7 @@ export default function Snake(props) {
       // returning new rect (col, row, width, height) on opposite side of canvas
       function getPartialRect(x, y, w, h) {
         // if entire body is within canvas boundary, return null
-        const pixelInaccuracy = 0;
+        const pixelInaccuracy = 2;
         if (
           x >= -pixelInaccuracy &&
           x + w <= adjustedW + pixelInaccuracy &&
@@ -493,15 +713,16 @@ export default function Snake(props) {
             nextIsCorner &&
             Math.abs(prev.dir - next.dir) === 2) ||
           getCornerDirection(r, c, arr, len, dir).length !== 0
-        )
-          return [0, 0, 0, 0];
+        ) {
+          offset = [0, 0, 0, 0];
+          return offset;
+        }
 
         // add a small offset to cover gaps between body segments
         if (prev) {
-          if (prev.dir === 1 || prev.dir === 3) offset[2] += 0.2;
-          else offset[3] += 0.2;
+          if (prev.dir === 1 || prev.dir === 3) offset[2] += 4 * drawAdjustment;
+          else offset[3] += 4 * drawAdjustment;
         }
-
         return offset;
       }
 
@@ -635,23 +856,10 @@ export default function Snake(props) {
         // allow update function to proceed only on first frame
         if (frame !== updateDelay) return;
 
-        // if (pause) return;
-
-        // // if game over, return
-        // if (gameState !== -1) {
-        //   setUpdateDelay(0);
-        //   return;
-        // }
-
-        // // if game still ongoing, update frame
-        // if (gameState === -1) setFrame(getNextFrame()); // advance frame
-
-        // // allow update function to proceed only on first frame
-        // if (frame !== updateDelay) return;
-
         // check win
         if (len === maxLen) {
           setGameState(1);
+          setPage("playAgainScreen");
           return;
         }
 
@@ -674,7 +882,7 @@ export default function Snake(props) {
         var grow = arr[nr][nc] === -1 ? true : false;
         if (grow) {
           setLen(len + 1);
-          setScore(score + 10 * multiplier);
+          setScore(score + (difficulty - minDifficulty + 1));
 
           const f = spawnFruit(arr);
           arr[f[0]][f[1]] = -1;
@@ -696,6 +904,7 @@ export default function Snake(props) {
         // if next cell is body (not 0 or -1), end game
         if (arr[nr][nc] > 1 && arr[nr][nc] !== len) {
           setGameState(0);
+          setPage("playAgainScreen");
           return;
         }
 
@@ -753,7 +962,6 @@ export default function Snake(props) {
       gameState,
       len,
       maxLen,
-      multiplier,
       nCols,
       nRows,
       pos,
@@ -763,6 +971,8 @@ export default function Snake(props) {
       pause,
       showArenaVals,
       score,
+      difficulty,
+      minDifficulty,
     ]
   );
 
@@ -805,9 +1015,6 @@ export default function Snake(props) {
               e.preventDefault();
               setUpdateDelay(k - e.target.value);
               setDifficulty(e.target.value);
-              setMultiplier(
-                Math.floor(Math.sqrt(multScale * e.target.value) * 10)
-              );
             }}
           />
         </div>
@@ -822,51 +1029,27 @@ export default function Snake(props) {
       >
         <canvas className="absolute" id="canvas" ref={canvasRef}></canvas>
         <div
-          className="absolute play-again"
-          style={{ background: gameState === -1 ? "" : "#1f2341cc" }}
+          className="absolute game-options-text-container"
+          style={(() => {
+            if (gameState === -1) return { background: "" };
+            else if (gameState === -2) return { background: "#1f2341ff" };
+            else return { background: "#1f2341ee" };
+          })()}
         >
-          {gameState !== -1 ? (
-            <a
-              href="/#"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                e.preventDefault();
-                resetArena();
-              }}
-            >
-              <p className="inline-block text-end content-end">Play Again</p>
-            </a>
-          ) : null}
+          {getPage()}
         </div>
       </div>
       <div className="snake-bottom-bar">
         <div className="flex justify-between">
           <p className="inline-block">Score: {score}</p>
-          <p
-            className="inline-block text-end content-end"
-            onMouseOver={() => {
-              if (getDisplayText(gameState) === "Instructions") {
-                setInstructions(true);
-              }
-            }}
-            onMouseLeave={() => {
-              setInstructions(false);
-            }}
-          >
+          <div className="inline-block text-end content-end">
             {getDisplayText(gameState)}
-          </p>
+          </div>
         </div>
         <div
           className="justify-end text-end"
           style={{ display: instructions ? "flex" : "none" }}
-        >
-          <div>
-            <p>up- w/i </p>
-            <p>down- s/k</p>
-            <p>left- a/j</p>
-            <p>right- d/l</p>
-          </div>
-        </div>
+        ></div>
       </div>
     </div>
   );
@@ -939,16 +1122,6 @@ function getCornerDirection(r, c, a, len, dir) {
   }
 
   return [];
-}
-
-function getDisplayText(gameState) {
-  if (gameState === 1) {
-    return "You win!";
-  } else if (gameState === 0) {
-    return "Game Over!";
-  } else {
-    return "Instructions";
-  }
 }
 
 function createArena(nRows, nCols) {

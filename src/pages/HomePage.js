@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import "./styles.css";
-import Project from "./Project";
-import Navbar from "./Navbar";
-import Snake from "./Snake";
-import FlipCard from "./FlipCard";
+import "../styles.css";
+import Project from "../components/Project";
+import Navbar from "../components/Navbar";
+import Snake from "../components/Snake";
+import FlipCard from "../components/FlipCard";
 import { CSSTransition } from "react-transition-group";
 import { useInView } from "react-intersection-observer";
 import "animate.css";
@@ -33,7 +33,7 @@ export default function HomePage() {
       name: "Browser Game Bot",
       techStack: ["Python", "Pandas", "Pytesseract", "OpenCV", "Selenium"],
       dx:
-        "A program that automatically performs clicks or key inputs in game between set time intervals. It is able to solve captcha challenges by cleaning up noise and then converting text in the captcha image into string format using Pytesseract. This was my first project using Selenium and Chromedriver where I had my first encounter with web elements behind the scenes. I will not be sharing the code to avoid disclosing any details about the game.",
+        "A program that automatically performs clicks or key inputs in game between set time intervals. It is able to solve captcha challenges by cleaning up noise and then converting text in the captcha image into string format using Pytesseract. This was my first project using Selenium and Chromedriver and my first time working with web elements. I will not be sharing the code to avoid disclosing any details about the game.",
       gitUrl: "",
     },
     {
@@ -173,13 +173,9 @@ export default function HomePage() {
                 I am a software engineer and self-taught web developer who
                 transforms great ideas into remarkable digital experiences.
               </h5>
-              {/* <br></br>
-              <h5 className={anim("slideUp", inView)} style={animDelay(0.6)}>
-                Come check out some of my work!
-              </h5> */}
             </div>
             <div className={"mt-28 snake " + anim("fade", inView)}>
-              {isSafari ? null : <Snake w={282} h={282} />}
+              {isSafari ? null : <Snake w={362} h={362} />}
               {/* <Snake w={300} h={25} /> */}
             </div>
           </div>
@@ -265,13 +261,13 @@ export default function HomePage() {
                 many areas including:
               </p>
               <ul>
-                <li key="0">Object Detection— Tensorflow</li>
-                <li key="1">Pytorch Data Science— Scikit-learn, Pandas</li>
+                <li key="0">Object Detection— Tensorflow, Pytorch</li>
+                <li key="1">Data Science— Scikit-learn, Pandas</li>
                 <li key="2">
                   Web Scraping and Automation— Selenium, BeautifulSoup
                 </li>
-                <li key="3">Web Development— ReactJS, HubSpot CMS</li>
-                <li key="4">Game Development— Pygame, Javascript</li>
+                <li key="3">Web Development— React, HubSpot CMS</li>
+                <li key="4">Game Development— Pygame, Javascript, React</li>
               </ul>
               <p>
                 I am currently working my very first job as an associate
@@ -323,7 +319,7 @@ export default function HomePage() {
             style={animDelay(0.2)}
             href="https://github.com/paulgan98"
             title="github"
-            path={require("./images/github-mark-white.png")}
+            path={require("../images/github-mark-white.png")}
             alt="github logo"
           />
           <FlipCard
@@ -331,7 +327,7 @@ export default function HomePage() {
             style={animDelay(0.4)}
             href="https://www.linkedin.com/in/paul-gan-85781b18b/"
             title="linkedin"
-            path={require("./images/linkedin-logo.png")}
+            path={require("../images/linkedin-logo.png")}
             alt="linkedin logo"
           />
           <FlipCard
@@ -339,7 +335,7 @@ export default function HomePage() {
             style={animDelay(0.6)}
             href="https://www.instagram.com/paulypavilion/"
             title="instagram"
-            path={require("./images/instagram-logo.png")}
+            path={require("../images/instagram-logo.png")}
             alt="instagram logo"
           />
           <FlipCard
@@ -347,7 +343,7 @@ export default function HomePage() {
             style={animDelay(0.8)}
             href="mailto:paulgan98@gmail.com"
             title="email"
-            path={require("./images/email-logo.png")}
+            path={require("../images/email-logo.png")}
             alt="email logo"
           />
         </div>
