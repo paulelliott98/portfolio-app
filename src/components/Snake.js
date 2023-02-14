@@ -9,12 +9,28 @@ var axiosInstance = axios.create({
   timeout: 1000,
 });
 
+var profanity = require("@2toad/profanity").profanity;
+
+// send game data to backend upon game over
+const postScores = async (playerName, score, difficulty) => {
+  const d = new Date();
+  const [month, day, year] = [d.getMonth() + 1, d.getDate(), d.getFullYear()];
+  const [hour, minute, second] = [d.getHours(), d.getMinutes(), d.getSeconds()];
+  await axiosInstance.post("/high-score", {
+    name: playerName,
+    score: score,
+    difficulty: difficulty,
+    date: `${month}-${day}-${year}`,
+    time: `${hour}:${minute}:${second}`,
+  });
+};
+
 export default function Snake(props) {
   const [pause, setPause] = useState(false);
   const [showArenaVals, setShowArenaVals] = useState(false);
 
   const canvasRef = useRef(null);
-  const drawAdjustment = 0.1;
+  const drawAdjustment = 0.08;
   const scale = window.devicePixelRatio || 1;
   const blockDim = 27;
   const gap = 0;
@@ -51,22 +67,23 @@ export default function Snake(props) {
   const [arena, setArena] = useState(a);
   const [fruitPos, setFruitPos] = useState(f);
   const [gameState, setGameState] = useState(-2);
-  const [instructions, setInstructions] = useState(false);
-  const [showDifficulty, setShowDifficulty] = useState(false);
 
   // difficulty settings and frame rate
   const k = 180;
   const [minDifficulty, maxDifficulty] = [10, 109];
-  const [difficulty, setDifficulty] = useState(
-    Math.floor((2 * (maxDifficulty + minDifficulty)) / 3)
-  );
+  const [difficulty, setDifficulty] = useState(maxDifficulty);
   const [updateDelay, setUpdateDelay] = useState(k - difficulty);
   const [frame, setFrame] = useState(0);
 
   // set which page is shown on screen
   const [page, setPage] = useState("homeScreen");
+
   const [playerName, setPlayerName] = useState("");
   const [highScores, setHighScores] = useState(null);
+  const [isChangePlayer, setIsChangePlayer] = useState(false);
+
+  const [showNameError, setShowNameError] = useState(false);
+  const [nameErrorTimeout, setNameErrorTimeout] = useState(null);
 
   const resetArena = () => {
     setPos(startPos);
@@ -75,7 +92,6 @@ export default function Snake(props) {
     setLen(startLen);
     setScore(0);
     setFrame(0);
-    setInstructions(false);
     setUpdateDelay(k - difficulty);
 
     var newArena = createArena(nRows, nCols);
@@ -95,87 +111,133 @@ export default function Snake(props) {
     else if (page === "playAgainScreen") return playAgainScreen();
     else if (page === "instructionsScreen") return instructionsScreen();
     else if (page === "highScoresScreen") return highScoresScreen();
+    else if (page === "setDifficultyScreen") return setDifficultyScreen();
     else if (page === "game") return null;
   };
 
   const homeScreen = () => {
     return (
-      <div className="game-options">
-        <a
-          href="/#"
-          rel="noopener noreferrer"
-          onClick={(e) => {
-            e.preventDefault();
-            if (playerName) {
-              setPage("game");
-              setGameState(-1);
-            } else {
-              setPage("enterNameScreen");
-            }
-          }}
-        >
-          <span>Play</span>
-        </a>
-        <a
-          href="/#"
-          rel="noopener noreferrer"
-          onClick={(e) => {
-            e.preventDefault();
-            setPage("instructionsScreen");
-          }}
-        >
-          <span>Instructions</span>
-        </a>
-        <a
-          href="/#"
-          rel="noopener noreferrer"
-          onClick={(e) => {
-            e.preventDefault();
-            setPage("highScoresScreen");
-          }}
-        >
-          <span>High Scores</span>
-        </a>
-        {playerName ? (
+      <div className="h-full">
+        <div className="game-options">
           <a
             href="/#"
             rel="noopener noreferrer"
             onClick={(e) => {
               e.preventDefault();
-              setPage("enterNameScreen");
+              if (playerName) {
+                setPage("game");
+                setGameState(-1);
+              } else {
+                setPage("enterNameScreen");
+              }
             }}
           >
-            <span>Change Player</span>
+            <span>Play</span>
           </a>
-        ) : null}
+          <a
+            href="/#"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              setPage("highScoresScreen");
+            }}
+          >
+            <span>High Scores</span>
+          </a>
+          <a
+            href="/#"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              setPage("instructionsScreen");
+            }}
+          >
+            <span>Instructions</span>
+          </a>
+
+          <a
+            href="/#"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              setPage("setDifficultyScreen");
+            }}
+          >
+            <span>Change Difficulty</span>
+          </a>
+          {playerName ? (
+            <a
+              href="/#"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsChangePlayer(true);
+                setPage("enterNameScreen");
+              }}
+            >
+              <span>Change Player</span>
+            </a>
+          ) : null}
+        </div>
       </div>
     );
   };
 
   const enterNameScreen = () => {
     return (
-      <div className="game-options">
-        <form>
-          <label className="inline" for="name">
-            Player Name:
-          </label>
-          <input
-            className="text-black"
-            type="text"
-            id="name"
-            name="name"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                if (e.target.value) setPlayerName(e.target.value);
-                setPage("game");
-                setGameState(-1);
-              }
+      <div className="h-full">
+        <div className="flex flex-col items-center justify-end h-1/2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
             }}
-            maxlength="20"
-            autoComplete="off"
-            autoFocus
-          />
-        </form>
+          >
+            <label className="inline" htmlFor="name">
+              Player Name:
+            </label>
+            <input
+              className="text-black"
+              type="text"
+              id="name"
+              name="name"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const inp = e.target.value.trim();
+                  if (inp) {
+                    if (profanity.exists(inp)) {
+                      setShowNameError(true);
+                      if (nameErrorTimeout) clearTimeout(nameErrorTimeout);
+                      const timeout = setTimeout(() => {
+                        setShowNameError(false);
+                      }, 2000);
+                      setNameErrorTimeout(timeout);
+                      return;
+                    } else setPlayerName(inp);
+                  } else setPlayerName("");
+
+                  if (isChangePlayer) {
+                    setPage("homeScreen");
+                    setGameState(-2);
+                  } else if (!profanity.exists(inp)) {
+                    setPage("game");
+                    setGameState(-1);
+                  }
+                }
+              }}
+              maxLength="20"
+              autoComplete="off"
+              defaultValue={playerName}
+              autoFocus
+            />
+          </form>
+        </div>
+        <div className="flex justify-center">
+          {showNameError ? (
+            <span className="invalid-name-warning">
+              Please choose a different name
+            </span>
+          ) : null}
+        </div>
       </div>
     );
   };
@@ -239,7 +301,7 @@ export default function Snake(props) {
   const highScoresScreen = () => {
     return (
       <div>
-        <div className="flex justify-center mt-3">
+        <div className="flex justify-center mt-3 high-scores">
           <span className="font-bold">High Scores</span>
         </div>
         <div className="flex justify-center">
@@ -255,18 +317,54 @@ export default function Snake(props) {
 
             <tbody>
               {highScores.map((row, i) => {
+                var dateString = "-";
+                if (row.Date !== "-") {
+                  const date = new Date(row.Date);
+                  const [m, d, y] = [
+                    date.getMonth() + 1,
+                    date.getDate(),
+                    date.getFullYear(),
+                  ];
+                  dateString = `${("0" + m).slice(-2)}-${("0" + d).slice(
+                    -2
+                  )}-${y}`;
+                }
                 return (
                   <tr key={i + 1}>
                     <td>{i + 1}</td>
                     <td>{row.Name}</td>
                     <td>{row.Score}</td>
-                    <td>{row.Date}</td>
+                    <td>{dateString}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
         </div>
+      </div>
+    );
+  };
+
+  const setDifficultyScreen = () => {
+    return (
+      <div className="flex items-center justify-between h-full content-center px-10">
+        <label htmlFor="difficulty">
+          {`Difficulty: ${difficulty - minDifficulty + 1}`}
+        </label>
+        <input
+          type="range"
+          id="difficulty"
+          name="difficulty"
+          min={minDifficulty}
+          max={maxDifficulty}
+          step={1}
+          defaultValue={difficulty}
+          onInput={(e) => {
+            e.preventDefault();
+            setUpdateDelay(k - e.target.value);
+            setDifficulty(e.target.value);
+          }}
+        />
       </div>
     );
   };
@@ -287,8 +385,11 @@ export default function Snake(props) {
             rel="noopener noreferrer"
             onClick={(e) => {
               e.preventDefault();
+              if (page === "game" && score > 0)
+                postScores(playerName, score, difficulty);
               setPage("homeScreen");
               setGameState(-2);
+              resetArena();
             }}
           >
             <span>Main Menu</span>
@@ -318,27 +419,6 @@ export default function Snake(props) {
             }
             setHighScores(scores);
           });
-      };
-
-      // send game data to backend upon game over
-      const postScores = () => {
-        const d = new Date();
-        const [month, day, year] = [
-          d.getMonth() + 1,
-          d.getDate(),
-          d.getFullYear(),
-        ];
-        const [hour, minute, second] = [
-          d.getHours(),
-          d.getMinutes(),
-          d.getSeconds(),
-        ];
-        axiosInstance.post("/high-score", {
-          name: playerName,
-          score: score,
-          date: `${month}-${day}-${year}`,
-          time: `${hour}:${minute}:${second}`,
-        });
       };
 
       const drawArena = (ctx, canvas) => {
@@ -920,7 +1000,7 @@ export default function Snake(props) {
 
         // check win
         if (len === maxLen) {
-          postScores();
+          postScores(playerName, score, difficulty);
           setGameState(1);
           setPage("playAgainScreen");
           return;
@@ -966,7 +1046,7 @@ export default function Snake(props) {
         // check collision/loss
         // if next cell is body (not 0 or -1), end game
         if (arr[nr][nc] > 1 && arr[nr][nc] !== len) {
-          postScores();
+          postScores(playerName, score, difficulty);
           setGameState(0);
           setPage("playAgainScreen");
           return;
@@ -1056,41 +1136,10 @@ export default function Snake(props) {
       style={{
         width: canvasRef.current ? canvasRef.current.style.width : adjustedW,
       }}
-      onMouseOver={() => {
-        setShowDifficulty(true);
-      }}
-      onMouseLeave={() => {
-        setShowDifficulty(false);
-      }}
     >
       <div className="snake-top-bar">
-        <div
-          className="flex justify-center h-5"
-          style={{ display: showDifficulty ? "none" : "flex" }}
-        >
+        <div className="flex justify-center h-5">
           <p>Snake</p>
-        </div>
-        <div
-          className="flex items-center justify-between h-5"
-          style={{ display: showDifficulty ? "flex" : "none" }}
-        >
-          <label htmlFor="difficulty">
-            {`Difficulty: ${difficulty - minDifficulty + 1}`}
-          </label>
-          <input
-            type="range"
-            id="difficulty"
-            name="difficulty"
-            min={minDifficulty}
-            max={maxDifficulty}
-            step={1}
-            defaultValue={difficulty}
-            onInput={(e) => {
-              e.preventDefault();
-              setUpdateDelay(k - e.target.value);
-              setDifficulty(e.target.value);
-            }}
-          />
         </div>
       </div>
       <div
@@ -1106,24 +1155,28 @@ export default function Snake(props) {
           className="absolute game-options-text-container"
           style={(() => {
             if (gameState === -1) return { background: "" };
-            else if (gameState === -2) return { background: "#1f2341ff" };
-            else return { background: "#1f2341ee" };
+            else if (gameState === -2) {
+              if (page === "homeScreen") return { background: "#1a1e40ee" };
+              else return { background: "#1a1e40" };
+            } else return { background: "#1f2341ee" };
           })()}
         >
           {getPage()}
         </div>
       </div>
       <div className="snake-bottom-bar">
-        <div className="flex justify-between">
-          <p className="inline-block">Score: {score}</p>
+        <div className="flex justify-between w-full">
+          <div>
+            {page === "game" ? (
+              <p className="inline-block">Score: {score}</p>
+            ) : (
+              <p className="inline-block"></p>
+            )}
+          </div>
           <div className="inline-block text-end content-end">
             {getDisplayText(gameState)}
           </div>
         </div>
-        <div
-          className="justify-end text-end"
-          style={{ display: instructions ? "flex" : "none" }}
-        ></div>
       </div>
     </div>
   );

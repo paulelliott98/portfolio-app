@@ -96,24 +96,26 @@ html {
   scrollbar-width: none; /* Firefox */
 }
 
+/* .high-scores {
+  background-color: var(--bg-color-3);
+} */
+
 table {
   width: 100%;
-  /* margin-block-start: 9px; */
 }
 
-th,
 td {
   text-align: start;
-  padding-block: 6.65px;
+  font-size: 10px;
+  padding-block: 7px;
   padding-inline-start: 12px;
 }
 
 th {
+  text-align: start;
   font-size: 12px;
-}
-
-td {
-  font-size: 10px;
+  padding-inline-start: 12px;
+  padding-block-start: 5px;
 }
 
 th.rank {
@@ -133,7 +135,16 @@ th.date {
 }
 
 tr:nth-child(even) {
+  background-color: var(--bg-color-3);
+}
+
+tr:nth-child(odd) {
   background-color: var(--bg-color-2);
+}
+
+tbody tr:hover {
+  color: var(--heading-color-main);
+  background-color: var(--);
 }
 
 form {
@@ -151,6 +162,10 @@ input[type="text"] {
 
 input[type="text"]:focus {
   outline: none;
+}
+
+.invalid-name-warning {
+  font-size: 10px;
 }
 
 code {
@@ -201,7 +216,6 @@ input[type="range"]::-ms-thumb {
 input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
   height: 4px;
-  margin-inline-start: 8px;
   cursor: pointer;
   background: var(--heading-color-main);
   border-radius: 3px;
@@ -210,7 +224,6 @@ input[type="range"]::-webkit-slider-runnable-track {
 input[type="range"]::-moz-range-track {
   width: 100%;
   height: 4px;
-  margin-inline-start: 8px;
   cursor: pointer;
   background: var(--heading-color-main);
   border-radius: 3px;
@@ -220,7 +233,6 @@ input[type="range"]::-moz-range-track {
 input[type="range"]::-ms-track {
   width: 100%;
   height: 4px;
-  margin-inline-start: 8px;
   cursor: pointer;
   background: var(--heading-color-main);
   border-radius: 3px;
@@ -247,10 +259,13 @@ canvas {
 
 .snake-bottom-bar {
   border-radius: 0px 0px 5px 5px;
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 .canvas-container-inner {
-  background-color: var(--nav-bg-color);
+  background-color: var(--bg-color-2);
 }
 
 .game-options-text-container {
@@ -274,6 +289,7 @@ canvas {
   min-width: 140px;
   display: flex;
   justify-content: center;
+  padding-block: 5px;
 }
 
 .game-options a span {
