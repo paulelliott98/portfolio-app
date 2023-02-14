@@ -385,8 +385,10 @@ export default function Snake(props) {
             rel="noopener noreferrer"
             onClick={(e) => {
               e.preventDefault();
-              if (page === "game" && score > 0)
+              if (page === "game" && score > 0) {
                 postScores(playerName, score, difficulty);
+                getHighScoresData();
+              }
               setPage("homeScreen");
               setGameState(-2);
               resetArena();
@@ -399,28 +401,28 @@ export default function Snake(props) {
     }
   };
 
+  const getHighScoresData = async () => {
+    var scores = [];
+    await axiosInstance
+      .get("/high-score")
+      .then((r) => {
+        scores = r.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .then(() => {
+        var numEmptyRows = 10;
+        if (scores) numEmptyRows = 10 - scores.length;
+        for (let i = 0; i < numEmptyRows; i++) {
+          scores.push({ Name: "-", Score: "-", Date: "-", Time: "-" });
+        }
+        setHighScores(scores);
+      });
+  };
+
   useEffect(
     () => {
-      const getHighScoresData = async () => {
-        var scores = [];
-        await axiosInstance
-          .get("/high-score")
-          .then((r) => {
-            scores = r.data;
-          })
-          .catch((err) => {
-            console.log(err);
-          })
-          .then(() => {
-            var numEmptyRows = 10;
-            if (scores) numEmptyRows = 10 - scores.length;
-            for (let i = 0; i < numEmptyRows; i++) {
-              scores.push({ Name: "-", Score: "-", Date: "-", Time: "-" });
-            }
-            setHighScores(scores);
-          });
-      };
-
       const drawArena = (ctx, canvas) => {
         // clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1001,6 +1003,7 @@ export default function Snake(props) {
         // check win
         if (len === maxLen) {
           postScores(playerName, score, difficulty);
+          getHighScoresData();
           setGameState(1);
           setPage("playAgainScreen");
           return;
@@ -1047,6 +1050,7 @@ export default function Snake(props) {
         // if next cell is body (not 0 or -1), end game
         if (arr[nr][nc] > 1 && arr[nr][nc] !== len) {
           postScores(playerName, score, difficulty);
+          getHighScoresData();
           setGameState(0);
           setPage("playAgainScreen");
           return;
@@ -1089,16 +1093,16 @@ export default function Snake(props) {
         update(context, canvas);
       }, 1);
 
-      // get high scores data every second
-      const getDataInterval = setInterval(() => {
-        if (page === "highScoresScreen") getHighScoresData();
-      }, 1000);
+      // get high scores data every 60 minutes
+      // const getDataInterval = setInterval(() => {
+      //   if (page === "highScoresScreen") getHighScoresData();
+      // }, 60 * 60 * 1000);
 
       drawArena(context, canvas);
 
       return () => {
         clearInterval(interval);
-        clearInterval(getDataInterval);
+        // clearInterval(getDataInterval);
         window.removeEventListener("keydown", handleKeyDown);
       };
     },
