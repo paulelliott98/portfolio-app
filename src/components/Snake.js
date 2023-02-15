@@ -3,16 +3,17 @@ import axios from "axios";
 
 var axiosInstance = axios.create({
   baseURL:
-    !process.env.NODE_ENV || "development"
+    process.env.NODE_ENV === "development"
       ? "http://localhost:8080"
-      : "https://www.paulgan.com",
-  timeout: 1000,
+      : "https://snake-backend.fly.dev",
+  timeout: 5000,
 });
 
 var profanity = require("@2toad/profanity").profanity;
 
 // send game data to backend upon game over
 const postScores = async (playerName, score, difficulty) => {
+  console.log("posting scores");
   const d = new Date();
   const [month, day, year] = [d.getMonth() + 1, d.getDate(), d.getFullYear()];
   const [hour, minute, second] = [d.getHours(), d.getMinutes(), d.getSeconds()];
@@ -139,6 +140,7 @@ export default function Snake(props) {
             rel="noopener noreferrer"
             onClick={(e) => {
               e.preventDefault();
+              getHighScoresData();
               setPage("highScoresScreen");
             }}
           >
@@ -319,12 +321,7 @@ export default function Snake(props) {
               {highScores.map((row, i) => {
                 var dateString = "-";
                 if (row.Date !== "-") {
-                  const date = new Date(row.Date);
-                  const [m, d, y] = [
-                    date.getMonth() + 1,
-                    date.getDate(),
-                    date.getFullYear(),
-                  ];
+                  const [y, m, d] = row.Date.split("-");
                   dateString = `${("0" + m).slice(-2)}-${("0" + d).slice(
                     -2
                   )}-${y}`;
@@ -387,7 +384,6 @@ export default function Snake(props) {
               e.preventDefault();
               if (page === "game" && score > 0) {
                 postScores(playerName, score, difficulty);
-                getHighScoresData();
               }
               setPage("homeScreen");
               setGameState(-2);
@@ -402,6 +398,7 @@ export default function Snake(props) {
   };
 
   const getHighScoresData = async () => {
+    console.log("getting high scores data");
     var scores = [];
     await axiosInstance
       .get("/high-score")
@@ -673,7 +670,11 @@ export default function Snake(props) {
         // color definitions
         var defaultGreen = [221, 254, 144]; // green
         var [xmasGreen, xmasRed] = [rgb(39, 93, 40), rgb(231, 57, 62)]; // christmas season
-        var [valPurple, valPink] = [rgb(195, 194, 236), rgb(226, 123, 195)]; // valentines day
+        var [valPurple, valPink, valRed] = [
+          rgb(195, 194, 236),
+          rgb(255, 192, 203),
+          rgb(175, 51, 67),
+        ]; // valentines day
 
         // christmas colors
         if (month === 12) {
@@ -683,13 +684,13 @@ export default function Snake(props) {
         }
         // valentines day colors
         else if (month === 2 && day === 14) {
-          if (ms < 333)
-            [valPink, valPurple, xmasRed] = [valPurple, xmasRed, valPink];
-          else if (ms >= 333 && ms < 666)
-            [valPink, valPurple, xmasRed] = [xmasRed, valPink, valPurple];
+          // if (ms < 333)
+          //   [valPink, valPurple, xmasRed] = [valPurple, xmasRed, valPink];
+          // else if (ms >= 333 && ms < 666)
+          //   [valPink, valPurple, xmasRed] = [xmasRed, valPink, valPurple];
           if (n % 3 === 0) return valPink;
           else if (n % 3 === 1) return valPurple;
-          return xmasRed;
+          return valRed;
         }
         // else default
         else {
@@ -1003,7 +1004,6 @@ export default function Snake(props) {
         // check win
         if (len === maxLen) {
           postScores(playerName, score, difficulty);
-          getHighScoresData();
           setGameState(1);
           setPage("playAgainScreen");
           return;
@@ -1050,7 +1050,6 @@ export default function Snake(props) {
         // if next cell is body (not 0 or -1), end game
         if (arr[nr][nc] > 1 && arr[nr][nc] !== len) {
           postScores(playerName, score, difficulty);
-          getHighScoresData();
           setGameState(0);
           setPage("playAgainScreen");
           return;
@@ -1080,6 +1079,8 @@ export default function Snake(props) {
         return cv;
       }
 
+      if (!highScores) getHighScoresData();
+
       window.addEventListener("keydown", handleKeyDown);
 
       if (!canvasRef.current) return;
@@ -1087,16 +1088,9 @@ export default function Snake(props) {
       const canvas = createHiPPICanvas(adjustedW, adjustedH);
       const context = canvas.getContext("2d");
 
-      getHighScoresData();
-
       const interval = setInterval(() => {
         update(context, canvas);
       }, 1);
-
-      // get high scores data every 60 minutes
-      // const getDataInterval = setInterval(() => {
-      //   if (page === "highScoresScreen") getHighScoresData();
-      // }, 60 * 60 * 1000);
 
       drawArena(context, canvas);
 
@@ -1131,6 +1125,7 @@ export default function Snake(props) {
       minDifficulty,
       playerName,
       page,
+      highScores,
     ]
   );
 
