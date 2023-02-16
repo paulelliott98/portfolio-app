@@ -70,11 +70,17 @@ export default function Snake(props) {
   const [gameState, setGameState] = useState(-2);
 
   // difficulty settings and frame rate
-  const k = 180;
-  const [minDifficulty, maxDifficulty] = [10, 109];
+  const k = 30; // this is added to # frames between arena updates
+  const [minDifficulty, maxDifficulty] = [1, 50];
   const [difficulty, setDifficulty] = useState(maxDifficulty);
-  const [updateDelay, setUpdateDelay] = useState(k - difficulty);
+  const [updateDelay, setUpdateDelay] = useState(
+    Math.ceil((maxDifficulty - difficulty + 1 + k) * 0.4)
+  );
   const [frame, setFrame] = useState(0);
+
+  const updateInterval = 5; // ms
+  const [lastUpdateTime, setLastUpdateTime] = useState(new Date());
+  const [updateTimeDiff, setUpdateTimeDiff] = useState(0);
 
   // set which page is shown on screen
   const [page, setPage] = useState("homeScreen");
@@ -93,7 +99,7 @@ export default function Snake(props) {
     setLen(startLen);
     setScore(0);
     setFrame(0);
-    setUpdateDelay(k - difficulty);
+    setUpdateDelay(Math.ceil((maxDifficulty - difficulty + 1 + k) * 0.5));
 
     var newArena = createArena(nRows, nCols);
     newArena = addSnake(startLen, startPos, newArena);
@@ -345,9 +351,7 @@ export default function Snake(props) {
   const setDifficultyScreen = () => {
     return (
       <div className="flex items-center justify-between h-full content-center px-10">
-        <label htmlFor="difficulty">
-          {`Difficulty: ${difficulty - minDifficulty + 1}`}
-        </label>
+        <label htmlFor="difficulty">{`Difficulty: ${difficulty}`}</label>
         <input
           type="range"
           id="difficulty"
@@ -358,8 +362,9 @@ export default function Snake(props) {
           defaultValue={difficulty}
           onInput={(e) => {
             e.preventDefault();
-            setUpdateDelay(k - e.target.value);
-            setDifficulty(e.target.value);
+            const val = parseInt(e.target.value);
+            setDifficulty(val);
+            setUpdateDelay(Math.ceil((maxDifficulty - val + 1 + k) * 0.5));
           }}
         />
       </div>
@@ -642,7 +647,7 @@ export default function Snake(props) {
               gap + i * (blockDim + gap),
             ];
             ctx.fillStyle = "red";
-            ctx.fillText(arena[j][i], c + 7, r + 13);
+            ctx.fillText(arena[j][i], c + 0.4 * blockDim, r + 0.6 * blockDim);
           }
         }
       };
@@ -1028,11 +1033,20 @@ export default function Snake(props) {
         var grow = arr[nr][nc] === -1 ? true : false;
         if (grow) {
           setLen(len + 1);
-          setScore(score + (difficulty - minDifficulty + 1));
+          setScore(score + difficulty * 2);
 
           const f = spawnFruit(arr);
           arr[f[0]][f[1]] = -1;
           setFruitPos(f);
+        }
+
+        // check collision/loss
+        // if next cell is body (not 0 or -1), end game
+        if (arr[nr][nc] > 1 && arr[nr][nc] !== len) {
+          postScores(playerName, score, difficulty);
+          setGameState(0);
+          setPage("playAgainScreen");
+          return;
         }
 
         // update body
@@ -1046,15 +1060,6 @@ export default function Snake(props) {
           }
         }
 
-        // check collision/loss
-        // if next cell is body (not 0 or -1), end game
-        if (arr[nr][nc] > 1 && arr[nr][nc] !== len) {
-          postScores(playerName, score, difficulty);
-          setGameState(0);
-          setPage("playAgainScreen");
-          return;
-        }
-
         // 1 2 3 0 x
         // 0 1 2 3 x
         // 0 1 2 3 4
@@ -1064,6 +1069,7 @@ export default function Snake(props) {
         } else {
           arr[nr][nc] = len;
         }
+
         setPos({ r: nr, c: nc }); // update head position
         setArena(arr); // update arena array
       }
@@ -1088,15 +1094,20 @@ export default function Snake(props) {
       const canvas = createHiPPICanvas(adjustedW, adjustedH);
       const context = canvas.getContext("2d");
 
-      const interval = setInterval(() => {
+      // const delay = Math.max(0, updateInterval - updateTimeDiff);
+      // console.log(delay);
+
+      const interval = setTimeout(() => {
+        const t = new Date();
+        setUpdateTimeDiff(t - lastUpdateTime - updateInterval);
+        setLastUpdateTime(t);
         update(context, canvas);
-      }, 1);
+      }, updateInterval);
 
       drawArena(context, canvas);
 
       return () => {
-        clearInterval(interval);
-        // clearInterval(getDataInterval);
+        clearTimeout(interval);
         window.removeEventListener("keydown", handleKeyDown);
       };
     },
@@ -1126,6 +1137,8 @@ export default function Snake(props) {
       playerName,
       page,
       highScores,
+      lastUpdateTime,
+      updateTimeDiff,
     ]
   );
 

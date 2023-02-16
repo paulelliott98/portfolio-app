@@ -376,7 +376,7 @@ canvas {
   padding-inline: 15vw;
 }
 
-.scroll-window-home {
+.scroll-window-full {
   width: 100vw;
   min-height: calc(100vh - var(--nav-height));
   padding-inline: 15vw;

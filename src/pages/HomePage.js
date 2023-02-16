@@ -74,14 +74,6 @@ export default function HomePage() {
     },
   ];
 
-  var isSafari =
-    /constructor/i.test(window.HTMLElement) ||
-    (function(p) {
-      return p.toString() === "[object SafariRemoteNotification]";
-    })(
-      !window["safari"] ||
-        (typeof safari !== "undefined" && window["safari"].pushNotification)
-    );
   const [active, setActive] = useState(0);
   const [animate, setAnimate] = useState(false);
   const [ref, inView] = useInView(); // intro
@@ -157,7 +149,7 @@ export default function HomePage() {
     <div className="prevent-select">
       <Navbar />
       <div>
-        <section className="scroll-window-home" id="home">
+        <section className="scroll-window-full" id="home">
           <div className="nav-fill"></div>
 
           <div className="flex justify-between self-center">
@@ -175,13 +167,13 @@ export default function HomePage() {
               </h5>
             </div>
             <div className={"mt-28 snake " + anim("fade", inView)}>
-              {isSafari ? null : <Snake w={362} h={362} />}
+              <Snake w={362} h={362} />
               {/* <Snake w={300} h={25} /> */}
             </div>
           </div>
         </section>
 
-        <section className="scroll-window" id="projects">
+        <section className="scroll-window-full" id="projects">
           <div className="section-title">
             <h4>projects</h4>
           </div>
