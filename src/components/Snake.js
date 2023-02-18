@@ -70,17 +70,25 @@ export default function Snake(props) {
   const [gameState, setGameState] = useState(-2);
 
   // difficulty settings and frame rate
-  const k = 30; // this is added to # frames between arena updates
-  const [minDifficulty, maxDifficulty] = [1, 50];
+  const isSafari =
+    /^((?!chrome|android).)*safari/i.test(navigator.userAgent) &&
+    typeof CSS !== "undefined" &&
+    /webkit/i.test(navigator.userAgent);
+  const isFirefox = navigator.userAgent.indexOf("Firefox") !== -1;
+
+  const k = 8;
+  var updateInterval = 1000 / 120; // fps
+  if (isSafari || isFirefox) updateInterval /= 0.9;
+
+  const [minDifficulty, maxDifficulty] = [1, 10];
   const [difficulty, setDifficulty] = useState(maxDifficulty);
   const [updateDelay, setUpdateDelay] = useState(
-    Math.ceil((maxDifficulty - difficulty + 1 + k) * 0.4)
+    maxDifficulty - difficulty + 1 + k
   );
   const [frame, setFrame] = useState(0);
-
-  const updateInterval = 5; // ms
+  const [nUpdates, setnUpdates] = useState(0);
   const [lastUpdateTime, setLastUpdateTime] = useState(new Date());
-  const [updateTimeDiff, setUpdateTimeDiff] = useState(0);
+  const [fps, setfps] = useState(updateInterval);
 
   // set which page is shown on screen
   const [page, setPage] = useState("homeScreen");
@@ -99,7 +107,7 @@ export default function Snake(props) {
     setLen(startLen);
     setScore(0);
     setFrame(0);
-    setUpdateDelay(Math.ceil((maxDifficulty - difficulty + 1 + k) * 0.5));
+    setUpdateDelay(maxDifficulty - difficulty + 1 + k);
 
     var newArena = createArena(nRows, nCols);
     newArena = addSnake(startLen, startPos, newArena);
@@ -364,7 +372,7 @@ export default function Snake(props) {
             e.preventDefault();
             const val = parseInt(e.target.value);
             setDifficulty(val);
-            setUpdateDelay(Math.ceil((maxDifficulty - val + 1 + k) * 0.5));
+            setUpdateDelay(maxDifficulty - difficulty + 1 + k);
           }}
         />
       </div>
@@ -979,11 +987,11 @@ export default function Snake(props) {
       }
 
       // returns number of next frame
-      function getNextFrame() {
-        if (frame + 1 > updateDelay) {
-          return 1;
+      function getNextFrame(f) {
+        if (frame + f > updateDelay) {
+          return frame + f - updateDelay;
         }
-        return frame + 1;
+        return frame + f;
       }
 
       // returns number of previous frame
@@ -995,16 +1003,20 @@ export default function Snake(props) {
       }
 
       // update game state
-      function update(ctx, c) {
+      function update(frames) {
+        setnUpdates(nUpdates + 1);
         // if game still ongoing, update frame
+        const toUpdate = frame + frames >= updateDelay ? 1 : 0;
+
         if (gameState === -1 && !pause) {
-          setFrame(getNextFrame()); // advance frame
+          setFrame(getNextFrame(frames)); // advance frame
         } else {
-          drawArena(ctx, c);
+          // drawArena(ctx, c);
+          return;
         }
 
-        // allow update function to proceed only on first frame
-        if (frame !== updateDelay) return;
+        // allow update function to proceed only on last frame
+        if (frame !== updateDelay || !toUpdate) return;
 
         // check win
         if (len === maxLen) {
@@ -1033,7 +1045,7 @@ export default function Snake(props) {
         var grow = arr[nr][nc] === -1 ? true : false;
         if (grow) {
           setLen(len + 1);
-          setScore(score + difficulty * 2);
+          setScore(score + difficulty * 10);
 
           const f = spawnFruit(arr);
           arr[f[0]][f[1]] = -1;
@@ -1089,21 +1101,22 @@ export default function Snake(props) {
 
       window.addEventListener("keydown", handleKeyDown);
 
-      if (!canvasRef.current) return;
-
       const canvas = createHiPPICanvas(adjustedW, adjustedH);
       const context = canvas.getContext("2d");
 
-      // const delay = Math.max(0, updateInterval - updateTimeDiff);
-      // console.log(delay);
+      const fpsCheckInterval = 1000;
+      const t = new Date();
+      if (t - lastUpdateTime >= fpsCheckInterval) {
+        setfps(nUpdates);
+        setLastUpdateTime(t);
+        setnUpdates(0);
+      }
 
       const interval = setTimeout(() => {
-        const t = new Date();
-        setUpdateTimeDiff(t - lastUpdateTime - updateInterval);
-        setLastUpdateTime(t);
-        update(context, canvas);
+        update(1);
       }, updateInterval);
 
+      if (!canvasRef.current) return;
       drawArena(context, canvas);
 
       return () => {
@@ -1137,8 +1150,10 @@ export default function Snake(props) {
       playerName,
       page,
       highScores,
+      nUpdates,
       lastUpdateTime,
-      updateTimeDiff,
+      fps,
+      updateInterval,
     ]
   );
 

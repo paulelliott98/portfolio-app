@@ -11,6 +11,21 @@ import "animate.css";
 export default function HomePage() {
   const projects = [
     {
+      listName: "snake (javascript)",
+      name: "Snake (javascript)",
+      techStack: [
+        "Javascript",
+        "React",
+        "Axios",
+        "Express",
+        "Sequelize",
+        "PostgreSQL",
+      ],
+      dx:
+        "A full-stack JavaScript snake game that utilizes HTML canvas and interpolation to create fluid movement. In addition, the game has a leaderboard that displays the top 10 players' high scores. The scores are stored in and retrieved from a PostgreSQL database, allowing players to compete with each other for the top spot. ",
+      gitUrl: "",
+    },
+    {
       listName: "polygon detection",
       name: "Canvas with Polygon Detection",
       techStack: ["Python", "Tkinter"],
@@ -166,7 +181,7 @@ export default function HomePage() {
                 transforms great ideas into remarkable digital experiences.
               </h5>
             </div>
-            <div className={"mt-28 snake " + anim("fade", inView)}>
+            <div className={"mt-24 snake " + anim("fade", inView)}>
               <Snake w={362} h={362} />
               {/* <Snake w={300} h={25} /> */}
             </div>

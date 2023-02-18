@@ -330,21 +330,22 @@ canvas {
   justify-content: flex-start;
   gap: 12px;
   margin-block: 18px;
-  padding-block-start: 0.5px;
+  padding: 1px;
 }
 
 .tech-item-div {
-  padding-block: 4px;
+  margin: 3px;
+  padding-block: 5px;
   padding-inline: 12px;
   background-color: var(--bg-color-3);
   border-radius: 14px;
-  transition: all ease 0.3s;
   display: flex;
   align-items: center;
+  transition: ease 0.2s;
 }
 
 .tech-item-div:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 .section-title h4::before,
