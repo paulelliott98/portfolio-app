@@ -1,5 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
+var profanity = require("@2toad/profanity").profanity;
+
+const fruits = [
+  "🍒",
+  "🍑",
+  "🍎",
+  "🍓",
+  "🍇",
+  "🍉",
+  "🍊",
+  "🍋",
+  "🍍",
+  "🍏",
+  "🍐",
+  "🥝",
+  "🥭",
+  "🍅",
+  "🫐",
+  "🍌",
+  "🍈",
+];
 
 var axiosInstance = axios.create({
   baseURL:
@@ -9,21 +30,30 @@ var axiosInstance = axios.create({
   timeout: 5000,
 });
 
-var profanity = require("@2toad/profanity").profanity;
-
 // send game data to backend upon game over
-const postScores = async (playerName, score, difficulty) => {
+const postScores = async (playerName, score, difficulty, d) => {
   console.log("posting scores");
-  const d = new Date();
   const [month, day, year] = [d.getMonth() + 1, d.getDate(), d.getFullYear()];
   const [hour, minute, second] = [d.getHours(), d.getMinutes(), d.getSeconds()];
-  await axiosInstance.post("/high-score", {
-    name: playerName,
-    score: score,
-    difficulty: difficulty,
-    date: `${month}-${day}-${year}`,
-    time: `${hour}:${minute}:${second}`,
-  });
+  await axiosInstance
+    .post("/high-score", {
+      name: playerName,
+      score: score,
+      difficulty: difficulty,
+      date: `${month}-${day}-${year}`,
+      time: `${hour}:${minute}:${second}`,
+    })
+    .then(() => {
+      return d;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  return d;
+};
+
+const randomFromArr = (arr) => {
+  return arr[Math.floor(arr.length * Math.random())];
 };
 
 export default function Snake(props) {
@@ -60,6 +90,8 @@ export default function Snake(props) {
   const [prevDir, setPrevDir] = useState(startDir);
   const [dir, setDir] = useState(startDir);
   const [nextDir, setNextDir] = useState(startDir);
+  const [fruit, setFruit] = useState(randomFromArr(fruits));
+  const [playerName, setPlayerName] = useState("");
 
   var a = createArena(nRows, nCols);
   a = addSnake(startLen, pos, a);
@@ -76,8 +108,8 @@ export default function Snake(props) {
     /webkit/i.test(navigator.userAgent);
   const isFirefox = navigator.userAgent.indexOf("Firefox") !== -1;
 
-  const k = 8;
-  var updateInterval = 1000 / 120; // fps
+  const k = 14;
+  var updateInterval = 1000 / 200; // fps
   if (isSafari || isFirefox) updateInterval /= 0.9;
 
   const [minDifficulty, maxDifficulty] = [1, 10];
@@ -93,12 +125,38 @@ export default function Snake(props) {
   // set which page is shown on screen
   const [page, setPage] = useState("homeScreen");
 
-  const [playerName, setPlayerName] = useState("");
-  const [highScores, setHighScores] = useState(null);
+  const [highScores, setHighScores] = useState([]);
+  const [isHighScore, setIsHighScore] = useState(false);
   const [isChangePlayer, setIsChangePlayer] = useState(false);
+  const [lastPostDate, setLastPostDate] = useState(null);
 
   const [showNameError, setShowNameError] = useState(false);
   const [nameErrorTimeout, setNameErrorTimeout] = useState(null);
+
+  // search for matching date object return 0-9
+  const getPlayerRank = () => {
+    if (!lastPostDate) return null;
+
+    // for i: 9,8, ... , 0
+    for (let i = highScores.length - 1; i >= 0; i--) {
+      if (highScores[i].Date === "-") continue;
+      // Date: '2023-02-18', Time: '10:28:35'
+      const [y, m, d] = highScores[i].Date.split("-").map((item) => {
+        return parseInt(item);
+      });
+      const [hr, min, sec] = highScores[i].Time.split(":").map((item) => {
+        return parseInt(item);
+      });
+      const dateObj = new Date(y, m - 1, d, hr, min, sec);
+      lastPostDate.setMilliseconds(0);
+      dateObj.setMilliseconds(0);
+      if (lastPostDate.getTime() === dateObj.getTime()) {
+        return i;
+      }
+    }
+
+    return null;
+  };
 
   const resetArena = () => {
     setPos(startPos);
@@ -115,295 +173,334 @@ export default function Snake(props) {
 
     setArena(newArena);
     setFruitPos(f);
-
+    setFruit(randomFromArr(fruits));
     setPause(false);
+    setIsHighScore(false);
   };
 
-  // return jsx for current displayed page on canvas
-  const getPage = () => {
-    if (page === "homeScreen") return homeScreen();
-    else if (page === "enterNameScreen") return enterNameScreen();
-    else if (page === "playAgainScreen") return playAgainScreen();
-    else if (page === "instructionsScreen") return instructionsScreen();
-    else if (page === "highScoresScreen") return highScoresScreen();
-    else if (page === "setDifficultyScreen") return setDifficultyScreen();
-    else if (page === "game") return null;
-  };
+  const keyframes = `
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2)
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+`;
 
-  const homeScreen = () => {
-    return (
-      <div className="h-full">
-        <div className="game-options">
-          <a
-            href="/#"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              e.preventDefault();
-              if (playerName) {
-                setPage("game");
-                setGameState(-1);
-              } else {
-                setPage("enterNameScreen");
-              }
-            }}
-          >
-            <span>Play</span>
-          </a>
-          <a
-            href="/#"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              e.preventDefault();
-              getHighScoresData();
-              setPage("highScoresScreen");
-            }}
-          >
-            <span>High Scores</span>
-          </a>
-          <a
-            href="/#"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              e.preventDefault();
-              setPage("instructionsScreen");
-            }}
-          >
-            <span>Instructions</span>
-          </a>
-
-          <a
-            href="/#"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              e.preventDefault();
-              setPage("setDifficultyScreen");
-            }}
-          >
-            <span>Change Difficulty</span>
-          </a>
-          {playerName ? (
-            <a
-              href="/#"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsChangePlayer(true);
-                setPage("enterNameScreen");
-              }}
-            >
-              <span>Change Player</span>
-            </a>
-          ) : null}
-        </div>
-      </div>
-    );
-  };
-
-  const enterNameScreen = () => {
-    return (
-      <div className="h-full">
-        <div className="flex flex-col items-center justify-end h-1/2">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <label className="inline" htmlFor="name">
-              Player Name:
-            </label>
-            <input
-              className="text-black"
-              type="text"
-              id="name"
-              name="name"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const inp = e.target.value.trim();
-                  if (inp) {
-                    if (profanity.exists(inp)) {
-                      setShowNameError(true);
-                      if (nameErrorTimeout) clearTimeout(nameErrorTimeout);
-                      const timeout = setTimeout(() => {
-                        setShowNameError(false);
-                      }, 2000);
-                      setNameErrorTimeout(timeout);
-                      return;
-                    } else setPlayerName(inp);
-                  } else setPlayerName("");
-
-                  if (isChangePlayer) {
-                    setPage("homeScreen");
-                    setGameState(-2);
-                  } else if (!profanity.exists(inp)) {
-                    setPage("game");
-                    setGameState(-1);
-                  }
-                }
-              }}
-              maxLength="20"
-              autoComplete="off"
-              defaultValue={playerName}
-              autoFocus
-            />
-          </form>
-        </div>
-        <div className="flex justify-center">
-          {showNameError ? (
-            <span className="invalid-name-warning">
-              Please choose a different name
-            </span>
-          ) : null}
-        </div>
-      </div>
-    );
-  };
-
-  const playAgainScreen = () => {
-    return (
+  const homeScreen = (
+    <div className="flex justify-center h-full">
       <div className="game-options">
         <a
           href="/#"
+          draggable="false"
           rel="noopener noreferrer"
           onClick={(e) => {
             e.preventDefault();
-            resetArena();
-            setPage("game");
-            setGameState(-1);
+            if (playerName) {
+              setPage("game");
+              setGameState(-1);
+            } else {
+              setPage("enterNameScreen");
+            }
           }}
         >
-          <p className="inline-block text-end content-end">Play Again</p>
+          <span>👾 Play</span>
         </a>
         <a
           href="/#"
+          draggable="false"
           rel="noopener noreferrer"
           onClick={(e) => {
             e.preventDefault();
-            resetArena();
-            setPage("homeScreen");
-            setGameState(-2);
+            getHighScoresData();
+            setPage("highScoresScreen");
           }}
         >
-          <p className="inline-block text-end content-end">Main Menu</p>
+          <span>📊 High Scores</span>
         </a>
-      </div>
-    );
-  };
-
-  const instructionsScreen = () => {
-    return (
-      <div className="flex flex-col justify-center h-full mx-10">
-        <div className="flex justify-center mb-5 font-bold">
-          <span>Instructions</span>
-        </div>
-
-        <div className="instructions">
-          <p>Change direction of snake head using the following keys:</p>
-          <div className="my-4 flex">
-            <div className="mr-10">
-              <p>up - w/i </p>
-              <p>down - s/k</p>
-            </div>
-            <div className="mr-10">
-              <p>left - a/j</p>
-              <p>right - d/l</p>
-            </div>
-          </div>
-          <p>Eat as many fruits as you can without colliding into the body!</p>
-        </div>
-      </div>
-    );
-  };
-
-  const highScoresScreen = () => {
-    return (
-      <div>
-        <div className="flex justify-center mt-3 high-scores">
-          <span className="font-bold">High Scores</span>
-        </div>
-        <div className="flex justify-center">
-          <table>
-            <thead>
-              <tr>
-                <th className="rank"></th>
-                <th className="name">Name</th>
-                <th className="score">Score</th>
-                <th className="date">Date</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {highScores.map((row, i) => {
-                var dateString = "-";
-                if (row.Date !== "-") {
-                  const [y, m, d] = row.Date.split("-");
-                  dateString = `${("0" + m).slice(-2)}-${("0" + d).slice(
-                    -2
-                  )}-${y}`;
-                }
-                return (
-                  <tr key={i + 1}>
-                    <td>{i + 1}</td>
-                    <td>{row.Name}</td>
-                    <td>{row.Score}</td>
-                    <td>{dateString}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  };
-
-  const setDifficultyScreen = () => {
-    return (
-      <div className="flex items-center justify-between h-full content-center px-10">
-        <label htmlFor="difficulty">{`Difficulty: ${difficulty}`}</label>
-        <input
-          type="range"
-          id="difficulty"
-          name="difficulty"
-          min={minDifficulty}
-          max={maxDifficulty}
-          step={1}
-          defaultValue={difficulty}
-          onInput={(e) => {
+        <a
+          href="/#"
+          draggable="false"
+          rel="noopener noreferrer"
+          onClick={(e) => {
             e.preventDefault();
-            const val = parseInt(e.target.value);
-            setDifficulty(val);
-            setUpdateDelay(maxDifficulty - difficulty + 1 + k);
+            setPage("instructionsScreen");
           }}
-        />
-      </div>
-    );
-  };
+        >
+          <span>📜 Instructions</span>
+        </a>
 
+        <a
+          href="/#"
+          draggable="false"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            e.preventDefault();
+            setPage("setDifficultyScreen");
+          }}
+        >
+          <span>⏩ Change Difficulty</span>
+        </a>
+        {playerName ? (
+          <a
+            href="/#"
+            draggable="false"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsChangePlayer(true);
+              setPage("enterNameScreen");
+            }}
+          >
+            <span>🏷️ Change Player</span>
+          </a>
+        ) : null}
+      </div>
+    </div>
+  );
+
+  const enterNameScreen = (
+    <div className="h-full">
+      <div className="flex flex-col items-center justify-end h-1/2">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <label className="inline" htmlFor="name">
+            Player Name:
+          </label>
+          <input
+            className="text-black"
+            type="text"
+            id="name"
+            name="name"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const inp = e.target.value.trim();
+                if (inp) {
+                  if (profanity.exists(inp)) {
+                    setShowNameError(true);
+                    if (nameErrorTimeout) clearTimeout(nameErrorTimeout);
+                    const timeout = setTimeout(() => {
+                      setShowNameError(false);
+                    }, 2000);
+                    setNameErrorTimeout(timeout);
+                    return;
+                  } else setPlayerName(inp);
+                } else setPlayerName("");
+
+                if (isChangePlayer) {
+                  setPage("homeScreen");
+                  setGameState(-2);
+                } else if (!profanity.exists(inp)) {
+                  setPage("game");
+                  setGameState(-1);
+                }
+              }
+            }}
+            maxLength="20"
+            autoComplete="off"
+            defaultValue={playerName}
+            autoFocus
+          />
+        </form>
+      </div>
+      <div className="flex justify-center">
+        {showNameError ? (
+          <span className="invalid-name-warning text-red-600">
+            Please choose a different name
+          </span>
+        ) : null}
+      </div>
+    </div>
+  );
+
+  const playAgainScreen = (
+    <div className="game-options">
+      <a
+        href="/#"
+        draggable="false"
+        rel="noopener noreferrer"
+        onClick={(e) => {
+          e.preventDefault();
+          resetArena();
+          setPage("game");
+          setGameState(-1);
+        }}
+      >
+        <p className="inline-block text-end content-end">Play Again</p>
+      </a>
+      <a
+        href="/#"
+        draggable="false"
+        rel="noopener noreferrer"
+        onClick={(e) => {
+          e.preventDefault();
+          resetArena();
+          setPage("homeScreen");
+          setGameState(-2);
+        }}
+      >
+        <p className="inline-block text-end content-end">Main Menu</p>
+      </a>
+    </div>
+  );
+
+  const instructionsScreen = (
+    <div className="flex flex-col justify-center h-full mx-10">
+      <div className="flex justify-center mb-5 font-bold">
+        <span>Instructions</span>
+      </div>
+
+      <div className="instructions">
+        <p>Change direction of snake head using the following keys:</p>
+        <div className="my-4 flex">
+          <div className="mr-10">
+            <p>⬆️ / w / i </p>
+            <p>⬇️ / s / k</p>
+          </div>
+          <div className="mr-10">
+            <p>⬅️ / a / j</p>
+            <p>➡️ / d / l</p>
+          </div>
+        </div>
+        <div className="my-4">
+          <p>Eat fruits to score points and grow:</p>
+          <p>🍒🍎🍑🍓🍇🍉🍊🍋🍍🍏🍐🥝🥭🍅🫐🍌🍈</p>
+        </div>
+        <p className="my-4">Do not collide into body! ☠️</p>
+      </div>
+    </div>
+  );
+
+  const highScoresScreen = (
+    <div>
+      <div className="flex justify-center mt-3 high-scores">
+        <span className="font-bold">High Scores</span>
+      </div>
+      <div className="flex justify-center">
+        <table>
+          <thead>
+            <tr>
+              <th className="rank"></th>
+              <th className="name">Name</th>
+              <th className="score">Score</th>
+              <th className="date">Date</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {highScores.map((row, i) => {
+              var dateString = "-";
+              if (row.Date !== "-") {
+                const [y, m, d] = row.Date.split("-");
+                dateString = `${("0" + m).slice(-2)}-${("0" + d).slice(
+                  -2
+                )}-${y}`;
+              }
+              return (
+                <tr
+                  key={i + 1}
+                  className={
+                    isHighScore && i === getPlayerRank() ? "text-green-400" : ""
+                  }
+                >
+                  <style>{keyframes}</style>
+                  <td>{i + 1}</td>
+                  <td>{row.Name}</td>
+                  <td>{row.Score}</td>
+                  <td>{dateString}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  const setDifficultyScreen = (
+    <div className="flex items-center justify-between h-full content-center px-10">
+      <label htmlFor="difficulty">{`Difficulty: ${difficulty}`}</label>
+      <input
+        type="range"
+        id="difficulty"
+        name="difficulty"
+        min={minDifficulty}
+        max={maxDifficulty}
+        step={1}
+        defaultValue={difficulty}
+        onInput={(e) => {
+          e.preventDefault();
+          const val = parseInt(e.target.value);
+          setDifficulty(val);
+          setUpdateDelay(maxDifficulty - difficulty + 1 + k);
+        }}
+      />
+    </div>
+  );
+
+  // current displayed page on canvas
+  let activePage = null;
+  if (page === "homeScreen") activePage = homeScreen;
+  else if (page === "enterNameScreen") activePage = enterNameScreen;
+  else if (page === "playAgainScreen") activePage = playAgainScreen;
+  else if (page === "instructionsScreen") activePage = instructionsScreen;
+  else if (page === "highScoresScreen") activePage = highScoresScreen;
+  else if (page === "setDifficultyScreen") activePage = setDifficultyScreen;
+  else if (page === "game") activePage = null;
+
+  // return the right element to display in snake bottom bar, right side
   const getDisplayText = () => {
     if (gameState === 1) {
       return "You win!";
     } else if (gameState === 0) {
-      return "Game Over!";
+      if (isHighScore)
+        return (
+          <div>
+            <p className="text-green-400">New high score!</p>
+          </div>
+        );
+      else
+        return (
+          <div>
+            <p>Game Over!</p>
+          </div>
+        );
     } else if (gameState === -2 && page === "homeScreen") {
       return null;
     } else {
       return (
         <div className="flex justify-end main-menu">
           <a
-            className="anchor"
+            draggable="false"
             href="/#"
             rel="noopener noreferrer"
             onClick={(e) => {
               e.preventDefault();
               if (page === "game" && score > 0) {
-                postScores(playerName, score, difficulty);
+                postScores(playerName, score, difficulty, new Date()).then(
+                  (d) => {
+                    setLastPostDate(d);
+                    getHighScoresData();
+                  }
+                );
+                setPage("highScoresScreen");
+                setGameState(0);
+              } else {
+                setPage("homeScreen");
+                setGameState(-2);
+                resetArena();
               }
-              setPage("homeScreen");
-              setGameState(-2);
-              resetArena();
             }}
           >
-            <span>Main Menu</span>
+            {page === "game" ? <span>End Game</span> : <span>Main Menu</span>}
           </a>
         </div>
       );
@@ -440,16 +537,12 @@ export default function Snake(props) {
         const arr = arena;
 
         // draw fruit
-        ctx.beginPath();
-        ctx.arc(
-          gap + fruitPos[1] * (blockDim + gap) + 0.5 * blockDim,
-          gap + fruitPos[0] * (blockDim + gap) + 0.5 * blockDim,
-          blockDim / 4,
-          0,
-          2 * Math.PI
+        ctx.font = "20px sans-serif";
+        ctx.fillText(
+          fruit,
+          gap + fruitPos[1] * (blockDim + gap) + 0.2 * blockDim,
+          gap + fruitPos[0] * (blockDim + gap) + 0.8 * blockDim
         );
-        ctx.fillStyle = getFillColor(-1);
-        ctx.fill();
 
         const diff = gap + (getLastFrame() / updateDelay) * blockDim;
         var corners = [];
@@ -655,6 +748,7 @@ export default function Snake(props) {
               gap + i * (blockDim + gap),
             ];
             ctx.fillStyle = "red";
+            ctx.font = "10px sans-serif";
             ctx.fillText(arena[j][i], c + 0.4 * blockDim, r + 0.6 * blockDim);
           }
         }
@@ -945,6 +1039,10 @@ export default function Snake(props) {
       }
 
       function handleKeyDown(e) {
+        if (gameState !== -1) return;
+
+        e.preventDefault();
+
         const input = e.keyCode;
 
         // pause
@@ -957,6 +1055,7 @@ export default function Snake(props) {
 
         const wasdCodes = [68, 83, 65, 87];
         const ijklCodes = [76, 75, 74, 73];
+        const arrowCodes = [39, 40, 37, 38];
 
         var nextDirection = -1;
 
@@ -967,14 +1066,15 @@ export default function Snake(props) {
           return;
         }
 
-        if (input === wasdCodes[0] || input === ijklCodes[0]) {
-          nextDirection = 1;
-        } else if (input === wasdCodes[1] || input === ijklCodes[1]) {
-          nextDirection = 2;
-        } else if (input === wasdCodes[2] || input === ijklCodes[2]) {
-          nextDirection = 3;
-        } else if (input === wasdCodes[3] || input === ijklCodes[3]) {
-          nextDirection = 4;
+        // set snake direction based on key input
+        for (let i = 0; i < 4; i++) {
+          if (
+            input === wasdCodes[i] ||
+            input === ijklCodes[i] ||
+            input === arrowCodes[i]
+          ) {
+            nextDirection = i + 1;
+          }
         }
 
         if (nextDirection === -1) {
@@ -1011,7 +1111,6 @@ export default function Snake(props) {
         if (gameState === -1 && !pause) {
           setFrame(getNextFrame(frames)); // advance frame
         } else {
-          // drawArena(ctx, c);
           return;
         }
 
@@ -1020,9 +1119,12 @@ export default function Snake(props) {
 
         // check win
         if (len === maxLen) {
-          postScores(playerName, score, difficulty);
+          postScores(playerName, score, difficulty, new Date()).then((d) => {
+            setLastPostDate(d);
+            getHighScoresData();
+          });
           setGameState(1);
-          setPage("playAgainScreen");
+          setPage("highScoresScreen");
           return;
         }
 
@@ -1050,14 +1152,18 @@ export default function Snake(props) {
           const f = spawnFruit(arr);
           arr[f[0]][f[1]] = -1;
           setFruitPos(f);
+          setFruit(randomFromArr(fruits));
         }
 
         // check collision/loss
         // if next cell is body (not 0 or -1), end game
         if (arr[nr][nc] > 1 && arr[nr][nc] !== len) {
-          postScores(playerName, score, difficulty);
+          postScores(playerName, score, difficulty, new Date()).then((d) => {
+            setLastPostDate(d);
+            getHighScoresData();
+          });
           setGameState(0);
-          setPage("playAgainScreen");
+          setPage("highScoresScreen");
           return;
         }
 
@@ -1097,7 +1203,7 @@ export default function Snake(props) {
         return cv;
       }
 
-      if (!highScores) getHighScoresData();
+      if (highScores.length === 0) getHighScoresData();
 
       window.addEventListener("keydown", handleKeyDown);
 
@@ -1116,8 +1222,9 @@ export default function Snake(props) {
         update(1);
       }, updateInterval);
 
-      if (!canvasRef.current) return;
-      drawArena(context, canvas);
+      if (canvasRef.current && gameState === -1) {
+        drawArena(context, canvas);
+      }
 
       return () => {
         clearTimeout(interval);
@@ -1148,12 +1255,14 @@ export default function Snake(props) {
       difficulty,
       minDifficulty,
       playerName,
-      page,
       highScores,
       nUpdates,
       lastUpdateTime,
       fps,
       updateInterval,
+      fruit,
+      page,
+      isHighScore,
     ]
   );
 
@@ -1166,7 +1275,46 @@ export default function Snake(props) {
     >
       <div className="snake-top-bar">
         <div className="flex justify-center h-5">
-          <p>Snake</p>
+          {(() => {
+            if (gameState === -1 || gameState === -2) return <p>Snake 🐍</p>;
+            else
+              return (
+                <div className="flex justify-between w-full">
+                  <div className="flex pink-on-hover">
+                    <a
+                      href="/#"
+                      draggable="false"
+                      rel="noopener noreferrer"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage("homeScreen");
+                        setGameState(-2);
+                        resetArena();
+                      }}
+                    >
+                      <span>Main Menu</span>
+                    </a>
+                  </div>
+                  <div className="flex pink-on-hover">
+                    <a
+                      href="/#"
+                      draggable="false"
+                      rel="noopener noreferrer"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage("game");
+                        setGameState(-1);
+                        resetArena();
+                      }}
+                    >
+                      <p className="inline-block text-end content-end">
+                        Play Again
+                      </p>
+                    </a>
+                  </div>
+                </div>
+              );
+          })()}
         </div>
       </div>
       <div
@@ -1184,24 +1332,45 @@ export default function Snake(props) {
             if (gameState === -1) return { background: "" };
             else if (gameState === -2) {
               if (page === "homeScreen") return { background: "#1a1e40ee" };
-              else return { background: "#1a1e40" };
-            } else return { background: "#1f2341ee" };
+            } else return { background: "#1a1e40" };
           })()}
         >
-          {getPage()}
+          {activePage}
         </div>
       </div>
       <div className="snake-bottom-bar">
         <div className="flex justify-between w-full">
           <div>
-            {page === "game" ? (
-              <p className="inline-block">Score: {score}</p>
+            {gameState !== -2 ? (
+              <div>
+                <p className="inline-block">Score:</p>
+                <p
+                  className="inline-block mx-3"
+                  style={(() => {
+                    const lowestItem =
+                      highScores.findLast((item) => item.Score !== "-") || null;
+                    var lowest = lowestItem ? lowestItem.Score : 0;
+                    if (highScores[highScores.length - 1].Score === "-")
+                      lowest = 0;
+                    if (score > lowest && gameState === -1) {
+                      if (!isHighScore) setIsHighScore(true);
+                      return {
+                        color: "#c792e9",
+                        animation: "pulse 0.8s linear infinite",
+                      };
+                    } else return {};
+                  })()}
+                >
+                  <style>{keyframes}</style>
+                  {score}
+                </p>
+              </div>
             ) : (
               <p className="inline-block"></p>
             )}
           </div>
           <div className="inline-block text-end content-end">
-            {getDisplayText(gameState)}
+            {getDisplayText()}
           </div>
         </div>
       </div>

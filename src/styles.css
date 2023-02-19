@@ -142,9 +142,12 @@ tr:nth-child(odd) {
   background-color: var(--bg-color-2);
 }
 
-tbody tr:hover {
+tbody tr td {
+  transition: all 0.25s ease;
+}
+
+tbody tr:hover > td {
   color: var(--heading-color-main);
-  background-color: var(--);
 }
 
 form {
@@ -276,7 +279,7 @@ canvas {
 }
 
 .game-options {
-  width: 100%;
+  width: 55%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -284,20 +287,21 @@ canvas {
   align-items: center;
 }
 
-.game-options a {
+.game-options a,
+.pink-on-hover a,
+.main-menu a {
   transition: ease 0.2s;
-  min-width: 140px;
-  display: flex;
-  justify-content: center;
+}
+
+.game-options a {
+  display: block;
+  width: 100%;
+  text-align: center;
   padding-block: 5px;
 }
 
 .game-options a span {
   text-align: center;
-}
-
-.main-menu a {
-  transition: ease 0.2s;
 }
 
 .instructions {
@@ -334,7 +338,8 @@ canvas {
 }
 
 .tech-item-div {
-  margin: 3px;
+  margin-inline-start: 0.5px;
+  margin-inline-end: 3px;
   padding-block: 5px;
   padding-inline: 12px;
   background-color: var(--bg-color-3);
@@ -447,7 +452,8 @@ li {
 
 .navbar a:hover,
 .game-options a:hover,
-.main-menu a:hover {
+.main-menu a:hover,
+.pink-on-hover a:hover {
   color: var(--heading-color-main);
   transform: scale(1.08);
 }

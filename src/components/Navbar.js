@@ -7,19 +7,47 @@ export default function Navbar() {
     <>
       <div className={"nav-area "}>
         <div className={"navbar "}>
-          <Link href="#" to="home" spy={true} smooth={true} duration={0}>
+          <Link
+            href="#"
+            draggable="false"
+            to="home"
+            spy={true}
+            smooth={true}
+            duration={0}
+          >
             home
           </Link>
 
-          <Link href="#" to="projects" spy={true} smooth={true} duration={0}>
+          <Link
+            href="#"
+            draggable="false"
+            to="projects"
+            spy={true}
+            smooth={true}
+            duration={0}
+          >
             projects
           </Link>
 
-          <Link href="#" to="about" spy={true} smooth={true} duration={0}>
+          <Link
+            href="#"
+            draggable="false"
+            to="about"
+            spy={true}
+            smooth={true}
+            duration={0}
+          >
             about
           </Link>
 
-          <Link href="#" to="contact" spy={true} smooth={true} duration={0}>
+          <Link
+            href="#"
+            draggable="false"
+            to="contact"
+            spy={true}
+            smooth={true}
+            duration={0}
+          >
             contact
           </Link>
         </div>
