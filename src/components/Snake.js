@@ -125,7 +125,7 @@ export default function Snake(props) {
   // set which page is shown on screen
   const [page, setPage] = useState("homeScreen");
 
-  const [highScores, setHighScores] = useState([]);
+  const [highScores, setHighScores] = useState(null);
   const [isHighScore, setIsHighScore] = useState(false);
   const [isChangePlayer, setIsChangePlayer] = useState(false);
   const [lastPostDate, setLastPostDate] = useState(null);
@@ -192,8 +192,141 @@ export default function Snake(props) {
   }
 `;
 
-  const homeScreen = (
-    <div className="flex justify-center h-full">
+  const homeScreen = () => {
+    return (
+      <div className="flex justify-center h-full">
+        <div className="game-options">
+          <a
+            href="/#"
+            draggable="false"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              if (playerName) {
+                setPage("game");
+                setGameState(-1);
+              } else {
+                setPage("enterNameScreen");
+              }
+            }}
+          >
+            <span>👾 Play</span>
+          </a>
+          <a
+            href="/#"
+            draggable="false"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              getHighScoresData();
+              setPage("highScoresScreen");
+            }}
+          >
+            <span>📊 High Scores</span>
+          </a>
+          <a
+            href="/#"
+            draggable="false"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              setPage("instructionsScreen");
+            }}
+          >
+            <span>📜 Instructions</span>
+          </a>
+
+          <a
+            href="/#"
+            draggable="false"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              setPage("setDifficultyScreen");
+            }}
+          >
+            <span>⏩ Change Difficulty</span>
+          </a>
+          {playerName ? (
+            <a
+              href="/#"
+              draggable="false"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsChangePlayer(true);
+                setPage("enterNameScreen");
+              }}
+            >
+              <span>🏷️ Change Player</span>
+            </a>
+          ) : null}
+        </div>
+      </div>
+    );
+  };
+
+  const enterNameScreen = () => {
+    return (
+      <div className="h-full">
+        <div className="flex flex-col items-center justify-end h-1/2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <label className="inline" htmlFor="name">
+              Player Name:
+            </label>
+            <input
+              className="text-black"
+              type="text"
+              id="name"
+              name="name"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const inp = e.target.value.trim();
+                  if (inp) {
+                    if (profanity.exists(inp)) {
+                      setShowNameError(true);
+                      if (nameErrorTimeout) clearTimeout(nameErrorTimeout);
+                      const timeout = setTimeout(() => {
+                        setShowNameError(false);
+                      }, 2000);
+                      setNameErrorTimeout(timeout);
+                      return;
+                    } else setPlayerName(inp);
+                  } else setPlayerName("");
+
+                  if (isChangePlayer) {
+                    setPage("homeScreen");
+                    setGameState(-2);
+                  } else if (!profanity.exists(inp)) {
+                    setPage("game");
+                    setGameState(-1);
+                  }
+                }
+              }}
+              maxLength="20"
+              autoComplete="off"
+              defaultValue={playerName}
+              autoFocus
+            />
+          </form>
+        </div>
+        <div className="flex justify-center">
+          {showNameError ? (
+            <span className="invalid-name-warning text-red-600">
+              Please choose a different name
+            </span>
+          ) : null}
+        </div>
+      </div>
+    );
+  };
+
+  const playAgainScreen = () => {
+    return (
       <div className="game-options">
         <a
           href="/#"
@@ -201,15 +334,12 @@ export default function Snake(props) {
           rel="noopener noreferrer"
           onClick={(e) => {
             e.preventDefault();
-            if (playerName) {
-              setPage("game");
-              setGameState(-1);
-            } else {
-              setPage("enterNameScreen");
-            }
+            resetArena();
+            setPage("game");
+            setGameState(-1);
           }}
         >
-          <span>👾 Play</span>
+          <p className="inline-block text-end content-end">Play Again</p>
         </a>
         <a
           href="/#"
@@ -217,244 +347,129 @@ export default function Snake(props) {
           rel="noopener noreferrer"
           onClick={(e) => {
             e.preventDefault();
-            getHighScoresData();
-            setPage("highScoresScreen");
+            resetArena();
+            setPage("homeScreen");
+            setGameState(-2);
           }}
         >
-          <span>📊 High Scores</span>
+          <p className="inline-block text-end content-end">Main Menu</p>
         </a>
-        <a
-          href="/#"
-          draggable="false"
-          rel="noopener noreferrer"
-          onClick={(e) => {
-            e.preventDefault();
-            setPage("instructionsScreen");
-          }}
-        >
-          <span>📜 Instructions</span>
-        </a>
-
-        <a
-          href="/#"
-          draggable="false"
-          rel="noopener noreferrer"
-          onClick={(e) => {
-            e.preventDefault();
-            setPage("setDifficultyScreen");
-          }}
-        >
-          <span>⏩ Change Difficulty</span>
-        </a>
-        {playerName ? (
-          <a
-            href="/#"
-            draggable="false"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              e.preventDefault();
-              setIsChangePlayer(true);
-              setPage("enterNameScreen");
-            }}
-          >
-            <span>🏷️ Change Player</span>
-          </a>
-        ) : null}
       </div>
-    </div>
-  );
+    );
+  };
 
-  const enterNameScreen = (
-    <div className="h-full">
-      <div className="flex flex-col items-center justify-end h-1/2">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <label className="inline" htmlFor="name">
-            Player Name:
-          </label>
-          <input
-            className="text-black"
-            type="text"
-            id="name"
-            name="name"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                const inp = e.target.value.trim();
-                if (inp) {
-                  if (profanity.exists(inp)) {
-                    setShowNameError(true);
-                    if (nameErrorTimeout) clearTimeout(nameErrorTimeout);
-                    const timeout = setTimeout(() => {
-                      setShowNameError(false);
-                    }, 2000);
-                    setNameErrorTimeout(timeout);
-                    return;
-                  } else setPlayerName(inp);
-                } else setPlayerName("");
+  const instructionsScreen = () => {
+    return (
+      <div className="flex flex-col justify-center h-full mx-10">
+        <div className="flex justify-center mb-5 font-bold">
+          <span>Instructions</span>
+        </div>
 
-                if (isChangePlayer) {
-                  setPage("homeScreen");
-                  setGameState(-2);
-                } else if (!profanity.exists(inp)) {
-                  setPage("game");
-                  setGameState(-1);
+        <div className="instructions">
+          <p>Change direction of snake head using the following keys:</p>
+          <div className="my-4 flex">
+            <div className="mr-10">
+              <p>⬆️ / w / i </p>
+              <p>⬇️ / s / k</p>
+            </div>
+            <div className="mr-10">
+              <p>⬅️ / a / j</p>
+              <p>➡️ / d / l</p>
+            </div>
+          </div>
+          <div className="my-4">
+            <p>Eat fruits to score points and grow:</p>
+            <p>🍒🍎🍑🍓🍇🍉🍊🍋🍍🍏🍐🥝🥭🍅🫐🍌🍈</p>
+          </div>
+          <p className="my-4">Do not collide into body! ☠️</p>
+        </div>
+      </div>
+    );
+  };
+
+  const highScoresScreen = () => {
+    return (
+      <div>
+        <div className="flex justify-center mt-3 high-scores">
+          <span className="font-bold">High Scores</span>
+        </div>
+        <div className="flex justify-center">
+          <table>
+            <thead>
+              <tr>
+                <th className="rank"></th>
+                <th className="name">Name</th>
+                <th className="score">Score</th>
+                <th className="date">Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {highScores.map((row, i) => {
+                var dateString = "-";
+                if (row.Date !== "-") {
+                  const [y, m, d] = row.Date.split("-");
+                  dateString = `${("0" + m).slice(-2)}-${("0" + d).slice(
+                    -2
+                  )}-${y}`;
                 }
-              }
-            }}
-            maxLength="20"
-            autoComplete="off"
-            defaultValue={playerName}
-            autoFocus
-          />
-        </form>
-      </div>
-      <div className="flex justify-center">
-        {showNameError ? (
-          <span className="invalid-name-warning text-red-600">
-            Please choose a different name
-          </span>
-        ) : null}
-      </div>
-    </div>
-  );
-
-  const playAgainScreen = (
-    <div className="game-options">
-      <a
-        href="/#"
-        draggable="false"
-        rel="noopener noreferrer"
-        onClick={(e) => {
-          e.preventDefault();
-          resetArena();
-          setPage("game");
-          setGameState(-1);
-        }}
-      >
-        <p className="inline-block text-end content-end">Play Again</p>
-      </a>
-      <a
-        href="/#"
-        draggable="false"
-        rel="noopener noreferrer"
-        onClick={(e) => {
-          e.preventDefault();
-          resetArena();
-          setPage("homeScreen");
-          setGameState(-2);
-        }}
-      >
-        <p className="inline-block text-end content-end">Main Menu</p>
-      </a>
-    </div>
-  );
-
-  const instructionsScreen = (
-    <div className="flex flex-col justify-center h-full mx-10">
-      <div className="flex justify-center mb-5 font-bold">
-        <span>Instructions</span>
-      </div>
-
-      <div className="instructions">
-        <p>Change direction of snake head using the following keys:</p>
-        <div className="my-4 flex">
-          <div className="mr-10">
-            <p>⬆️ / w / i </p>
-            <p>⬇️ / s / k</p>
-          </div>
-          <div className="mr-10">
-            <p>⬅️ / a / j</p>
-            <p>➡️ / d / l</p>
-          </div>
+                return (
+                  <tr
+                    key={i + 1}
+                    className={
+                      isHighScore && i === getPlayerRank()
+                        ? "text-green-400"
+                        : ""
+                    }
+                  >
+                    <style>{keyframes}</style>
+                    <td>{i + 1}</td>
+                    <td>{row.Name}</td>
+                    <td>{row.Score}</td>
+                    <td>{dateString}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-        <div className="my-4">
-          <p>Eat fruits to score points and grow:</p>
-          <p>🍒🍎🍑🍓🍇🍉🍊🍋🍍🍏🍐🥝🥭🍅🫐🍌🍈</p>
-        </div>
-        <p className="my-4">Do not collide into body! ☠️</p>
       </div>
-    </div>
-  );
+    );
+  };
 
-  const highScoresScreen = (
-    <div>
-      <div className="flex justify-center mt-3 high-scores">
-        <span className="font-bold">High Scores</span>
+  const setDifficultyScreen = () => {
+    return (
+      <div className="flex items-center justify-between h-full content-center px-10">
+        <label htmlFor="difficulty">{`Difficulty: ${difficulty}`}</label>
+        <input
+          type="range"
+          id="difficulty"
+          name="difficulty"
+          min={minDifficulty}
+          max={maxDifficulty}
+          step={1}
+          defaultValue={difficulty}
+          onInput={(e) => {
+            e.preventDefault();
+            const val = parseInt(e.target.value);
+            setDifficulty(val);
+            setUpdateDelay(maxDifficulty - difficulty + 1 + k);
+          }}
+        />
       </div>
-      <div className="flex justify-center">
-        <table>
-          <thead>
-            <tr>
-              <th className="rank"></th>
-              <th className="name">Name</th>
-              <th className="score">Score</th>
-              <th className="date">Date</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {highScores.map((row, i) => {
-              var dateString = "-";
-              if (row.Date !== "-") {
-                const [y, m, d] = row.Date.split("-");
-                dateString = `${("0" + m).slice(-2)}-${("0" + d).slice(
-                  -2
-                )}-${y}`;
-              }
-              return (
-                <tr
-                  key={i + 1}
-                  className={
-                    isHighScore && i === getPlayerRank() ? "text-green-400" : ""
-                  }
-                >
-                  <style>{keyframes}</style>
-                  <td>{i + 1}</td>
-                  <td>{row.Name}</td>
-                  <td>{row.Score}</td>
-                  <td>{dateString}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-
-  const setDifficultyScreen = (
-    <div className="flex items-center justify-between h-full content-center px-10">
-      <label htmlFor="difficulty">{`Difficulty: ${difficulty}`}</label>
-      <input
-        type="range"
-        id="difficulty"
-        name="difficulty"
-        min={minDifficulty}
-        max={maxDifficulty}
-        step={1}
-        defaultValue={difficulty}
-        onInput={(e) => {
-          e.preventDefault();
-          const val = parseInt(e.target.value);
-          setDifficulty(val);
-          setUpdateDelay(maxDifficulty - difficulty + 1 + k);
-        }}
-      />
-    </div>
-  );
+    );
+  };
 
   // current displayed page on canvas
-  let activePage = null;
-  if (page === "homeScreen") activePage = homeScreen;
-  else if (page === "enterNameScreen") activePage = enterNameScreen;
-  else if (page === "playAgainScreen") activePage = playAgainScreen;
-  else if (page === "instructionsScreen") activePage = instructionsScreen;
-  else if (page === "highScoresScreen") activePage = highScoresScreen;
-  else if (page === "setDifficultyScreen") activePage = setDifficultyScreen;
-  else if (page === "game") activePage = null;
+  const getPage = () => {
+    if (page === "homeScreen") return homeScreen();
+    else if (page === "enterNameScreen") return enterNameScreen();
+    else if (page === "playAgainScreen") return playAgainScreen();
+    else if (page === "instructionsScreen") return instructionsScreen();
+    else if (page === "highScoresScreen") return highScoresScreen();
+    else if (page === "setDifficultyScreen") return setDifficultyScreen();
+    else if (page === "game") return null;
+  };
 
   // return the right element to display in snake bottom bar, right side
   const getDisplayText = () => {
@@ -1039,7 +1054,7 @@ export default function Snake(props) {
       }
 
       function handleKeyDown(e) {
-        if (gameState !== -1) return;
+        if (gameState !== -1 && page !== "highScoresScreen") return;
 
         e.preventDefault();
 
@@ -1203,7 +1218,7 @@ export default function Snake(props) {
         return cv;
       }
 
-      if (highScores.length === 0) getHighScoresData();
+      if (!highScores) getHighScoresData();
 
       window.addEventListener("keydown", handleKeyDown);
 
@@ -1335,7 +1350,7 @@ export default function Snake(props) {
             } else return { background: "#1a1e40" };
           })()}
         >
-          {activePage}
+          {getPage()}
         </div>
       </div>
       <div className="snake-bottom-bar">
@@ -1347,8 +1362,13 @@ export default function Snake(props) {
                 <p
                   className="inline-block mx-3"
                   style={(() => {
+                    if (!highScores) return {};
+
                     const lowestItem =
-                      highScores.findLast((item) => item.Score !== "-") || null;
+                      highScores
+                        .slice()
+                        .reverse()
+                        .find((item) => item.Score !== "-") || null;
                     var lowest = lowestItem ? lowestItem.Score : 0;
                     if (highScores[highScores.length - 1].Score === "-")
                       lowest = 0;
