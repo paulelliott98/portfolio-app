@@ -156,8 +156,9 @@ form {
 }
 
 input[type="text"] {
+  font-size: 14px;
   margin: 8px;
-  padding: 3px;
+  padding-inline: 3px;
   width: 80px;
   height: 20px;
   border-radius: 3px;
