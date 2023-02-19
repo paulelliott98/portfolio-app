@@ -104,39 +104,20 @@ export default function HomePage() {
     switch (type) {
       case "slideLeft":
         animIn = "animate__animated animate__fadeInLeft animate__fast";
-        animOut = "animate__animated animate__fadeOutLeft animate__fast";
         break;
-
       case "slideRight":
         animIn = "animate__animated animate__fadeInRight animate__faster";
-        animOut = "animate__animated animate__fadeOutRight animate__faster";
         break;
-
       case "slideUp":
         animIn = "animate__animated animate__fadeInUp animate__faster";
-        animOut = "animate__animated animate__fadeOutUp animate__faster";
         break;
-
       case "slideDown":
         animIn = "animate__animated animate__fadeInDown animate__fast";
-        // animOut = "animate__animated animate__fadeOutDown animate__fast";
         break;
-
       case "fade":
         animIn = "fadeIn";
         animOut = "fadeOut";
         break;
-
-      case "flipX":
-        animIn = "animate__animated animate__flipInX";
-        animOut = "animate__animated animate__flipOutX";
-        break;
-
-      case "flipY":
-        animIn = "animate__animated animate__flipInY";
-        animOut = "animate__animated animate__flipOutY";
-        break;
-
       default:
         break;
     }
@@ -168,8 +149,7 @@ export default function HomePage() {
           <div className="nav-fill"></div>
 
           <div className="flex justify-between self-center">
-            <div className="intro mt-40">
-              <div ref={ref}></div>
+            <div ref={ref} className="intro mt-40">
               <h5 className={anim("slideUp", inView)} style={animDelay(0)}>
                 Hi, my name is
               </h5>
@@ -192,8 +172,7 @@ export default function HomePage() {
           <div className="section-title">
             <h4>projects</h4>
           </div>
-          <div ref={ref2}></div>
-          <div className="flex justify-between">
+          <div ref={ref2} className="flex justify-between">
             <div className="projects-list">
               {projects.map((p, index) => (
                 <a
