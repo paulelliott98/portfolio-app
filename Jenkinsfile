@@ -23,7 +23,7 @@ pipeline {
                 echo 'Deploying....'
                 
                 // Deploy the project to GitHub Pages
-                withCredentials([usernamePassword(credentialsId: 'portfolio-app-access-token', passwordVariable: 'ACCESS_TOKEN')]) {
+                withCredentials([usernamePassword(credentialsId: 'portfolio-app-access-token', usernameVariable: 'USERNAME', passwordVariable: 'ACCESS_TOKEN')]) {
                     sh 'git remote set-url origin https://$ACCESS_TOKEN@github.com/paulgan98/my-portfolio.git'
                 }
                 
