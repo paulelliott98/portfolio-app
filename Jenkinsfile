@@ -10,6 +10,7 @@ pipeline {
             steps {
                 echo 'Building..'
                 sh 'npm install'
+                sh 'npm install -g gh-pages'
             }
         }
 //         stage('Test') {
