@@ -20,7 +20,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                sh 'npm deploy'                
+                sh 'npm run deploy'                
             }
         }
     }
