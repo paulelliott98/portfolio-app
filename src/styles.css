@@ -417,14 +417,12 @@ canvas {
 }
 
 .ul-indented {
-  width: 90%;
   padding-block-end: 1em;
   padding-inline-start: 4em;
   /* list-style-position: outside; */
 }
 
 .ul-unindented {
-  width: 90%;
   padding-block-end: 1em;
   list-style-position: outside;
   padding-inline-start: 1em;
