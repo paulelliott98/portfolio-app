@@ -11,8 +11,8 @@ import "animate.css";
 export default function HomePage() {
   const projects = [
     {
-      listName: "snake (javascript)",
-      name: "Snake (javascript)",
+      listName: "snake",
+      name: "Snake",
       techStack: [
         "Javascript",
         "React",
@@ -20,6 +20,8 @@ export default function HomePage() {
         "Express",
         "Sequelize",
         "PostgreSQL",
+        "Docker",
+        "Jenkins",
       ],
       dx:
         "A full-stack JavaScript snake game that utilizes HTML canvas and interpolation to create fluid movement. In addition, the game has a leaderboard that displays the top 10 players' high scores. The scores are stored in and retrieved from a PostgreSQL database, allowing players to compete with each other for the top spot. ",
@@ -79,14 +81,6 @@ export default function HomePage() {
         "A console game with AI opponent implementing the minimax algorithm with alpha-beta pruning. While not completely unbeatable, the AI is capable of putting up a very good fight. The game is entirely rendered with text and made for the MacOS terminal.",
       gitUrl: "https://github.com/paulgan98/connect4",
     },
-    {
-      listName: "snake",
-      name: "Snake",
-      techStack: ["C++"],
-      dx:
-        "The classic game of snake, drawn entirely with text for the MacOS and Windows terminal. The player maneuvers the snake's head using arrow keys to eat fruits that spawn randomly around the arena. The snake's body grows longer with each fruit eaten.",
-      gitUrl: "https://github.com/paulgan98/snake",
-    },
   ];
 
   const [active, setActive] = useState(0);
@@ -111,12 +105,12 @@ export default function HomePage() {
         animOut = "animate__animated animate__fadeOutRight animate__faster";
         break;
       case "slideUp":
-        animIn = "animate__animated animate__fadeInUp animate__faster";
-        animOut = "animate__animated animate__fadeOutUp animate__faster";
+        animIn = "animate__animated animate__fadeInUp animate__fast";
+        animOut = "animate__animated animate__fadeOutUp animate__fast";
         break;
       case "slideDown":
         animIn = "animate__animated animate__fadeInDown animate__fast";
-        animOut = "animate__animated animate__fadeOutDown animate__faster";
+        animOut = "animate__animated animate__fadeOutDown animate__fast";
         break;
       case "fade":
         animIn = "fadeIn";
@@ -157,10 +151,10 @@ export default function HomePage() {
               <h5 className={anim("slideUp", inView)} style={animDelay(0)}>
                 Hi, my name is
               </h5>
-              <h1 className={anim("slideUp", inView)} style={animDelay(0.2)}>
+              <h1 className={anim("slideUp", inView)} style={animDelay(0.3)}>
                 Paul Gan
               </h1>
-              <h5 className={anim("slideUp", inView)} style={animDelay(0.4)}>
+              <h5 className={anim("slideUp", inView)} style={animDelay(0.6)}>
                 I am a software engineer and web developer who transforms great
                 ideas into remarkable digital experiences.
               </h5>
@@ -237,9 +231,9 @@ export default function HomePage() {
               <h2>Bio</h2>
               <div className="divider"></div>
               <p>
-                Hello and welcome to my website! I am a motivated graduate of
-                UCLA’s class of 2022 (Go Bruins!) with a major in molecular,
-                cell, and development biology and a minor in bioinformatics.
+                Hello and welcome to my website! I am a graduate of UCLA’s class
+                of 2022 (Go Bruins!) with a major in molecular, cell, and
+                development biology and a minor in bioinformatics.
               </p>
               <p>
                 Previously pre-dental, I eventually made up my mind to pursue my
@@ -250,39 +244,62 @@ export default function HomePage() {
                 Over the years, I’ve explored and completed personal projects in
                 many areas including:
               </p>
-              <ul>
-                <li key="1">
-                  Data Science / Deep Learning— PyTorch, Tensorflow, OpenCV,
-                  Scikit-learn, Numpy, Pandas, Matplotlib
-                </li>
-                <li key="2">
-                  Web Scraping and Automation— Selenium, BeautifulSoup
-                </li>
-                <li key="3">
-                  Web Development— React, Node, Express, PostgreSQL, Docker
-                </li>
-                <li key="4">Game Development— Pygame, Javascript, React</li>
+              <ul className="ul-indented">
+                <li key="1">Data Science / Deep Learning</li>
+                <li key="2">Web Scraping and Automation</li>
+                <li key="3">Web Development</li>
+                <li key="4">Game Development</li>
               </ul>
-              <p></p>
+              <p>
+                I am currently searching for a software developer position where
+                I can utilize my broad skillset, curiosity, and resourcefulness
+                to deliver and create value for the team.
+              </p>
             </div>
           </div>
-          <div className="flex justify-between">
-            <div
+          <div
+            className={"container " + anim("fade", inView4)}
+            style={animDelay(0.7)}
+            ref={ref4}
+          >
+            <h2>skills</h2>
+            <div className="divider"></div>
+            <ul className="ul-unindented">
+              <li key="0">
+                Machine Learning/Data Science — Python, PyTorch, Tensorflow,
+                Scikit-learn, Numpy, Pandas, Matplotlib, Seaborn, OpenCV,
+                Pillow, Selenium, BeautifulSoup
+              </li>
+              <li key="1">
+                Full Stack — Javascript, CSS, HTML5, React.js, Axios,
+                Express.js, Sequelize, Fly.io, Flask, Microservices
+              </li>
+              <li key="2">Database — PostgreSQL, MySQL</li>
+              <li key="3">
+                Containerization — Docker, Docker Compose, Kubernetes
+              </li>
+              <li key="4">Cloud — GCP</li>
+              <li key="5">CI/CD — Jenkins, Gitlab, Git</li>
+            </ul>
+          </div>
+          <div className="flex justify-between gap-3">
+            {/* <div
               ref={ref4}
-              className={"container max-w-49 " + anim("fade", inView4)}
+              className={"container max-w-min " + anim("fade", inView4)}
               style={animDelay(0.5)}
             >
-              <h2>coding languages</h2>
+              <h2>languages</h2>
               <div className="divider"></div>
               <ul>
-                <li key="0">python</li>
-                <li key="1">java</li>
-                <li key="2">c++</li>
-                <li key="3">javascript</li>
+                <li key="0">Python</li>
+                <li key="1">Javascript</li>
+                <li key="2">Java</li>
+                <li key="3">C++</li>
               </ul>
-            </div>
-            <div
-              className={"container max-w-49 " + anim("fade", inView4)}
+            </div> */}
+
+            {/* <div
+              className={"container " + anim("fade", inView4)}
               style={animDelay(0.7)}
             >
               <h2>things I love</h2>
@@ -295,7 +312,7 @@ export default function HomePage() {
                 <li key="4">video games</li>
                 <li key="5">listening to music and podcasts</li>
               </ul>
-            </div>
+            </div> */}
           </div>
         </section>
       </div>
