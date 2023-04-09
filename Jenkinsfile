@@ -20,8 +20,14 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                sh 'npm run deploy'                
+                
+                // Deploy the project to GitHub Pages
+                withCredentials([usernamePassword(credentialsId: 'portfolio-app-git-credentials', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
+                    sh "gh-pages -d build -u $GITHUB_USERNAME -p $GITHUB_PASSWORD"
+                }
+                
             }
         }
+
     }
 }
