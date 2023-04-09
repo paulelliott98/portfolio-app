@@ -15,7 +15,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                sh 'gh-pages -d build'
+                sh 'npm install'
+                sh 'npm deploy'                
             }
         }
     }
