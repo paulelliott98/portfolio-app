@@ -253,16 +253,16 @@ export default function HomePage() {
               <ul>
                 <li key="0">Object Detection— Tensorflow, Pytorch</li>
                 <li key="1">
-                  Data Science— Scikit-learn, Numpy, Pandas, Matplotlib
+                  Data Science / Deep Learning— PyTorch, Tensorflow, OpenCV,
+                  Scikit-learn, Numpy, Pandas, Matplotlib
                 </li>
-                <li key="2">Deep Learning– PyTorch, Tensorflow, OpenCV</li>
-                <li key="3">
+                <li key="2">
                   Web Scraping and Automation— Selenium, BeautifulSoup
                 </li>
-                <li key="4">
-                  Web Development— React, Node, Express, PostgreSQL
+                <li key="3">
+                  Web Development— React, Node, Express, PostgreSQL, Docker
                 </li>
-                <li key="5">Game Development— Pygame, Javascript, React</li>
+                <li key="4">Game Development— Pygame, Javascript, React</li>
               </ul>
               <p></p>
             </div>
