@@ -251,7 +251,6 @@ export default function HomePage() {
                 many areas including:
               </p>
               <ul>
-                <li key="0">Object Detection— Tensorflow, Pytorch</li>
                 <li key="1">
                   Data Science / Deep Learning— PyTorch, Tensorflow, OpenCV,
                   Scikit-learn, Numpy, Pandas, Matplotlib
