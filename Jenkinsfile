@@ -6,8 +6,8 @@ pipeline {
     }
     
     environment {
-        GITHUB_USERNAME = ""
-        GITHUB_PASSWORD = ""
+        GITHUB_USERNAME = credentials('github-username')
+        GITHUB_PASSWORD = credentials('github-password')
     }
     
     stages {
