@@ -5,6 +5,11 @@ pipeline {
         nodejs "nodejs"
     }
     
+    environment {
+        GITHUB_USERNAME = ""
+        GITHUB_PASSWORD = ""
+    }
+    
     stages {
         stage('Build') {
             steps {
@@ -25,9 +30,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'portfolio-app-git-credentials', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
                     sh "gh-pages -d build -u $GITHUB_USERNAME -p $GITHUB_PASSWORD"
                 }
-                
             }
         }
-
     }
 }
