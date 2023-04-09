@@ -5,11 +5,6 @@ pipeline {
         nodejs "nodejs"
     }
     
-    environment {
-        GITHUB_USERNAME = credentials('github-username')
-        GITHUB_PASSWORD = credentials('github-password')
-    }
-    
     stages {
         stage('Build') {
             steps {
