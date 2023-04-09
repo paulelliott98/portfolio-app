@@ -104,15 +104,19 @@ export default function HomePage() {
     switch (type) {
       case "slideLeft":
         animIn = "animate__animated animate__fadeInLeft animate__fast";
+        animOut = "animate__animated animate__fadeOutLeft animate__fast";
         break;
       case "slideRight":
         animIn = "animate__animated animate__fadeInRight animate__faster";
+        animOut = "animate__animated animate__fadeOutRight animate__faster";
         break;
       case "slideUp":
         animIn = "animate__animated animate__fadeInUp animate__faster";
+        animOut = "animate__animated animate__fadeOutUp animate__faster";
         break;
       case "slideDown":
         animIn = "animate__animated animate__fadeInDown animate__fast";
+        animOut = "animate__animated animate__fadeOutDown animate__faster";
         break;
       case "fade":
         animIn = "fadeIn";
@@ -157,8 +161,8 @@ export default function HomePage() {
                 Paul Gan
               </h1>
               <h5 className={anim("slideUp", inView)} style={animDelay(0.4)}>
-                I am a software engineer and self-taught web developer who
-                transforms great ideas into remarkable digital experiences.
+                I am a software engineer and web developer who transforms great
+                ideas into remarkable digital experiences.
               </h5>
             </div>
             <div className={"mt-24 snake " + anim("fade", inView)}>
@@ -248,17 +252,19 @@ export default function HomePage() {
               </p>
               <ul>
                 <li key="0">Object Detection— Tensorflow, Pytorch</li>
-                <li key="1">Data Science— Scikit-learn, Pandas</li>
-                <li key="2">
+                <li key="1">
+                  Data Science— Scikit-learn, Numpy, Pandas, Matplotlib
+                </li>
+                <li key="2">Deep Learning– PyTorch, Tensorflow, OpenCV</li>
+                <li key="3">
                   Web Scraping and Automation— Selenium, BeautifulSoup
                 </li>
-                <li key="3">Web Development— React, HubSpot CMS</li>
-                <li key="4">Game Development— Pygame, Javascript, React</li>
+                <li key="4">
+                  Web Development— React, Node, Express, PostgreSQL
+                </li>
+                <li key="5">Game Development— Pygame, Javascript, React</li>
               </ul>
-              <p>
-                I am currently working my very first job as an associate
-                software engineer at Nisum.
-              </p>
+              <p></p>
             </div>
           </div>
           <div className="flex justify-between">
