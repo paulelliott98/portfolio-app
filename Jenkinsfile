@@ -23,9 +23,8 @@ pipeline {
                 echo 'Deploying....'
                 
                 // Deploy the project to GitHub Pages
-                withCredentials([usernamePassword(credentialsId: 'portfolio-app-git-credentials', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
-                    sh 'git remote set-url origin https://paulgan98:$GITHUB_PASSWORD@github.com/paulgan98/my-portfolio.git'
-//                     sh 'gh-pages -d build -u $GITHUB_USERNAME -p $GITHUB_PASSWORD'
+                withCredentials([usernamePassword(credentialsId: 'portfolio-app-access-token', passwordVariable: 'ACCESS_TOKEN')]) {
+                    sh 'git remote set-url origin https://$ACCESS_TOKEN@github.com/paulgan98/my-portfolio.git'
                     sh 'npm run deploy'
                 }
             }
