@@ -245,10 +245,10 @@ export default function HomePage() {
                 many areas including:
               </p>
               <ul className="ul-indented">
-                <li key="1">Data Science / Deep Learning</li>
+                <li key="0">Data Science / Deep Learning</li>
+                <li key="1">Web Development</li>
                 <li key="2">Web Scraping and Automation</li>
-                <li key="3">Web Development</li>
-                <li key="4">Game Development</li>
+                <li key="3">Game Development</li>
               </ul>
               <p>
                 I am currently searching for a software developer position where
