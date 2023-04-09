@@ -1,8 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap");
 
 :root {
   --bg-color-main: #161a39;
@@ -178,6 +178,7 @@ code {
 }
 
 input[type="range"] {
+  appearance: none;
   -webkit-appearance: none;
   background: transparent;
 }
@@ -196,6 +197,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* firefox */
 input[type="range"]::-moz-range-thumb {
+  appearance: none;
   -webkit-appearance: none;
   height: 16px;
   width: 16px;
@@ -207,6 +209,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* IE */
 input[type="range"]::-ms-thumb {
+  appearance: none;
   -webkit-appearance: none;
   height: 6px;
   width: 16px;
@@ -634,8 +637,10 @@ li {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
+  perspective: 0;
   -webkit-perspective: 0;
   -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
   visibility: visible;
   text-align: center;
