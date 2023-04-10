@@ -6,6 +6,7 @@ pipeline {
     }
     
     stages {
+        
         stage('Build') {
             steps {
                 echo 'Building...'
@@ -13,11 +14,14 @@ pipeline {
                 sh 'npm install -g gh-pages'
             }
         }
-//         stage('Test') {
-//             steps {
-//                 echo 'Testing...'
-//             }
-//         }
+
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+                sh 'npm run test'
+            }
+        }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying...'

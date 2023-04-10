@@ -100,7 +100,7 @@ export default function Snake(props) {
   // set which page is shown on screen
   const [page, setPage] = useState("homeScreen");
 
-  const [highScores, setHighScores] = useState(null);
+  const [highScores, setHighScores] = useState([]);
   const [isHighScore, setIsHighScore] = useState(false);
   const [isChangePlayer, setIsChangePlayer] = useState(false);
   const [lastPostDate, setLastPostDate] = useState(null);
@@ -363,6 +363,43 @@ export default function Snake(props) {
   };
 
   const highScoresScreen = () => {
+    let rows = [];
+
+    if (highScores.length === 0) {
+      for (let i = 0; i < 10; i++) {
+        rows.push(
+          <tr>
+            <td>{i + 1}</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        );
+      }
+    } else {
+      rows = highScores.map((row, i) => {
+        var dateString = "-";
+        if (row.Date !== "-") {
+          const [y, m, d] = row.Date.split("-");
+          dateString = `${("0" + m).slice(-2)}-${("0" + d).slice(-2)}-${y}`;
+        }
+        return (
+          <tr
+            key={i + 1}
+            className={
+              isHighScore && i === getPlayerRank() ? "text-green-400" : ""
+            }
+          >
+            <style>{keyframes}</style>
+            <td>{i + 1}</td>
+            <td>{row.Name}</td>
+            <td>{row.Score}</td>
+            <td>{dateString}</td>
+          </tr>
+        );
+      });
+    }
+
     return (
       <div>
         <div className="flex justify-center mt-3 high-scores">
@@ -378,34 +415,7 @@ export default function Snake(props) {
                 <th className="date">Date</th>
               </tr>
             </thead>
-
-            <tbody>
-              {highScores.map((row, i) => {
-                var dateString = "-";
-                if (row.Date !== "-") {
-                  const [y, m, d] = row.Date.split("-");
-                  dateString = `${("0" + m).slice(-2)}-${("0" + d).slice(
-                    -2
-                  )}-${y}`;
-                }
-                return (
-                  <tr
-                    key={i + 1}
-                    className={
-                      isHighScore && i === getPlayerRank()
-                        ? "text-green-400"
-                        : ""
-                    }
-                  >
-                    <style>{keyframes}</style>
-                    <td>{i + 1}</td>
-                    <td>{row.Name}</td>
-                    <td>{row.Score}</td>
-                    <td>{dateString}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
+            <tbody>{rows}</tbody>
           </table>
         </div>
       </div>
@@ -1282,7 +1292,7 @@ export default function Snake(props) {
       }}
     >
       <div className="snake-top-bar">
-        <div className="flex justify-center h-5">
+        <div className="flex justify-center items-center h-5">
           {(() => {
             if (gameState === -1 || gameState === -2) return <p>Snake 🐍</p>;
             else

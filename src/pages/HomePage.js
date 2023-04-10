@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles.css";
 import Project from "../components/Project";
-import Navbar from "../components/Navbar";
+import Stars from "../components/Stars";
 import Snake from "../components/Snake";
 import FlipCard from "../components/FlipCard";
 import { CSSTransition } from "react-transition-group";
 import { useInView } from "react-intersection-observer";
 import "animate.css";
-const utils = require("../utils");
 
 export default function HomePage() {
   const projects = [
@@ -89,7 +88,7 @@ export default function HomePage() {
   const [ref, inView] = useInView(); // intro
   const [ref2, inView2] = useInView(); // projects
   const [ref3, inView3] = useInView(); // about bio
-  const [ref4, inView4] = useInView(); // about languages and things I love
+  const [ref4, inView4] = useInView(); // about skills
   const [ref5, inView5] = useInView(); // contact
 
   // animations
@@ -140,205 +139,175 @@ export default function HomePage() {
     }
   };
 
-  function isInViewport(x, y) {
-    if (x >= 0 && x <= 100 && y >= 0 && y <= 100) return true;
-    return false;
+  const [width, setWidth] = useState(window.innerWidth);
+
+  function handleWindowSizeChange() {
+    setWidth(window.innerWidth);
   }
 
-  var stars = useRef(null);
-
   useEffect(() => {
-    function generateStars(n) {
-      const stars = [];
-      for (let i = 0; i < n; i++) {
-        let [x, y, size] = [
-          (Math.round(Math.random() * 1000) / 1000) * 100,
-          (Math.round(Math.random() * 1000) / 1000) * 400,
-          utils.randChoice([0.7, 1.3, 2]),
-        ];
+    window.addEventListener("resize", handleWindowSizeChange);
 
-        let style = {
-          left: `${x}vw`,
-          top: `${y}vh`,
-          width: `${size}px`,
-          height: `${size}px`,
-          position: "fixed",
-          zIndex: `-${100 - size}`,
-          background: `#fff`,
-          borderRadius: "50%",
-          boxShadow: `0 0 2px 0.3px`,
-          animation: `animStar ${Math.pow(size, 2) * 200}s ${
-            isInViewport(x, y) ? "1 linear forwards" : "linear infinite"
-          }`,
-          content: ``,
-        };
+    return () => {
+      window.removeEventListener("resize", handleWindowSizeChange);
+    };
+  });
 
-        let jsx = <div key={i} style={style}></div>;
-        stars.push(jsx);
-      }
-      return stars;
-    }
-    stars.current = generateStars(500);
-  }, []);
+  const isMobile = width <= 992;
 
   return (
-    <div className="prevent-select">
-      <div className="space-bg"></div>
-      {stars.current}
-      <Navbar />
-      <div>
-        <section key="0" className="scroll-window-full" id="home">
-          <div className="nav-fill"></div>
-          <div className="flex justify-between self-center">
-            <div ref={ref} className="intro mt-40">
-              <h5 className={anim("slideUp", inView)} style={animDelay(0)}>
-                Hi, my name is
-              </h5>
-              <h1 className={anim("slideUp", inView)} style={animDelay(0.3)}>
-                Paul Gan
-              </h1>
-              <h5 className={anim("slideUp", inView)} style={animDelay(0.6)}>
-                I am a software engineer and web developer who transforms great
-                ideas into remarkable digital experiences.
-              </h5>
-            </div>
+    <div className="prevent-select overflow-scroll">
+      <Stars n={500} />
+
+      <section key="0" className="scroll-window-full" id="home">
+        <div className="nav-fill"></div>
+        <div className="flex justify-between self-center">
+          <div ref={ref} className="intro mt-40">
+            <h5 className={anim("slideUp", inView)} style={animDelay(0)}>
+              Hi, my name is
+            </h5>
+            <h1 className={anim("slideUp", inView)} style={animDelay(0.3)}>
+              Paul Gan
+            </h1>
+            <h5 className={anim("slideUp", inView)} style={animDelay(0.6)}>
+              I am a software engineer and web developer who transforms great
+              ideas into remarkable digital experiences.
+            </h5>
+          </div>
+          {isMobile ? null : (
             <div className={"mt-24 snake " + anim("fade", inView)}>
               <Snake w={362} h={362} />
-              {/* <Snake w={300} h={25} /> */}
             </div>
-          </div>
-        </section>
+          )}
+        </div>
+      </section>
 
-        <section key="1" className="scroll-window-full" id="projects">
-          <div className="section-title">
-            <h4>projects</h4>
+      <section key="1" className="scroll-window-full" id="projects">
+        <div className="section-title">
+          <h4>projects</h4>
+        </div>
+        <div ref={ref2} className="flex justify-between gap-10">
+          <div className="projects-list">
+            {projects.map((p, index) => (
+              <a
+                key={index}
+                className={anim("slideLeft", inView2)}
+                style={{
+                  ...{
+                    color: active === index ? "var(--heading-color-main)" : "",
+                    textShadow: active === index ? "0 0 10px #902cce" : "",
+                  },
+                  ...animDelay(0.3 + index * 0.1),
+                }}
+                href="/#"
+                rel="noopener noreferrer"
+                onClick={(e) => handleDisplay(e, index)}
+              >
+                <div>
+                  <span>{p.listName}</span>
+                </div>
+              </a>
+            ))}
           </div>
-          <div ref={ref2} className="flex justify-between gap-10">
-            <div className="projects-list">
-              {projects.map((p, index) => (
-                <a
-                  key={index}
-                  className={anim("slideLeft", inView2)}
-                  style={{
-                    ...{
-                      backgroundColor:
-                        active === index ? "var(--bg-color-2)" : "",
-                      color:
-                        active === index ? "var(--heading-color-main)" : "",
-                      textShadow: active === index ? "0 0 10px #902cce" : "",
-                    },
-                    ...animDelay(0.3 + index * 0.1),
-                  }}
-                  href="/#"
-                  rel="noopener noreferrer"
-                  onClick={(e) => handleDisplay(e, index)}
+          <div
+            className={"project-container " + anim("fade", inView2)}
+            style={animDelay(0.8)}
+          >
+            {projects
+              .filter((_, index) => {
+                return index === active;
+              })
+              .map((p, i) => (
+                <CSSTransition
+                  key={i}
+                  in={animate}
+                  timeout={400}
+                  classNames="fade"
                 >
-                  <div>
-                    <span>{p.listName}</span>
-                  </div>
-                </a>
-              ))}
-            </div>
-            <div
-              className={"project-container " + anim("fade", inView2)}
-              style={animDelay(0.8)}
-            >
-              {projects
-                .filter((_, index) => {
-                  return index === active;
-                })
-                .map((p, i) => (
-                  <CSSTransition
+                  <Project
                     key={i}
-                    in={animate}
-                    timeout={400}
-                    classNames="fade"
-                  >
-                    <Project
-                      key={i}
-                      techStack={p.techStack}
-                      name={p.name}
-                      dx={p.dx}
-                      gitUrl={p.gitUrl}
-                    />
-                  </CSSTransition>
-                ))}
-            </div>
+                    techStack={p.techStack}
+                    name={p.name}
+                    dx={p.dx}
+                    gitUrl={p.gitUrl}
+                  />
+                </CSSTransition>
+              ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section key="2" className="scroll-window" id="about">
-          <div className="section-title">
-            <h4>about</h4>
+      <section key="2" className="scroll-window" id="about">
+        <div className="section-title">
+          <h4>about</h4>
+        </div>
+        <div ref={ref3} className="flex flex-col gap-y-10">
+          <div
+            className={"container " + anim("fade", inView3)}
+            style={animDelay(0.5)}
+          >
+            <h2>Bio</h2>
+            <div className="divider"></div>
+            <p>
+              Hello and welcome to my website! I am a graduate of UCLA’s class
+              of 2022 (Go Bruins!) with a major in molecular, cell, and
+              development biology and a minor in bioinformatics.
+            </p>
+            <p>
+              Previously pre-dental, I eventually made up my mind to pursue my
+              passion for software development and switched into tech during my
+              4th year of college.
+            </p>
+            <p>
+              Over the years, I’ve explored and completed personal projects in
+              many areas including:
+            </p>
+            <ul className="ul-indented">
+              <li key="0">Data Science / Deep Learning</li>
+              <li key="1">Web Development</li>
+              <li key="2">Web Scraping and Automation</li>
+              <li key="3">Game Development</li>
+            </ul>
+            <p>
+              I am currently searching for a software developer position where I
+              can utilize my broad skillset, curiosity, and resourcefulness to
+              deliver and create value for the team.
+            </p>
           </div>
-          <div ref={ref3} className="flex flex-col gap-y-10">
-            <div
-              className={"container " + anim("fade", inView3)}
-              style={animDelay(0.5)}
-            >
-              <h2>Bio</h2>
-              <div className="divider"></div>
-              <p>
-                Hello and welcome to my website! I am a graduate of UCLA’s class
-                of 2022 (Go Bruins!) with a major in molecular, cell, and
-                development biology and a minor in bioinformatics.
-              </p>
-              <p>
-                Previously pre-dental, I eventually made up my mind to pursue my
-                passion for software development and switched into tech during
-                my 4th year of college.
-              </p>
-              <p>
-                Over the years, I’ve explored and completed personal projects in
-                many areas including:
-              </p>
-              <ul className="ul-indented">
-                <li key="0">Data Science / Deep Learning</li>
-                <li key="1">Web Development</li>
-                <li key="2">Web Scraping and Automation</li>
-                <li key="3">Game Development</li>
-              </ul>
-              <p>
-                I am currently searching for a software developer position where
-                I can utilize my broad skillset, curiosity, and resourcefulness
-                to deliver and create value for the team.
-              </p>
-            </div>
-            <div
-              className={"container " + anim("fade", inView4)}
-              style={animDelay(0.7)}
-              ref={ref4}
-            >
-              <h2>skills</h2>
-              <div className="divider"></div>
-              <ul className="ul-unindented">
-                <li key="0">
-                  <b>Machine Learning/Data Science</b> — Python, PyTorch,
-                  Tensorflow, Scikit-learn, Numpy, Pandas, Matplotlib, Seaborn,
-                  OpenCV, Pillow, Selenium, BeautifulSoup
-                </li>
-                <li key="1">
-                  <b>Full Stack</b> — Javascript, CSS, HTML5, React.js, Axios,
-                  Express.js, Sequelize, Fly.io, Flask, Microservices
-                </li>
-                <li key="2">
-                  <b>Database</b> — PostgreSQL, MySQL
-                </li>
-                <li key="3">
-                  <b>Containerization</b> — Docker, Docker Compose, Kubernetes
-                </li>
-                <li key="4">
-                  <b>Cloud</b> — GCP
-                </li>
-                <li key="5">
-                  <b>CI/CD</b> — Jenkins, Gitlab, Git
-                </li>
-              </ul>
-            </div>
+          <div
+            className={"container " + anim("fade", inView4)}
+            style={animDelay(0.7)}
+            ref={ref4}
+          >
+            <h2>skills</h2>
+            <div className="divider"></div>
+            <ul className="ul-unindented">
+              <li key="0">
+                <b>Machine Learning/Data Science</b> — Python, PyTorch,
+                Tensorflow, Scikit-learn, Numpy, Pandas, Matplotlib, Seaborn,
+                OpenCV, Pillow, Selenium, BeautifulSoup
+              </li>
+              <li key="1">
+                <b>Full Stack</b> — Javascript, CSS, HTML5, React.js, Axios,
+                Express.js, Sequelize, Fly.io, Flask, Microservices
+              </li>
+              <li key="2">
+                <b>Database</b> — PostgreSQL, MySQL
+              </li>
+              <li key="3">
+                <b>Containerization</b> — Docker, Docker Compose, Kubernetes
+              </li>
+              <li key="4">
+                <b>Cloud</b> — GCP
+              </li>
+              <li key="5">
+                <b>CI/CD</b> — Jenkins, Gitlab, Git
+              </li>
+            </ul>
           </div>
-          <div className="flex justify-between gap-3"></div>
-        </section>
-      </div>
+        </div>
+        <div className="flex justify-between gap-3"></div>
+      </section>
 
       <section key="3" className="scroll-window" id="contact">
         <div className="section-title">

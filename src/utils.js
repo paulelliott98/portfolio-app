@@ -63,6 +63,11 @@ function randOdd(min, max) {
   return n;
 }
 
+function isInViewport(x, y) {
+  if (x >= 0 && x <= 100 && y >= 0 && y <= 100) return true;
+  return false;
+}
+
 module.exports = {
   sleep,
   createArray,
@@ -72,4 +77,5 @@ module.exports = {
   randChoice,
   randEven,
   randOdd,
+  isInViewport,
 };

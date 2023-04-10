@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-scroll";
 
-// reuseable component for projects
+// navbar component
 export default function Navbar() {
   return (
     <>
       <div className={"nav-area "}>
-        <div className={"navbar "}>
+        <div className="navbar ">
           <Link
             href="#"
             draggable="false"
