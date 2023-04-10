@@ -154,7 +154,7 @@ export default function HomePage() {
         let [x, y, size] = [
           (Math.round(Math.random() * 1000) / 1000) * 100,
           (Math.round(Math.random() * 1000) / 1000) * 400,
-          utils.randChoice([1, 1.5, 2]),
+          utils.randChoice([0.7, 1.3, 2]),
         ];
 
         let style = {
