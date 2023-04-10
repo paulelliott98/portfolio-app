@@ -8,8 +8,8 @@ export default function Project({ techStack, name, dx, gitUrl }) {
       <div className="divider"></div>
       <p>{dx}</p>
       <div className="tech-stack-container">
-        {techStack.map((item) => (
-          <div className="tech-item-div">
+        {techStack.map((item, i) => (
+          <div key={i} className="tech-item-div">
             <h3>{item}</h3>
           </div>
         ))}

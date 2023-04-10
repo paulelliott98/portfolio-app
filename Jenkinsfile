@@ -8,19 +8,19 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+                echo 'Building...'
                 sh 'npm install'
                 sh 'npm install -g gh-pages'
             }
         }
 //         stage('Test') {
 //             steps {
-//                 echo 'Testing..'
+//                 echo 'Testing...'
 //             }
 //         }
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                echo 'Deploying...'
                 
                 // Deploy the project to GitHub Pages
                 withCredentials([usernamePassword(credentialsId: 'portfolio-app-access-token', usernameVariable: 'USERNAME', passwordVariable: 'ACCESS_TOKEN')]) {

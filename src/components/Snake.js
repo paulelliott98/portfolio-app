@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 var profanity = require("@2toad/profanity").profanity;
+const utils = require("../utils");
 
 const fruits = [
   "🍒",
@@ -25,36 +26,10 @@ const fruits = [
 var axiosInstance = axios.create({
   baseURL:
     process.env.NODE_ENV === "development"
-      ? "http://localhost:8080"
+      ? "http://localhost:8081"
       : "https://snake-backend.fly.dev",
   timeout: 5000,
 });
-
-// send game data to backend upon game over
-const postScores = async (playerName, score, difficulty, d) => {
-  console.log("posting scores");
-  const [month, day, year] = [d.getMonth() + 1, d.getDate(), d.getFullYear()];
-  const [hour, minute, second] = [d.getHours(), d.getMinutes(), d.getSeconds()];
-  await axiosInstance
-    .post("/high-score", {
-      name: playerName,
-      score: score,
-      difficulty: difficulty,
-      date: `${month}-${day}-${year}`,
-      time: `${hour}:${minute}:${second}`,
-    })
-    .then(() => {
-      return d;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  return d;
-};
-
-const randomFromArr = (arr) => {
-  return arr[Math.floor(arr.length * Math.random())];
-};
 
 export default function Snake(props) {
   const [pause, setPause] = useState(false);
@@ -89,8 +64,8 @@ export default function Snake(props) {
   const [pos, setPos] = useState(startPos);
   const [prevDir, setPrevDir] = useState(startDir);
   const [dir, setDir] = useState(startDir);
-  const [nextDir, setNextDir] = useState(startDir);
-  const [fruit, setFruit] = useState(randomFromArr(fruits));
+  const nextDir = useRef(startDir);
+  const [fruit, setFruit] = useState(utils.randChoice(fruits));
   const [playerName, setPlayerName] = useState("");
 
   var a = createArena(nRows, nCols);
@@ -160,8 +135,8 @@ export default function Snake(props) {
 
   const resetArena = () => {
     setPos(startPos);
-    setDir(startDir);
-    setNextDir(startDir);
+    setPrevDir(startDir);
+    nextDir.current = startDir;
     setLen(startLen);
     setScore(0);
     setFrame(0);
@@ -173,7 +148,7 @@ export default function Snake(props) {
 
     setArena(newArena);
     setFruitPos(f);
-    setFruit(randomFromArr(fruits));
+    setFruit(utils.randChoice(fruits));
     setPause(false);
     setIsHighScore(false);
   };
@@ -522,26 +497,52 @@ export default function Snake(props) {
     }
   };
 
-  const getHighScoresData = async () => {
-    console.log("getting high scores data");
+  async function getHighScoresData() {
     var scores = [];
     await axiosInstance
       .get("/high-score")
       .then((r) => {
         scores = r.data;
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .then(() => {
         var numEmptyRows = 10;
         if (scores) numEmptyRows = 10 - scores.length;
         for (let i = 0; i < numEmptyRows; i++) {
           scores.push({ Name: "-", Score: "-", Date: "-", Time: "-" });
         }
         setHighScores(scores);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-  };
+  }
+
+  // send game data to backend upon game over
+  async function postScores(playerName, score, difficulty, d) {
+    const [month, day, year] = [d.getMonth() + 1, d.getDate(), d.getFullYear()];
+    const [hour, minute, second] = [
+      d.getHours(),
+      d.getMinutes(),
+      d.getSeconds(),
+    ];
+    await axiosInstance
+      .post("/high-score", {
+        name: playerName,
+        score: score,
+        difficulty: difficulty,
+        date: `${month}-${day}-${year}`,
+        time: `${hour}:${minute}:${second}`,
+      })
+      .then(() => {
+        return d;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return d;
+  }
+
+  useEffect(() => {
+    getHighScoresData();
+  }, []);
 
   useEffect(
     () => {
@@ -1064,9 +1065,7 @@ export default function Snake(props) {
         if (input === 49) setPause(!pause);
         if (input === 187) setShowArenaVals(!showArenaVals);
 
-        if (gameState !== -1) {
-          return;
-        }
+        if (gameState !== -1) return;
 
         const wasdCodes = [68, 83, 65, 87];
         const ijklCodes = [76, 75, 74, 73];
@@ -1077,9 +1076,8 @@ export default function Snake(props) {
         if (
           (input === wasdCodes[2] || input === ijklCodes[2]) &&
           getDir() === 0
-        ) {
+        )
           return;
-        }
 
         // set snake direction based on key input
         for (let i = 0; i < 4; i++) {
@@ -1092,13 +1090,9 @@ export default function Snake(props) {
           }
         }
 
-        if (nextDirection === -1) {
-          return;
-        }
+        if (nextDirection === -1) return;
 
-        if (!pause) {
-          setNextDir(nextDirection);
-        }
+        if (!pause) nextDir.current = nextDirection;
       }
 
       // returns number of next frame
@@ -1144,10 +1138,11 @@ export default function Snake(props) {
         }
 
         setPrevDir(dir);
-        if (isValidNextDir(nextDir)) {
-          setDir(nextDir);
+
+        if (isValidNextDir(nextDir.current)) {
+          setDir(nextDir.current);
         } else {
-          setNextDir(dir);
+          nextDir.current = dir;
         }
 
         if (dir === 0) return;
@@ -1167,7 +1162,7 @@ export default function Snake(props) {
           const f = spawnFruit(arr);
           arr[f[0]][f[1]] = -1;
           setFruitPos(f);
-          setFruit(randomFromArr(fruits));
+          setFruit(utils.randChoice(fruits));
         }
 
         // check collision/loss
@@ -1217,8 +1212,6 @@ export default function Snake(props) {
         cv.getContext("2d").scale(scale, scale);
         return cv;
       }
-
-      if (!highScores) getHighScoresData();
 
       window.addEventListener("keydown", handleKeyDown);
 
@@ -1341,17 +1334,7 @@ export default function Snake(props) {
         }}
       >
         <canvas className="absolute" id="canvas" ref={canvasRef}></canvas>
-        <div
-          className="absolute game-options-text-container"
-          style={(() => {
-            if (gameState === -1) return { background: "" };
-            else if (gameState === -2) {
-              if (page === "homeScreen") return { background: "#1a1e40ee" };
-            } else return { background: "#1a1e40" };
-          })()}
-        >
-          {getPage()}
-        </div>
+        <div className="absolute game-options-text-container">{getPage()}</div>
       </div>
       <div className="snake-bottom-bar">
         <div className="flex justify-between w-full">
@@ -1487,18 +1470,11 @@ function addSnake(startLen, pos, arr) {
   return a;
 }
 
-// generate random int in [min, max]
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 // takes in arena as input, returns fruit position
 const spawnFruit = (a) => {
   var arr = [...a];
   const [nRows, nCols] = [a.length, a[0].length];
-  var [row, col] = [getRandomInt(0, nRows - 1), getRandomInt(0, nCols - 1)];
+  var [row, col] = [utils.randInt(0, nRows - 1), utils.randInt(0, nCols - 1)];
 
   // if empty space return
   // else keep looping through each position in arena in order until empty space (0) is encountered

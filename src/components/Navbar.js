@@ -8,6 +8,7 @@ export default function Navbar() {
       <div className={"nav-area "}>
         <div className={"navbar "}>
           <Link
+            key="0"
             href="#"
             draggable="false"
             to="home"
@@ -19,6 +20,7 @@ export default function Navbar() {
           </Link>
 
           <Link
+            key="1"
             href="#"
             draggable="false"
             to="projects"
@@ -30,6 +32,7 @@ export default function Navbar() {
           </Link>
 
           <Link
+            key="2"
             href="#"
             draggable="false"
             to="about"
@@ -41,6 +44,7 @@ export default function Navbar() {
           </Link>
 
           <Link
+            key="3"
             href="#"
             draggable="false"
             to="contact"

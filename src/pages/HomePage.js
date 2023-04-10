@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles.css";
 import Project from "../components/Project";
 import Navbar from "../components/Navbar";
@@ -7,6 +7,7 @@ import FlipCard from "../components/FlipCard";
 import { CSSTransition } from "react-transition-group";
 import { useInView } from "react-intersection-observer";
 import "animate.css";
+const utils = require("../utils");
 
 export default function HomePage() {
   const projects = [
@@ -139,13 +140,55 @@ export default function HomePage() {
     }
   };
 
+  function isInViewport(x, y) {
+    if (x >= 0 && x <= 100 && y >= 0 && y <= 100) return true;
+    return false;
+  }
+
+  var stars = useRef(null);
+
+  useEffect(() => {
+    function generateStars(n) {
+      const stars = [];
+      for (let i = 0; i < n; i++) {
+        let [x, y, size] = [
+          (Math.round(Math.random() * 1000) / 1000) * 100,
+          (Math.round(Math.random() * 1000) / 1000) * 400,
+          utils.randChoice([1, 1.5, 2]),
+        ];
+
+        let style = {
+          left: `${x}vw`,
+          top: `${y}vh`,
+          width: `${size}px`,
+          height: `${size}px`,
+          position: "fixed",
+          zIndex: `-${100 - size}`,
+          background: `#fff`,
+          borderRadius: "50%",
+          boxShadow: `0 0 2px 0.3px`,
+          animation: `animStar ${Math.pow(size, 2) * 200}s ${
+            isInViewport(x, y) ? "1 linear forwards" : "linear infinite"
+          }`,
+          content: ``,
+        };
+
+        let jsx = <div key={i} style={style}></div>;
+        stars.push(jsx);
+      }
+      return stars;
+    }
+    stars.current = generateStars(500);
+  }, []);
+
   return (
     <div className="prevent-select">
+      <div className="space-bg"></div>
+      {stars.current}
       <Navbar />
       <div>
-        <section className="scroll-window-full" id="home">
+        <section key="0" className="scroll-window-full" id="home">
           <div className="nav-fill"></div>
-
           <div className="flex justify-between self-center">
             <div ref={ref} className="intro mt-40">
               <h5 className={anim("slideUp", inView)} style={animDelay(0)}>
@@ -166,24 +209,23 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="scroll-window-full" id="projects">
+        <section key="1" className="scroll-window-full" id="projects">
           <div className="section-title">
             <h4>projects</h4>
           </div>
-          <div ref={ref2} className="flex justify-between">
+          <div ref={ref2} className="flex justify-between gap-10">
             <div className="projects-list">
               {projects.map((p, index) => (
                 <a
+                  key={index}
                   className={anim("slideLeft", inView2)}
                   style={{
                     ...{
                       backgroundColor:
                         active === index ? "var(--bg-color-2)" : "",
-                      color: active === index ? "var(--text-color-main)" : "",
-                      borderLeft:
-                        active === index
-                          ? "2px solid var(--heading-color-main)"
-                          : "",
+                      color:
+                        active === index ? "var(--heading-color-main)" : "",
+                      textShadow: active === index ? "0 0 10px #902cce" : "",
                     },
                     ...animDelay(0.3 + index * 0.1),
                   }}
@@ -205,9 +247,15 @@ export default function HomePage() {
                 .filter((_, index) => {
                   return index === active;
                 })
-                .map((p) => (
-                  <CSSTransition in={animate} timeout={400} classNames="fade">
+                .map((p, i) => (
+                  <CSSTransition
+                    key={i}
+                    in={animate}
+                    timeout={400}
+                    classNames="fade"
+                  >
                     <Project
+                      key={i}
                       techStack={p.techStack}
                       name={p.name}
                       dx={p.dx}
@@ -219,11 +267,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="scroll-window" id="about">
+        <section key="2" className="scroll-window" id="about">
           <div className="section-title">
             <h4>about</h4>
           </div>
-          <div ref={ref3} className="flex">
+          <div ref={ref3} className="flex flex-col gap-y-10">
             <div
               className={"container " + anim("fade", inView3)}
               style={animDelay(0.5)}
@@ -256,73 +304,50 @@ export default function HomePage() {
                 to deliver and create value for the team.
               </p>
             </div>
-          </div>
-          <div
-            className={"container " + anim("fade", inView4)}
-            style={animDelay(0.7)}
-            ref={ref4}
-          >
-            <h2>skills</h2>
-            <div className="divider"></div>
-            <ul className="ul-unindented">
-              <li key="0">
-                Machine Learning/Data Science — Python, PyTorch, Tensorflow,
-                Scikit-learn, Numpy, Pandas, Matplotlib, Seaborn, OpenCV,
-                Pillow, Selenium, BeautifulSoup
-              </li>
-              <li key="1">
-                Full Stack — Javascript, CSS, HTML5, React.js, Axios,
-                Express.js, Sequelize, Fly.io, Flask, Microservices
-              </li>
-              <li key="2">Database — PostgreSQL, MySQL</li>
-              <li key="3">
-                Containerization — Docker, Docker Compose, Kubernetes
-              </li>
-              <li key="4">Cloud — GCP</li>
-              <li key="5">CI/CD — Jenkins, Gitlab, Git</li>
-            </ul>
-          </div>
-          <div className="flex justify-between gap-3">
-            {/* <div
-              ref={ref4}
-              className={"container max-w-min " + anim("fade", inView4)}
-              style={animDelay(0.5)}
-            >
-              <h2>languages</h2>
-              <div className="divider"></div>
-              <ul>
-                <li key="0">Python</li>
-                <li key="1">Javascript</li>
-                <li key="2">Java</li>
-                <li key="3">C++</li>
-              </ul>
-            </div> */}
-
-            {/* <div
+            <div
               className={"container " + anim("fade", inView4)}
               style={animDelay(0.7)}
+              ref={ref4}
             >
-              <h2>things I love</h2>
+              <h2>skills</h2>
               <div className="divider"></div>
-              <ul>
-                <li key="0">rainy days</li>
-                <li key="1">snow</li>
-                <li key="2">working out</li>
-                <li key="3">Harry Potter, Marvel, Star Wars</li>
-                <li key="4">video games</li>
-                <li key="5">listening to music and podcasts</li>
+              <ul className="ul-unindented">
+                <li key="0">
+                  <b>Machine Learning/Data Science</b> — Python, PyTorch,
+                  Tensorflow, Scikit-learn, Numpy, Pandas, Matplotlib, Seaborn,
+                  OpenCV, Pillow, Selenium, BeautifulSoup
+                </li>
+                <li key="1">
+                  <b>Full Stack</b> — Javascript, CSS, HTML5, React.js, Axios,
+                  Express.js, Sequelize, Fly.io, Flask, Microservices
+                </li>
+                <li key="2">
+                  <b>Database</b> — PostgreSQL, MySQL
+                </li>
+                <li key="3">
+                  <b>Containerization</b> — Docker, Docker Compose, Kubernetes
+                </li>
+                <li key="4">
+                  <b>Cloud</b> — GCP
+                </li>
+                <li key="5">
+                  <b>CI/CD</b> — Jenkins, Gitlab, Git
+                </li>
               </ul>
-            </div> */}
+            </div>
           </div>
+          <div className="flex justify-between gap-3"></div>
         </section>
       </div>
-      <section className="scroll-window" id="contact">
+
+      <section key="3" className="scroll-window" id="contact">
         <div className="section-title">
           <h4>get in touch</h4>
         </div>
         <div className="flex justify-center">
           <div ref={ref5}></div>
           <FlipCard
+            key="0"
             classes={anim("slideLeft", inView5)}
             style={animDelay(0.2)}
             href="https://github.com/paulgan98"
@@ -331,6 +356,7 @@ export default function HomePage() {
             alt="github logo"
           />
           <FlipCard
+            key="1"
             classes={anim("slideLeft", inView5)}
             style={animDelay(0.4)}
             href="https://www.linkedin.com/in/paul-gan-85781b18b/"
@@ -339,6 +365,7 @@ export default function HomePage() {
             alt="linkedin logo"
           />
           <FlipCard
+            key="2"
             classes={anim("slideLeft", inView5)}
             style={animDelay(0.6)}
             href="https://www.instagram.com/paulypavilion/"
@@ -347,6 +374,7 @@ export default function HomePage() {
             alt="instagram logo"
           />
           <FlipCard
+            key="3"
             classes={anim("slideLeft", inView5)}
             style={animDelay(0.8)}
             href="mailto:paulgan98@gmail.com"
