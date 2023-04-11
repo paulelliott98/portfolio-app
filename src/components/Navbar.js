@@ -1,27 +1,30 @@
-import React from "react";
+import { React, useEffect, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 // navbar component
-export default function Navbar() {
+export default function Navbar(props) {
+  let navRef = useRef(null);
+
+  useEffect(() => {
+    props.getNavRef(navRef.current);
+  }, [props]);
+
   return (
-    <>
-      <div className={"nav-area "}>
-        <div className="navbar ">
-          <RouterLink to="/">home</RouterLink>
-          <div className="nav-item">
-            <RouterLink to="/#projects">
-              projects<span class="arrow"></span>
+    <div ref={navRef} className="nav-area ">
+      <div className="navbar ">
+        <RouterLink to="/#home">home</RouterLink>
+        <div className="nav-item">
+          <RouterLink to="/#projects">projects</RouterLink>
+          <span className="arrow"></span>
+          <ul className="dropdown">
+            <RouterLink to="/algorithm-visualizer">
+              Search Algo Visualizer
             </RouterLink>
-            <ul class="dropdown">
-              <RouterLink to="/algorithm-visualizer">
-                Search Algo Visualizer
-              </RouterLink>
-            </ul>
-          </div>
-          <RouterLink to="/#about">about</RouterLink>
-          <RouterLink to="/#contact">contact</RouterLink>
+          </ul>
         </div>
+        <RouterLink to="/#about">about</RouterLink>
+        <RouterLink to="/#contact">contact</RouterLink>
       </div>
-    </>
+    </div>
   );
 }

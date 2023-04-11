@@ -8,10 +8,6 @@ const utils = require("../../utils");
 const DEBUG = false;
 
 export default function AlgorithmVisualizer(props) {
-  useEffect(() => {
-    console.log("Rendered Algorithm Visualizer");
-  }, []);
-
   const randomInteger = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };

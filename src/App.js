@@ -1,28 +1,88 @@
 import HomePage from "./pages/HomePage";
 import VisualizerToolPage from "./pages/VisualizerToolPage";
+import Navbar from "./components/Navbar";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 
+const utils = require("./utils");
+
+var isMobile =
+  "ontouchstart" in window ||
+  navigator.maxTouchPoints > 0 ||
+  navigator.msMaxTouchPoints > 0;
+
 export default function App() {
-  let isEventListenersAttached = useRef(false);
+  const [width, setWidth] = useState(window.innerWidth);
+  isMobile = isMobile === true || width <= 992;
+
+  function handleWindowSizeChange() {
+    setWidth(window.innerWidth);
+  }
+
+  let [navRef, setNavRef] = useState(null);
+
+  function getNavRef(ref) {
+    setNavRef(ref);
+  }
+
   let isScrolling = useRef(false);
+  let isUserScrolling = useRef(false);
+  let isTouchMove = useRef(false);
+
+  let [lastPagePos, currPagePos] = [
+    useRef(document.documentElement.scrollTop),
+    useRef(document.documentElement.scrollTop),
+  ];
   let timer = useRef(null);
 
   const { pathname, hash, key } = useLocation();
 
-  function handleScroll() {
-    isScrolling.current = true;
-
-    if (timer.current !== null) {
-      clearTimeout(timer.current);
-    }
-
-    timer.current = setTimeout(() => {
-      isScrolling.current = false; // user stopped scrolling
-    }, 50);
-  }
+  let isEventListenersAttached = useRef(false);
 
   useEffect(() => {
+    function handleWheel() {
+      isUserScrolling.current = true;
+    }
+
+    function handleTouchMove() {
+      isTouchMove.current = true;
+    }
+
+    function handleScroll() {
+      isScrolling.current = true;
+
+      lastPagePos.current = currPagePos.current;
+      currPagePos.current = document.documentElement.scrollTop;
+
+      if (navRef !== null) {
+        if (currPagePos.current > lastPagePos.current) {
+          // console.log("Scrolling down");
+          if (
+            isUserScrolling.current === true ||
+            (isTouchMove.current === true && isMobile === true)
+          ) {
+            navRef.style.visibility = "hidden";
+            const dy = `-${navRef.clientHeight + 3}px`;
+            navRef.style.transform = `translateY(${dy})`;
+          }
+        } else {
+          // console.log("Scrolling up");
+          if (navRef !== null) navRef.style = ""; // default
+        }
+      }
+
+      if (timer.current !== null) {
+        clearTimeout(timer.current);
+      }
+
+      timer.current = setTimeout(() => {
+        isScrolling.current = false; // page stopped moving
+        isUserScrolling.current = false; // user stopped scrolling
+      }, 50);
+
+      isTouchMove.current = false;
+    }
+
     let to = null;
 
     if (!isScrolling.current) {
@@ -42,39 +102,79 @@ export default function App() {
       }
     }
 
-    if (!isEventListenersAttached.current)
+    if (!isEventListenersAttached.current) {
+      window.addEventListener("resize", handleWindowSizeChange);
       window.addEventListener("scroll", handleScroll);
+      window.addEventListener("wheel", handleWheel);
+      window.addEventListener("touchmove", handleTouchMove);
+    }
+
     isEventListenersAttached.current = true;
 
     return () => {
       clearTimeout(to);
+      window.removeEventListener("resize", handleWindowSizeChange);
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchmove", handleTouchMove);
     };
-  }, [pathname, hash, key, isScrolling, timer]); // do this on route change
+  }, [
+    pathname,
+    hash,
+    key,
+    isScrolling,
+    timer,
+    lastPagePos,
+    currPagePos,
+    navRef,
+  ]); // do this on route change
 
-  const [width, setWidth] = useState(window.innerWidth);
+  function generateStars(n) {
+    let stars = [];
+    for (let i = 0; i < n; i++) {
+      let [x, y, size] = [
+        (Math.round(Math.random() * 1000) / 1000) * 100,
+        (Math.round(Math.random() * 1000) / 1000) * 400,
+        utils.randChoice([0.7, 1.3, 2]),
+      ];
 
-  function handleWindowSizeChange() {
-    setWidth(window.innerWidth);
+      let style = {
+        left: `${x}vw`,
+        top: `${y}vh`,
+        width: `${size}px`,
+        height: `${size}px`,
+        position: "fixed",
+        zIndex: `-${100 - size}`,
+        background: `#fff`,
+        borderRadius: "50%",
+        boxShadow: `0 0 2px 0.3px`,
+        animation: `animStar ${Math.pow(size, 2) * 200}s ${
+          utils.isInViewport(x, y) ? "1 linear forwards" : "linear infinite"
+        }`,
+        content: ``,
+      };
+
+      let jsx = <div key={i} style={style}></div>;
+      stars.push(jsx);
+    }
+    return stars;
   }
 
-  useEffect(() => {
-    window.addEventListener("resize", handleWindowSizeChange);
-
-    return () => {
-      window.removeEventListener("resize", handleWindowSizeChange);
-    };
-  });
-
-  const isMobile = width <= 992;
+  var stars = useRef(generateStars(500));
 
   return (
-    <Routes>
-      <Route path="/" element={<HomePage isMobile={isMobile} />} />
-      <Route
-        path="/algorithm-visualizer"
-        element={<VisualizerToolPage isMobile={isMobile} />}
-      />
-    </Routes>
+    <>
+      <Navbar getNavRef={getNavRef} />
+      {isMobile === true ? null : <div className="space-bg"></div>}
+      {stars.current}
+
+      <Routes>
+        <Route path="/" element={<HomePage isMobile={isMobile} />} />
+        <Route
+          path="/algorithm-visualizer"
+          element={<VisualizerToolPage isMobile={isMobile} />}
+        />
+      </Routes>
+    </>
   );
 }

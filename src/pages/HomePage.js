@@ -84,10 +84,10 @@ export default function HomePage(props) {
 
   const [active, setActive] = useState(0);
   const [animate, setAnimate] = useState(false);
-  const [ref, inView] = useInView(); // intro
-  const [ref2, inView2] = useInView(); // projects
-  const [ref3, inView3] = useInView(); // about bio
-  const [ref4, inView4] = useInView(); // about skills
+  const [ref, inView] = useInView({ triggerOnce: true }); // intro
+  const [ref2, inView2] = useInView({ triggerOnce: true }); // projects
+  const [ref3, inView3] = useInView({ triggerOnce: true }); // about bio
+  const [ref4, inView4] = useInView({ triggerOnce: true }); // about skills
   const [ref5, inView5] = useInView(); // contact
 
   // animations
@@ -97,7 +97,8 @@ export default function HomePage(props) {
     switch (type) {
       case "slideLeft":
         animIn = "animate__animated animate__fadeInLeft animate__fast";
-        animOut = "animate__animated animate__fadeOutLeft animate__fast";
+        // animOut = "animate__animated animate__fadeOutLeft animate__fast";
+        animOut = "fadeOut";
         break;
       case "slideRight":
         animIn = "animate__animated animate__fadeInRight animate__faster";
@@ -137,22 +138,6 @@ export default function HomePage(props) {
       setActive(i);
     }
   };
-
-  // const [width, setWidth] = useState(window.innerWidth);
-
-  // function handleWindowSizeChange() {
-  //   setWidth(window.innerWidth);
-  // }
-
-  // useEffect(() => {
-  //   window.addEventListener("resize", handleWindowSizeChange);
-
-  //   return () => {
-  //     window.removeEventListener("resize", handleWindowSizeChange);
-  //   };
-  // });
-
-  // const isMobile = width <= 992;
 
   return (
     <div className="prevent-select">

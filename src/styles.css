@@ -19,9 +19,16 @@
 }
 
 html {
+  position: absolute;
+  z-index: -10000;
   scroll-behavior: smooth;
-  overflow: scroll;
   overflow-x: hidden;
+  overflow-y: auto;
+  background-size: cover;
+  background: radial-gradient(circle at bottom, #1b2735 0%, #090a0f 100%) fixed
+    center;
+  background-attachment: fixed;
+  height: 700px;
 }
 
 ::-webkit-scrollbar {
@@ -30,6 +37,8 @@ html {
 }
 
 body {
+  position: absolute;
+  z-index: -1001;
   font-family: "Montserrat", sans-serif;
   font-weight: 400;
   font-size: 16px;
@@ -38,7 +47,8 @@ body {
   box-sizing: border-box;
   color: var(--text-color-main);
   animation-fill-mode: both;
-  overflow: hidden;
+  scroll-behavior: smooth;
+  overflow-y: hidden;
 }
 
 .space-bg {
@@ -150,10 +160,7 @@ tr:hover {
   background-color: #282c3c;
 }
 
-tr {
-  transition: all 0.25s ease;
-}
-
+tr,
 tbody tr td {
   transition: all 0.25s ease;
 }
@@ -338,9 +345,9 @@ canvas {
 }
 
 .prevent-select {
+  user-select: none; /* Standard syntax */
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
 }
 
 .tech-stack-container {
@@ -445,22 +452,28 @@ li {
 
 .nav-area {
   position: fixed;
+  width: 100vw;
+  height: var(--nav-height);
   left: 0px;
   top: 0px;
   display: flex;
   justify-content: flex-end;
-  width: 100%;
-  height: var(--nav-height);
   z-index: 9999;
   background-color: var(--nav-bg-color);
-  /* box-shadow: 0px 2px 4px var(--nav-bg-color); */
+  transition-duration: 0.6s;
+  transform: translateY(0);
   align-items: center;
   backdrop-filter: blur(15px);
+  filter: blur(0);
+}
+
+.nav-area * {
+  transition-duration: 0.3s;
 }
 
 .navbar {
   display: flex;
-  justify-content: flex-end;
+  gap: 4em;
   padding-inline-end: 50px;
   height: 100%;
 }
@@ -469,29 +482,21 @@ li {
 .navbar .nav-item {
   display: flex;
   flex-direction: row;
+  justify-content: flex-end;
   align-items: center;
-  justify-content: center;
-  margin-inline: 20px;
+  padding-inline: 0.3em;
   letter-spacing: 0.3vw;
-  padding: 10px;
-  transition: ease-out 0.2s;
   height: 100%;
-  width: max-content;
 }
 
-.navbar a:hover,
-/* .navbar .nav-item:hover, */
+.navbar > a:hover,
+.navbar > .nav-item:hover > a,
+.dropdown > a:hover,
 .game-options a:hover,
 .main-menu a:hover,
 .pink-on-hover a:hover {
   color: var(--heading-color-main);
   transform: scale(1.08);
-  animation: glow 0.7s linear infinite alternate;
-}
-
-.navbar .nav-item:hover {
-  color: var(--heading-color-main);
-  transform: scale(1);
   animation: glow 0.7s linear infinite alternate;
 }
 
@@ -502,10 +507,6 @@ li {
   to {
     text-shadow: 0 0 10px #902cce, 0 0 30px #902cce;
   }
-}
-
-.nav-area .navbar div a {
-  margin-inline: -10px;
 }
 
 .nav-fill {
@@ -524,7 +525,6 @@ li {
   transform: rotate(-45deg);
   margin-left: 0.38em;
   margin-top: -0.25em;
-  transition: transform 0.2s ease-in-out;
 }
 
 .dropdown {
@@ -535,34 +535,33 @@ li {
   flex-direction: column;
   justify-content: flex-start;
   top: 100%;
-  right: 0px;
-  height: 0px;
-  padding-inline: 30px;
-
+  height: 0;
+  padding-inline: 1.5em;
   overflow: auto;
-  transition: ease 0.2s;
   visibility: hidden;
 
   /* background-color: var(--nav-bg-color);
-  backdrop-filter: blur(15px); */
+  backdrop-filter: blur(15px);
+  filter: blur(0); */
   background-color: var(--bg-color-3);
 }
 
 .dropdown a {
+  padding-block: 0.5em;
   font-size: 14px;
   letter-spacing: 0.08em;
-  display: block;
-  height: 1em;
 }
 
 .nav-item:hover > .dropdown {
   visibility: visible;
-  height: 42px;
+  height: 2em;
 }
 
-.nav-item:hover > a > .arrow {
+.nav-item:hover > .arrow {
   transform: rotate(-225deg);
   margin-top: 4px;
+  color: var(--heading-color-main);
+  animation: glow 0.7s linear infinite alternate;
 }
 
 /* projects */
@@ -806,18 +805,23 @@ footer {
   }
 
   .nav-area {
+    height: 3em;
     justify-content: center;
   }
 
   .navbar {
-    justify-content: space-between;
-    padding-inline: 18px;
+    gap: 1em;
+    padding: 0;
+    margin-inline: 2em;
   }
 
   .navbar .nav-item,
   .navbar a {
     font-size: 13px;
-    margin-inline: 5px;
+  }
+
+  .dropdown a {
+    font-size: 10px;
   }
 
   .intro {
