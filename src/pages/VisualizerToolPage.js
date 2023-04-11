@@ -1,25 +1,21 @@
-import { React, useEffect } from "react";
-import Stars from "../components/Stars";
+import { React } from "react";
 import AlgorithmVisualizer from "../components/algorithm-visualizer/algoVisualizer";
 import "../styles.css";
-// const utils = require("../utils");
 
-export default function VisualizerToolPage() {
-  const maxSize = 525;
-
-  useEffect(() => {
-    console.log("VisualizerToolPage");
-  }, []);
+export default function VisualizerToolPage(props) {
+  const maxSize = 580;
 
   return (
-    <div className="">
-      <div className="space-bg"></div>
-      <Stars />
-      <section key="0" className="scroll-window-full" id="home">
+    <div className="prevent-select overflow-hidden">
+      <section className="h-full">
         <div className="nav-fill"></div>
-        <div className="mt-28 flex justify-center">
+        {props.isMobile ? (
+          <div className="flex justify-center items-center h-screen">
+            <div>This feature is not yet available on touch devices.</div>
+          </div>
+        ) : (
           <AlgorithmVisualizer w={maxSize} h={maxSize} />
-        </div>
+        )}
       </section>
     </div>
   );

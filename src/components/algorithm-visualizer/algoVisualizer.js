@@ -3,11 +3,15 @@ import "./algoVisualizer.css";
 import * as algorithms from "./algorithms";
 const blocks = require("./blocks");
 const utils = require("../../utils");
-const mazeGenerator = require("./mazeGenerator");
+// const mazeGenerator = require("./mazeGenerator");
 
 const DEBUG = false;
 
 export default function AlgorithmVisualizer(props) {
+  useEffect(() => {
+    console.log("Rendered Algorithm Visualizer");
+  }, []);
+
   const randomInteger = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
@@ -15,10 +19,10 @@ export default function AlgorithmVisualizer(props) {
   const canvasRef = useRef(null);
   const scale = window.devicePixelRatio || 1;
 
-  const [minBlockScale, maxBlockScale] = [2, 3];
+  const [minBlockScale, maxBlockScale] = [2, 4];
   const defaultBlockScale = minBlockScale + 1;
-  const baseBlockSize = 0.75;
-  const base = 3;
+  const baseBlockSize = 3;
+  const base = 2;
   let blockScale = useRef(defaultBlockScale);
   let blockSize = useRef(baseBlockSize * Math.pow(base, blockScale.current));
   let [nRows, nCols] = [
@@ -160,7 +164,7 @@ export default function AlgorithmVisualizer(props) {
 
     // return color based on value of grid[j][i]
     const getFillColor = (j, i) => {
-      const opacity = "dd";
+      const opacity = "bb";
       var color = "";
       // unvisited block
       if (grid[j][i] === blocks.empty) {
@@ -406,181 +410,192 @@ export default function AlgorithmVisualizer(props) {
   ]);
 
   return (
-    <div className="flex">
-      <div>
-        <canvas className="bfs-canvas" ref={canvasRef} {...props} />
-        <p>
-          {hoverRow.current !== -1
-            ? `${hoverRow.current}, ${hoverCol.current}`
-            : null}
-        </p>
-      </div>
-      <div className="px-5 w-96">
-        <div className="options-block">
-          <p>Search Algorithm:</p>
-          <div className="flex">
-            <div
-              className="mr-5"
-              onClick={() => {
-                setAlgorithm("bfs");
-                resetVisited();
-              }}
-            >
-              <label>
-                <input
-                  className="mr-1"
-                  type="radio"
-                  name="algorithm"
-                  value={algorithm}
-                  checked={algorithm === "bfs"}
-                  onChange={() => {
-                    setAlgorithm("bfs");
-                    resetVisited();
-                  }}
-                />
-                BFS
-              </label>
-            </div>
-            <div
-              className="mr-5"
-              onClick={() => {
-                setAlgorithm("dfs");
-                resetVisited();
-              }}
-            >
-              <label>
-                <input
-                  className="mr-1"
-                  type="radio"
-                  name="algorithm"
-                  value={algorithm}
-                  checked={algorithm === "dfs"}
-                  onChange={() => {
-                    setAlgorithm("dfs");
-                    resetVisited();
-                  }}
-                />
-                DFS
-              </label>
-            </div>
-            <div
-              className="mr-5"
-              onClick={() => {
-                setAlgorithm("bfsShortestPath");
-                resetVisited();
-              }}
-            >
-              <label>
-                <input
-                  className="mr-1"
-                  type="radio"
-                  name="algorithm"
-                  value={algorithm}
-                  checked={algorithm === "bfsShortestPath"}
-                  onChange={() => {
-                    setAlgorithm("bfsShortestPath");
-                    resetVisited();
-                  }}
-                />
-                BFS Shortest Path
-              </label>
+    <div>
+      <div className="flex mt-14 gap-10 h-full justify-center content-center">
+        <div>
+          <canvas className="bfs-canvas" ref={canvasRef} {...props} />
+          <p>
+            {hoverRow.current !== -1
+              ? `${hoverRow.current}, ${hoverCol.current}`
+              : null}
+          </p>
+        </div>
+        <div className="flex flex-col justify-start gap-16 control-panel">
+          <div className="options-block">
+            <p>Search Algorithm:</p>
+            <div className="flex">
+              <div
+                className="mr-5"
+                onClick={() => {
+                  setAlgorithm("bfs");
+                  resetVisited();
+                }}
+              >
+                <label>
+                  <input
+                    className="mr-1"
+                    type="radio"
+                    name="algorithm"
+                    value={algorithm}
+                    checked={algorithm === "bfs"}
+                    onChange={() => {
+                      setAlgorithm("bfs");
+                      resetVisited();
+                    }}
+                  />
+                  BFS
+                </label>
+              </div>
+              <div
+                className="mr-5"
+                onClick={() => {
+                  setAlgorithm("dfs");
+                  resetVisited();
+                }}
+              >
+                <label>
+                  <input
+                    className="mr-1"
+                    type="radio"
+                    name="algorithm"
+                    value={algorithm}
+                    checked={algorithm === "dfs"}
+                    onChange={() => {
+                      setAlgorithm("dfs");
+                      resetVisited();
+                    }}
+                  />
+                  DFS
+                </label>
+              </div>
+              <div
+                className="mr-5"
+                onClick={() => {
+                  setAlgorithm("bfsShortestPath");
+                  resetVisited();
+                }}
+              >
+                <label>
+                  <input
+                    className="mr-1"
+                    type="radio"
+                    name="algorithm"
+                    value={algorithm}
+                    checked={algorithm === "bfsShortestPath"}
+                    onChange={() => {
+                      setAlgorithm("bfsShortestPath");
+                      resetVisited();
+                    }}
+                  />
+                  BFS Shortest Path
+                </label>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="options-block">
-          <label htmlFor="block-size">
-            Block Size: {Math.round(blockSize.current)}
-          </label>
-          <input
-            className="block"
-            type="range"
-            id="block-size"
-            name="block-size"
-            min={minBlockScale}
-            max={maxBlockScale}
-            defaultValue={defaultBlockScale}
-            step={1}
-            onInput={(e) => {
+          <div className="options-block">
+            <label htmlFor="block-size">
+              Block Size: {Math.round(blockSize.current)}
+            </label>
+            <input
+              className="block"
+              type="range"
+              id="block-size"
+              name="block-size"
+              min={minBlockScale}
+              max={maxBlockScale}
+              defaultValue={defaultBlockScale}
+              step={1}
+              onInput={(e) => {
+                e.preventDefault();
+                const val = parseInt(e.target.value);
+                blockScale.current = val;
+
+                run.current = false;
+                setResult("-");
+
+                blockSize.current = baseBlockSize * Math.pow(base, val);
+                nRows.current = Math.floor(props.h / blockSize.current);
+                nCols.current = Math.floor(props.w / blockSize.current);
+                gap.current =
+                  (props.h % blockSize.current) / (nCols.current + 1);
+
+                // initialize random start and end positions
+                _start = {
+                  r: randomInteger(0, Math.floor((nRows.current - 1) / 2)),
+                  c: randomInteger(0, nCols.current - 1),
+                };
+
+                _end = {
+                  r: randomInteger(
+                    Math.floor((nRows.current - 1) / 2) + 1,
+                    nRows.current - 1
+                  ),
+                  c: randomInteger(0, nCols.current - 1),
+                };
+
+                let tempGrid = utils.createArray(nRows.current, nCols.current);
+                tempGrid[_start.r][_start.c] = blocks.source;
+                tempGrid[_end.r][_end.c] = blocks.sink;
+
+                setStartPos(_start);
+                setEndPos(_end);
+                setGrid(tempGrid);
+              }}
+            />
+          </div>
+
+          <div className="options-block">
+            <label htmlFor="speed">
+              Speed: {speed.current === sliderMax ? "Max" : speed.current + 1}
+            </label>
+            <input
+              className="block"
+              type="range"
+              id="speed"
+              name="speed"
+              min={sliderMin}
+              max={sliderMax}
+              defaultValue={speed.current}
+              step={1}
+              onInput={(e) => {
+                e.preventDefault();
+                const val = parseInt(e.target.value);
+                speed.current = val;
+              }}
+            />
+          </div>
+
+          <div className="options-block flex flex-col">
+            <div className="control-panel-button">
+              <a
+                href="/#"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  resetVisited();
+                }}
+              >
+                Clear Visited
+              </a>
+            </div>
+            <div className="control-panel-button">
+              <a
+                href="/#"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  resetVisited();
+                  utils.changeAll(blocks.wall, blocks.empty, grid);
+                }}
+              >
+                Clear Walls
+              </a>
+            </div>
+            {/* <a href="/#"
+
+            onClick={(e) => {
               e.preventDefault();
-              const val = parseInt(e.target.value);
-              blockScale.current = val;
-
-              run.current = false;
-              setResult("-");
-
-              blockSize.current = baseBlockSize * Math.pow(base, val);
-              nRows.current = Math.floor(props.h / blockSize.current);
-              nCols.current = Math.floor(props.w / blockSize.current);
-              gap.current = (props.h % blockSize.current) / (nCols.current + 1);
-
-              // initialize random start and end positions
-              _start = {
-                r: randomInteger(0, Math.floor((nRows.current - 1) / 2)),
-                c: randomInteger(0, nCols.current - 1),
-              };
-
-              _end = {
-                r: randomInteger(
-                  Math.floor((nRows.current - 1) / 2) + 1,
-                  nRows.current - 1
-                ),
-                c: randomInteger(0, nCols.current - 1),
-              };
-
-              let tempGrid = utils.createArray(nRows.current, nCols.current);
-              tempGrid[_start.r][_start.c] = blocks.source;
-              tempGrid[_end.r][_end.c] = blocks.sink;
-
-              setStartPos(_start);
-              setEndPos(_end);
-              setGrid(tempGrid);
-            }}
-          />
-        </div>
-
-        <div className="options-block">
-          <label htmlFor="speed">
-            Speed: {speed.current === sliderMax ? "Max" : speed.current + 1}
-          </label>
-          <input
-            className="block"
-            type="range"
-            id="speed"
-            name="speed"
-            min={sliderMin}
-            max={sliderMax}
-            defaultValue={speed.current}
-            step={1}
-            onInput={(e) => {
-              e.preventDefault();
-              const val = parseInt(e.target.value);
-              speed.current = val;
-            }}
-          />
-        </div>
-
-        <div className="options-block">
-          <button
-            className="block"
-            onClick={() => {
-              resetVisited();
-            }}
-          >
-            Clear Visited
-          </button>
-          <button
-            className="block"
-            onClick={() => {
-              resetVisited();
-              utils.changeAll(blocks.wall, blocks.empty, grid);
-            }}
-          >
-            Clear Walls
-          </button>
-          <button
-            className="block"
-            onClick={() => {
               resetVisited();
               const obj = mazeGenerator.generateMaze(
                 nRows.current,
@@ -592,61 +607,68 @@ export default function AlgorithmVisualizer(props) {
             }}
           >
             Generate Maze
-          </button>
-          <button
-            className="block"
-            onClick={() => {
-              if (startPos.r === -1 || run.current) return;
+          </a> */}
+            <div className="control-panel-button">
+              <a
+                href="/#"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (startPos.r === -1 || run.current) return;
 
-              resetVisited();
+                  resetVisited();
 
-              const prom = runSearch(startPos, endPos);
-              if (run.current) {
-                prom.then((res) => {
-                  setResult(res);
-                  run.current = false;
-                });
-              }
-            }}
-          >
-            Begin Search
-          </button>
-        </div>
-
-        <div className="options-block">
-          <p>
-            {algorithm === "bfsShortestPath" ? "Path Length" : "Result"}:
-            {` ${result}`}
-          </p>
-        </div>
-      </div>
-
-      {DEBUG === false ? null : (
-        <div className="mx-3 w-70">
-          <div>
-            <div>
-              Keys Down:
-              {` ${String(isLeftMouseDown.current)}, ${String(
-                isRightMouseDown.current
-              )}, ${String(isShiftDown.current)}`}
+                  const prom = runSearch(startPos, endPos);
+                  if (run.current) {
+                    prom.then((res) => {
+                      setResult(res);
+                      run.current = false;
+                    });
+                  }
+                }}
+              >
+                Begin Search
+              </a>
             </div>
-            <div>
-              Grid Val:
-              {hoverRow.current !== -1 &&
-              hoverRow.current < nRows.current &&
-              hoverCol.current < nCols.current
-                ? ` ${grid[hoverRow.current][hoverCol.current]}, (${
-                    hoverRow.current
-                  }, ${hoverCol.current})`
-                : ""}
-            </div>
-            <div>nRows, nCols: {`(${nRows.current}, ${nCols.current})`}</div>
-            <div>Grid Dimensions: {`(${grid.length}, ${grid[0].length})`}</div>
-            <div>Block Scale: {blockScale.current}</div>
-            <div>Block Size: {blockSize.current}</div>
+          </div>
+
+          <div className="options-block mt-20">
+            <p>
+              {algorithm === "bfsShortestPath" ? "Path Length" : "Result"}
+              {`\xa0:\xa0\xa0${result}`}
+            </p>
           </div>
         </div>
-      )}
+
+        {DEBUG === false ? null : (
+          <div className="mx-3 w-70">
+            <div>
+              <div>
+                Keys Down:
+                {` ${String(isLeftMouseDown.current)}, ${String(
+                  isRightMouseDown.current
+                )}, ${String(isShiftDown.current)}`}
+              </div>
+              <div>
+                Grid Val:
+                {hoverRow.current !== -1 &&
+                hoverRow.current < nRows.current &&
+                hoverCol.current < nCols.current
+                  ? ` ${grid[hoverRow.current][hoverCol.current]}, (${
+                      hoverRow.current
+                    }, ${hoverCol.current})`
+                  : ""}
+              </div>
+              <div>nRows, nCols: {`(${nRows.current}, ${nCols.current})`}</div>
+              <div>
+                Grid Dimensions: {`(${grid.length}, ${grid[0].length})`}
+              </div>
+              <div>Block Scale: {blockScale.current}</div>
+              <div>Block Size: {blockSize.current}</div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

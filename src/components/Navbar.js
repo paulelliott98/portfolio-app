@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-scroll";
+import { Link as RouterLink } from "react-router-dom";
 
 // navbar component
 export default function Navbar() {
@@ -7,49 +7,19 @@ export default function Navbar() {
     <>
       <div className={"nav-area "}>
         <div className="navbar ">
-          <Link
-            href="#"
-            draggable="false"
-            to="home"
-            spy={true}
-            smooth={true}
-            duration={0}
-          >
-            home
-          </Link>
-
-          <Link
-            href="#"
-            draggable="false"
-            to="projects"
-            spy={true}
-            smooth={true}
-            duration={0}
-          >
-            projects
-          </Link>
-
-          <Link
-            href="#"
-            draggable="false"
-            to="about"
-            spy={true}
-            smooth={true}
-            duration={0}
-          >
-            about
-          </Link>
-
-          <Link
-            href="#"
-            draggable="false"
-            to="contact"
-            spy={true}
-            smooth={true}
-            duration={0}
-          >
-            contact
-          </Link>
+          <RouterLink to="/">home</RouterLink>
+          <div className="nav-item">
+            <RouterLink to="/#projects">
+              projects<span class="arrow"></span>
+            </RouterLink>
+            <ul class="dropdown">
+              <RouterLink to="/algorithm-visualizer">
+                Search Algo Visualizer
+              </RouterLink>
+            </ul>
+          </div>
+          <RouterLink to="/#about">about</RouterLink>
+          <RouterLink to="/#contact">contact</RouterLink>
         </div>
       </div>
     </>

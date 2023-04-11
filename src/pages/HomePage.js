@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../styles.css";
 import Project from "../components/Project";
-import Stars from "../components/Stars";
 import Snake from "../components/Snake";
 import FlipCard from "../components/FlipCard";
 import { CSSTransition } from "react-transition-group";
 import { useInView } from "react-intersection-observer";
 import "animate.css";
 
-export default function HomePage() {
+export default function HomePage(props) {
   const projects = [
     {
       listName: "snake",
@@ -139,26 +138,24 @@ export default function HomePage() {
     }
   };
 
-  const [width, setWidth] = useState(window.innerWidth);
+  // const [width, setWidth] = useState(window.innerWidth);
 
-  function handleWindowSizeChange() {
-    setWidth(window.innerWidth);
-  }
+  // function handleWindowSizeChange() {
+  //   setWidth(window.innerWidth);
+  // }
 
-  useEffect(() => {
-    window.addEventListener("resize", handleWindowSizeChange);
+  // useEffect(() => {
+  //   window.addEventListener("resize", handleWindowSizeChange);
 
-    return () => {
-      window.removeEventListener("resize", handleWindowSizeChange);
-    };
-  });
+  //   return () => {
+  //     window.removeEventListener("resize", handleWindowSizeChange);
+  //   };
+  // });
 
-  const isMobile = width <= 992;
+  // const isMobile = width <= 992;
 
   return (
-    <div className="prevent-select overflow-scroll">
-      <Stars n={500} />
-
+    <div className="prevent-select">
       <section key="0" className="scroll-window-full" id="home">
         <div className="nav-fill"></div>
         <div className="flex justify-between self-center">
@@ -174,7 +171,7 @@ export default function HomePage() {
               ideas into remarkable digital experiences.
             </h5>
           </div>
-          {isMobile ? null : (
+          {props.isMobile ? null : (
             <div className={"mt-24 snake " + anim("fade", inView)}>
               <Snake w={362} h={362} />
             </div>
