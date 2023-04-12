@@ -1,9 +1,16 @@
-import { React } from "react";
+import { React, useEffect } from "react";
 import AlgorithmVisualizer from "../components/algorithm-visualizer/algoVisualizer";
 import "../styles.css";
 
+const utils = require("../utils");
+
 export default function VisualizerToolPage(props) {
   const maxSize = 580;
+  const getDocumentHeight = props.getDocumentHeight;
+
+  useEffect(() => {
+    getDocumentHeight(utils.getPageHeight(document));
+  }, [getDocumentHeight]);
 
   return (
     <section className="scroll-window">

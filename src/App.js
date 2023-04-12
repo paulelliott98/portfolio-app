@@ -15,25 +15,20 @@ export default function App() {
   const [width, setWidth] = useState(window.innerWidth);
   isMobile = isMobile === true || width <= 992;
 
-  var body = document.body,
-    html = document.documentElement;
-
-  var documentHeight = Math.max(
-    body.scrollHeight,
-    body.offsetHeight,
-    html.clientHeight,
-    html.scrollHeight,
-    html.offsetHeight
-  );
-
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
   }
 
-  let [navRef, setNavRef] = useState(null);
+  let documentHeight = useRef(utils.getPageHeight(document));
+
+  function getDocumentHeight(height) {
+    documentHeight.current = height;
+  }
+
+  let navRef = useRef(null);
 
   function getNavRef(ref) {
-    setNavRef(ref);
+    navRef.current = ref;
   }
 
   let isScrolling = useRef(false);
@@ -66,21 +61,22 @@ export default function App() {
       const offset = 20;
 
       if (
-        navRef !== null &&
+        navRef.current !== null &&
         currPagePos.current > offset &&
-        currPagePos.current < documentHeight - window.innerHeight - offset
+        currPagePos.current <
+          documentHeight.current - window.innerHeight - offset
       ) {
         if (currPagePos.current > lastPagePos.current) {
           // console.log("Scrolling down");
           if (isUserScrolling.current === true || isMobile === true) {
-            navRef.style.visibility = "hidden";
+            navRef.current.style.visibility = "hidden";
 
-            const dy = `-${navRef.clientHeight + 3}px`;
-            navRef.style.transform = `translateY(${dy})`;
+            const dy = `-${navRef.current.clientHeight + 3}px`;
+            navRef.current.style.transform = `translateY(${dy})`;
           }
         } else {
           // console.log("Scrolling up");
-          navRef.style = ""; // default
+          navRef.current.style = ""; // set to default defined css style
         }
       }
 
@@ -90,8 +86,6 @@ export default function App() {
 
       timer.current = setTimeout(() => {
         isScrolling.current = false; // page stopped moving
-        isUserScrolling.current = false; // user stopped scrolling
-        isTouchMove.current = false;
       }, 50);
     }
 
@@ -118,6 +112,9 @@ export default function App() {
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("wheel", handleWheel);
     window.addEventListener("touchmove", handleTouchMove);
+
+    isUserScrolling.current = false;
+    isTouchMove.current = false;
 
     return () => {
       clearTimeout(to);
@@ -178,10 +175,23 @@ export default function App() {
       {stars.current}
 
       <Routes>
-        <Route path="/" element={<HomePage isMobile={isMobile} />} />
+        <Route
+          path="/"
+          element={
+            <HomePage
+              isMobile={isMobile}
+              getDocumentHeight={getDocumentHeight}
+            />
+          }
+        />
         <Route
           path="/algorithm-visualizer"
-          element={<VisualizerToolPage isMobile={isMobile} />}
+          element={
+            <VisualizerToolPage
+              isMobile={isMobile}
+              getDocumentHeight={getDocumentHeight}
+            />
+          }
         />
       </Routes>
     </>

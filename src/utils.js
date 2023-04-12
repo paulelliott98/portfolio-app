@@ -68,6 +68,22 @@ function isInViewport(x, y) {
   return false;
 }
 
+// return height of page
+function getPageHeight(document) {
+  let body = document.body,
+    html = document.documentElement;
+
+  let documentHeight = Math.max(
+    body.scrollHeight,
+    body.offsetHeight,
+    html.clientHeight,
+    html.scrollHeight,
+    html.offsetHeight
+  );
+
+  return documentHeight;
+}
+
 module.exports = {
   sleep,
   createArray,
@@ -78,4 +94,5 @@ module.exports = {
   randEven,
   randOdd,
   isInViewport,
+  getPageHeight,
 };

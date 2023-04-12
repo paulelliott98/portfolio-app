@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles.css";
 import Project from "../components/Project";
 import Snake from "../components/Snake";
@@ -6,6 +6,8 @@ import FlipCard from "../components/FlipCard";
 import { CSSTransition } from "react-transition-group";
 import { useInView } from "react-intersection-observer";
 import "animate.css";
+
+const utils = require("../utils");
 
 export default function HomePage(props) {
   const projects = [
@@ -138,6 +140,12 @@ export default function HomePage(props) {
       setActive(i);
     }
   };
+
+  const getDocumentHeight = props.getDocumentHeight;
+
+  useEffect(() => {
+    getDocumentHeight(utils.getPageHeight(document));
+  }, [getDocumentHeight]);
 
   return (
     <div className="prevent-select">
