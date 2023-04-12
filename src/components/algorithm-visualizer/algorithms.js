@@ -1,5 +1,12 @@
 const utils = require("../../utils");
 
+const messages = {
+  placeholder: "-",
+  pathExists: "Yes",
+  pathDoesNotExist: "No",
+  shortestPathDoesNotExist: "Destination Unreachable!",
+};
+
 // DFS
 export async function dfs(start, end, grid, run, speed, setGrid) {
   var dirs = [
@@ -23,7 +30,7 @@ export async function dfs(start, end, grid, run, speed, setGrid) {
 
     // found target, return
     if (curr.r === end.r && curr.c === end.c) {
-      return "Path Found!";
+      return messages.pathExists;
     }
 
     // update ui grid
@@ -53,10 +60,10 @@ export async function dfs(start, end, grid, run, speed, setGrid) {
     }
   }
 
-  if (!run.current) return "-";
+  if (!run.current) return messages.placeholder;
 
   // no path between source and destination
-  return "Path Not Found!";
+  return messages.pathDoesNotExist;
 }
 
 // BFS
@@ -83,7 +90,7 @@ export async function bfs(start, end, grid, run, speed, setGrid, setResult) {
 
     // found target, return
     if (curr.r === end.r && curr.c === end.c) {
-      return "Path Found!";
+      return messages.pathExists;
     }
 
     // update ui grid
@@ -114,10 +121,10 @@ export async function bfs(start, end, grid, run, speed, setGrid, setResult) {
     }
   }
 
-  if (!run.current) return "-";
+  if (!run.current) return messages.placeholder;
 
   // no path between source and destination
-  return "Path Not Found!";
+  return messages.pathDoesNotExist;
 }
 
 // BFS shortest path
@@ -216,8 +223,8 @@ export async function bfsShortestPath(
     }
   }
 
-  if (!run.current) return "-";
+  if (!run.current) return messages.placeholder;
 
   // no path between source and destination; return null
-  return "Path Not Found!";
+  return messages.shortestPathDoesNotExist;
 }

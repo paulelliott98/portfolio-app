@@ -630,7 +630,9 @@ export default function AlgorithmVisualizer(props) {
 
           <div className="options-block mt-20">
             <p>
-              {algorithm === "bfsShortestPath" ? "Path Length" : "Result"}
+              {algorithm === "bfsShortestPath"
+                ? "Shortest Path Length"
+                : "Path Exists"}
               {`\xa0:\xa0\xa0${result}`}
             </p>
           </div>
