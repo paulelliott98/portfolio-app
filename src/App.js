@@ -65,22 +65,20 @@ export default function App() {
 
       const offset = 20;
 
-      if (navRef !== null) {
+      if (
+        navRef !== null &&
+        currPagePos.current > offset &&
+        currPagePos.current < documentHeight - window.innerHeight - offset
+      ) {
         if (currPagePos.current > lastPagePos.current) {
           // console.log("Scrolling down");
-          if (
-            (isUserScrolling.current === true || isMobile === true) &&
-            currPagePos.current > offset
-          ) {
+          if (isUserScrolling.current === true || isMobile === true) {
             navRef.style.visibility = "hidden";
 
             const dy = `-${navRef.clientHeight + 3}px`;
             navRef.style.transform = `translateY(${dy})`;
           }
-        } else if (
-          currPagePos.current <
-          documentHeight - window.innerHeight - offset
-        ) {
+        } else {
           // console.log("Scrolling up");
           navRef.style = ""; // default
         }

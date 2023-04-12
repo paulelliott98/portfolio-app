@@ -164,7 +164,7 @@ export default function HomePage(props) {
         </div>
       </section>
 
-      <section key="1" className="scroll-window-full" id="projects">
+      <section key="1" className="scroll-window" id="projects">
         <div className="section-title">
           <h4>projects</h4>
         </div>
