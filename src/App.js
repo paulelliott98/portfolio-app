@@ -15,6 +15,17 @@ export default function App() {
   const [width, setWidth] = useState(window.innerWidth);
   isMobile = isMobile === true || width <= 992;
 
+  var body = document.body,
+    html = document.documentElement;
+
+  var documentHeight = Math.max(
+    body.scrollHeight,
+    body.offsetHeight,
+    html.clientHeight,
+    html.scrollHeight,
+    html.offsetHeight
+  );
+
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
   }
@@ -37,8 +48,6 @@ export default function App() {
 
   const { pathname, hash, key } = useLocation();
 
-  let isEventListenersAttached = useRef(false);
-
   useEffect(() => {
     function handleWheel() {
       isUserScrolling.current = true;
@@ -54,20 +63,26 @@ export default function App() {
       lastPagePos.current = currPagePos.current;
       currPagePos.current = document.documentElement.scrollTop;
 
+      const offset = 20;
+
       if (navRef !== null) {
         if (currPagePos.current > lastPagePos.current) {
           // console.log("Scrolling down");
           if (
-            isUserScrolling.current === true ||
-            (isTouchMove.current === true && isMobile === true)
+            (isUserScrolling.current === true || isMobile === true) &&
+            currPagePos.current > offset
           ) {
             navRef.style.visibility = "hidden";
+
             const dy = `-${navRef.clientHeight + 3}px`;
             navRef.style.transform = `translateY(${dy})`;
           }
-        } else {
+        } else if (
+          currPagePos.current <
+          documentHeight - window.innerHeight - offset
+        ) {
           // console.log("Scrolling up");
-          if (navRef !== null) navRef.style = ""; // default
+          navRef.style = ""; // default
         }
       }
 
@@ -78,9 +93,8 @@ export default function App() {
       timer.current = setTimeout(() => {
         isScrolling.current = false; // page stopped moving
         isUserScrolling.current = false; // user stopped scrolling
+        isTouchMove.current = false;
       }, 50);
-
-      isTouchMove.current = false;
     }
 
     let to = null;
@@ -102,14 +116,10 @@ export default function App() {
       }
     }
 
-    if (!isEventListenersAttached.current) {
-      window.addEventListener("resize", handleWindowSizeChange);
-      window.addEventListener("scroll", handleScroll);
-      window.addEventListener("wheel", handleWheel);
-      window.addEventListener("touchmove", handleTouchMove);
-    }
-
-    isEventListenersAttached.current = true;
+    window.addEventListener("resize", handleWindowSizeChange);
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("wheel", handleWheel);
+    window.addEventListener("touchmove", handleTouchMove);
 
     return () => {
       clearTimeout(to);
@@ -127,6 +137,7 @@ export default function App() {
     lastPagePos,
     currPagePos,
     navRef,
+    documentHeight,
   ]); // do this on route change
 
   function generateStars(n) {
