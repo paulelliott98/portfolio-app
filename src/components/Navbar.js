@@ -12,7 +12,7 @@ export default function Navbar(props) {
   return (
     <div ref={navRef} className="nav-area ">
       <div className="navbar ">
-        <RouterLink to="/#home">home</RouterLink>
+        <RouterLink to="/">home</RouterLink>
         <div className="nav-item">
           <RouterLink to="/#projects">projects</RouterLink>
           <span className="arrow"></span>

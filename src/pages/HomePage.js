@@ -148,7 +148,7 @@ export default function HomePage(props) {
   }, [getDocumentHeight]);
 
   return (
-    <div className="prevent-select">
+    <div className="">
       <section key="0" className="scroll-window-full" id="home">
         <div className="nav-fill"></div>
         <div className="flex justify-between self-center">

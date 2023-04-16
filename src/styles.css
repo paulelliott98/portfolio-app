@@ -62,11 +62,11 @@ body {
 }
 
 @keyframes animStar {
-  from {
-    transform: translateY(0px);
+  0% {
+    transform: translateY(0vh);
   }
-  to {
-    transform: translateY(-400vh);
+  100% {
+    transform: translateY(-100vh);
   }
 }
 

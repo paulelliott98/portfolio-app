@@ -135,44 +135,85 @@ export default function App() {
     documentHeight,
   ]); // do this on route change
 
-  function generateStars(n) {
-    let stars = [];
-    for (let i = 0; i < n; i++) {
-      let [x, y, size] = [
-        (Math.round(Math.random() * 1000) / 1000) * 100,
-        (Math.round(Math.random() * 1000) / 1000) * 400,
-        utils.randChoice([0.7, 1.3, 2]),
-      ];
+  let [stars, setStars] = useState(null);
 
-      let style = {
-        left: `${x}vw`,
-        top: `${y}vh`,
-        width: `${size}px`,
-        height: `${size}px`,
-        position: "fixed",
-        zIndex: `-${100 - size}`,
-        background: `#fff`,
-        borderRadius: "50%",
-        boxShadow: `0 0 2px 0.3px`,
-        animation: `animStar ${Math.pow(size, 2) * 200}s ${
-          utils.isInViewport(x, y) ? "1 linear forwards" : "linear infinite"
-        }`,
-        content: ``,
-      };
+  useEffect(() => {
+    // create 3 layers of sliding backgrounds, where each layer has one size of stars
+    // layers with smaller stars will move faster (shorter duration) to create the parallax effect
+    function generateStars(n) {
+      let sizes = [0.1, 0.3, 0.5, 0.7]; // sizes of stars in px
+      let numStars = new Array(sizes.length); // number of stars of each size. Sum to ~ n
+      const sizesSum = sizes.reduce((partialSum, a) => partialSum + a, 0);
+      for (let i in sizes) {
+        numStars[i] = Math.floor((sizes[i] / sizesSum) * n);
+      }
 
-      let jsx = <div key={i} style={style}></div>;
-      stars.push(jsx);
+      numStars = numStars.reverse();
+
+      let starsDivs = [];
+
+      for (let i = 0; i < numStars.length; i++) {
+        let size = sizes[i];
+
+        let style1 = {
+          position: "fixed",
+          zIndex: `-${500 - size}`,
+          left: `0`,
+          top: `0`,
+          width: `${size}px`,
+          height: `${size}px`,
+          background: `transparent`,
+          borderRadius: `50% 50%`,
+          animation: `animStar ${Math.pow(size, 0.5) * 200}s linear infinite`,
+        };
+
+        let style2 = JSON.parse(JSON.stringify(style1));
+        style2["top"] = "100vh";
+
+        let boxShadows = ``;
+
+        for (let j = 0; j < numStars[i]; j++) {
+          let [x, y] = [
+            (Math.round(Math.random() * 1000) / 1000) * 100, // vw
+            (Math.round(Math.random() * 1000) / 1000) * 100, // vh
+          ];
+
+          let colors;
+          if (i < sizes.length / 2) colors = ["#4CA9E1", "#FAECDB", "#FFFFFF"];
+          else colors = ["#FAECDB", "#FFFFFF"];
+
+          const color = utils.randChoice(colors);
+
+          // offset-x | offset-y | blur-radius | spread-radius | color
+          let boxShadow = `${x}vw ${y}vh ${size +
+            0.5}px ${size}px ${color}, ${x}vw ${y}vh ${size * 3}px ${size *
+            1.2}px ${color}, ${x}vw ${y}vh ${size * 5}px ${size *
+            1.2}px ${color}, ${x}vw ${y}vh ${size * 7}px ${size *
+            1.2}px ${color}, ${x}vw ${y}vh ${size * 9}px ${size *
+            1.2}px ${color}`;
+
+          if (j > 0) boxShadows += `, `;
+
+          boxShadows += `${boxShadow}`;
+        }
+
+        style1["boxShadow"] = boxShadows; // string of box shadows
+        starsDivs.push(<div key={i} style={style1}></div>);
+
+        style2["boxShadow"] = boxShadows; // string of box shadows
+        starsDivs.push(<div key={i + sizes.length} style={style2}></div>);
+      }
+      return starsDivs;
     }
-    return stars;
-  }
 
-  var stars = useRef(generateStars(500));
+    setStars(generateStars(130));
+  }, []);
 
   return (
     <>
       <Navbar getNavRef={getNavRef} />
       {isMobile === true ? null : <div className="space-bg"></div>}
-      {stars.current}
+      {stars}
 
       <Routes>
         <Route
