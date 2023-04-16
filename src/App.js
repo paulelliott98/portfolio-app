@@ -13,11 +13,7 @@ var isMobile =
 
 export default function App() {
   const [width, setWidth] = useState(window.innerWidth);
-  isMobile = isMobile === true || width <= 992;
-
-  function handleWindowSizeChange() {
-    setWidth(window.innerWidth);
-  }
+  let isSmallScreen = useRef(isMobile === true || width <= 992);
 
   let documentHeight = useRef(utils.getPageHeight(document));
 
@@ -44,6 +40,19 @@ export default function App() {
   const { pathname, hash, key } = useLocation();
 
   useEffect(() => {
+    function handleWindowSizeChange() {
+      setWidth(window.innerWidth);
+      isSmallScreen.current = isMobile === true || width <= 992;
+    }
+
+    window.addEventListener("resize", handleWindowSizeChange);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowSizeChange);
+    };
+  });
+
+  useEffect(() => {
     function handleWheel() {
       isUserScrolling.current = true;
     }
@@ -68,7 +77,10 @@ export default function App() {
       ) {
         if (currPagePos.current > lastPagePos.current) {
           // console.log("Scrolling down");
-          if (isUserScrolling.current === true || isMobile === true) {
+          if (
+            isUserScrolling.current === true ||
+            isSmallScreen.current === true
+          ) {
             navRef.current.style.visibility = "hidden";
 
             const dy = `-${navRef.current.clientHeight + 3}px`;
@@ -108,7 +120,6 @@ export default function App() {
       }
     }
 
-    window.addEventListener("resize", handleWindowSizeChange);
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("wheel", handleWheel);
     window.addEventListener("touchmove", handleTouchMove);
@@ -118,7 +129,6 @@ export default function App() {
 
     return () => {
       clearTimeout(to);
-      window.removeEventListener("resize", handleWindowSizeChange);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchmove", handleTouchMove);
@@ -212,7 +222,7 @@ export default function App() {
   return (
     <>
       <Navbar getNavRef={getNavRef} />
-      {isMobile === true ? null : <div className="space-bg"></div>}
+      {isSmallScreen.current === true ? null : <div className="space-bg"></div>}
       {stars}
 
       <Routes>
@@ -220,7 +230,7 @@ export default function App() {
           path="/"
           element={
             <HomePage
-              isMobile={isMobile}
+              isMobile={isSmallScreen.current}
               getDocumentHeight={getDocumentHeight}
             />
           }
@@ -229,7 +239,7 @@ export default function App() {
           path="/algorithm-visualizer"
           element={
             <VisualizerToolPage
-              isMobile={isMobile}
+              isMobile={isSmallScreen.current}
               getDocumentHeight={getDocumentHeight}
             />
           }

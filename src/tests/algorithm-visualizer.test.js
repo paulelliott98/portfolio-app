@@ -1,5 +1,5 @@
-const blocks = require("./algorithm-visualizer/blocks");
-const mg = require("./algorithm-visualizer/mazeGenerator");
+const blocks = require("../components/algorithm-visualizer/blocks");
+const mg = require("../components/algorithm-visualizer/mazeGenerator");
 const utils = require("../utils");
 
 const dirs = { up: 0, right: 1, down: 2, left: 3 };
