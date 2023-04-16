@@ -355,9 +355,8 @@ canvas {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 12px;
+  gap: 11px;
   margin-block: 18px;
-  padding: 1px;
 }
 
 .tech-item-div {

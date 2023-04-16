@@ -26,7 +26,7 @@ export default function HomePage(props) {
       ],
       dx:
         "A full-stack JavaScript snake game that utilizes HTML canvas and interpolation to create fluid movement. In addition, the game has a leaderboard that displays the top 10 players' high scores. The scores are stored in and retrieved from a PostgreSQL database, allowing players to compete with each other for the top spot. ",
-      gitUrl: "",
+      gitUrl: "https://github.com/paulgan98/portfolio-app",
     },
     {
       listName: "polygon detection",
@@ -260,8 +260,8 @@ export default function HomePage(props) {
             </ul>
             <p>
               I am currently searching for a software developer position where I
-              can utilize my broad skillset, curiosity, and resourcefulness to
-              deliver and create value for the team.
+              can utilize my broad skillset, strong problem solving ability, and
+              resourcefulness to help the team succeed.
             </p>
           </div>
           <div
