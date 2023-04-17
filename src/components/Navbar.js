@@ -17,9 +17,7 @@ export default function Navbar(props) {
           <RouterLink to="/#projects">projects</RouterLink>
           <span className="arrow"></span>
           <ul className="dropdown">
-            <RouterLink to="/algorithm-visualizer">
-              Search Algo Visualizer
-            </RouterLink>
+            <RouterLink to="/algorithm-visualizer">Algo Visualizer</RouterLink>
           </ul>
         </div>
         <RouterLink to="/#about">about</RouterLink>
