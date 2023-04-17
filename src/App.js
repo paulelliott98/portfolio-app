@@ -78,8 +78,9 @@ export default function App() {
         if (currPagePos.current > lastPagePos.current) {
           // console.log("Scrolling down");
           if (
-            isUserScrolling.current === true ||
-            isSmallScreen.current === true
+            (isUserScrolling.current === true ||
+              isSmallScreen.current === true) &&
+            documentHeight.current > window.screen.height
           ) {
             navRef.current.style.visibility = "hidden";
 
