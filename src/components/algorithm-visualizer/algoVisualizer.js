@@ -274,7 +274,6 @@ export default function AlgorithmVisualizer(props) {
     function handleKeyDown(e, canvas) {
       if (e.keyCode === 16) {
         e.preventDefault();
-        document.getSelection().removeAllRanges();
         isShiftDown.current = true;
       }
 
