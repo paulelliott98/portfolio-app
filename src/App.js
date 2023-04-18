@@ -190,9 +190,8 @@ export default function App() {
           ];
 
           let colors;
-          if (i < sizes.length / 2)
-            colors = ["#4CA9E1", "#FAECDB", "#FFFFFF", "#D39A95", "#A387D4"];
-          else colors = ["#FAECDB", "#FFFFFF", "#D39A95", "#A387D4"];
+          if (i < sizes.length / 2) colors = ["#4CA9E1", "#FAECDB", "#FFFFFF"];
+          else colors = ["#FAECDB", "#FFFFFF", "#D39A95"];
 
           const color = utils.randChoice(colors);
 

@@ -3,7 +3,7 @@ import "./algoVisualizer.css";
 import * as algorithms from "./algorithms";
 const blocks = require("./blocks");
 const utils = require("../../utils");
-// const mazeGenerator = require("./mazeGenerator");
+const mg = require("./mazeGenerator");
 
 const DEBUG = false;
 
@@ -273,8 +273,8 @@ export default function AlgorithmVisualizer(props) {
 
     function handleKeyDown(e, canvas) {
       if (e.keyCode === 16) {
-        e.preventDefault();
         isShiftDown.current = true;
+        updateGrid();
       }
 
       // return if click did not occur within canvas
@@ -305,11 +305,12 @@ export default function AlgorithmVisualizer(props) {
     }
 
     function handleKeyRelease(e, canvas) {
-      e.preventDefault();
-
       if (e.keyCode === 16) {
         isShiftDown.current = false;
+        updateGrid();
       }
+
+      e.preventDefault();
 
       const rect = canvas.getBoundingClientRect();
 
@@ -347,9 +348,7 @@ export default function AlgorithmVisualizer(props) {
       window.addEventListener("mousemove", (e) => {
         handleMouseMove(e, canvas);
       });
-    }
 
-    if (!isEventListenersAttached.current) {
       window.addEventListener("contextmenu", (e) => {
         const rect = canvas.getBoundingClientRect();
         if (
@@ -367,9 +366,6 @@ export default function AlgorithmVisualizer(props) {
       window.addEventListener("keydown", (e) => {
         handleKeyDown(e, canvas);
       });
-    }
-
-    if (!isEventListenersAttached.current) {
       window.addEventListener("mouseup", (e) => {
         handleKeyRelease(e, canvas);
       });
@@ -665,22 +661,24 @@ export default function AlgorithmVisualizer(props) {
                   Clear Walls
                 </a>
               </div>
-              {/* <a href="/#"
+              {/* <div className="control-panel-button">
+                <a
+                  href="/#"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    resetVisited();
 
-            onClick={(e) => {
-              e.preventDefault();
-              resetVisited();
-              const obj = mazeGenerator.generateMaze(
-                nRows.current,
-                nCols.current
-              );
-              setGrid(obj.grid);
-              setStartPos(obj.startPos);
-              setEndPos(obj.endPos);
-            }}
-          >
-            Generate Maze
-          </a> */}
+                    const obj = mg.generateMaze(nRows.current, nCols.current);
+
+                    setStartPos(obj.startPos);
+                    setEndPos(obj.endPos);
+                    setGrid(obj.grid);
+                  }}
+                >
+                  Generate Maze
+                </a>
+              </div> */}
               <div className="control-panel-button">
                 <a
                   href="/#"
@@ -691,13 +689,10 @@ export default function AlgorithmVisualizer(props) {
 
                     resetVisited();
 
-                    const prom = runSearch(startPos, endPos);
-                    if (run.current) {
-                      prom.then((res) => {
-                        setResult(res);
-                        run.current = false;
-                      });
-                    }
+                    runSearch(startPos, endPos).then((res) => {
+                      setResult(res);
+                      run.current = false;
+                    });
                   }}
                 >
                   Begin Search

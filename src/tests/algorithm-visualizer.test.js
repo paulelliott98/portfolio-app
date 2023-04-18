@@ -5,14 +5,8 @@ const utils = require("../utils");
 const dirs = { up: 0, right: 1, down: 2, left: 3 };
 
 const [nRows, nCols] = [64, 64];
-let maze = mg.generateMaze(nRows, nCols).grid;
 
-test("maze should be nRows x nCols", () => {
-  expect(maze.length).toBe(nRows);
-  expect(maze[0].length).toBe(nCols);
-});
-
-test("utils.randInt should pick random int between [a, b] inclusive", () => {
+test("randInt should pick random int between [a, b] inclusive", () => {
   let s = new Set();
   for (let i = 0; i < 200; i++) {
     s.add(utils.randInt(0, 3));
@@ -34,8 +28,24 @@ test("randChoice should choose be able to pick any item in list", () => {
   expect(s.has("right")).toBe(true);
 });
 
+test("getSideBlocks", () => {
+  let newMaze = mg.generateMaze(nRows, nCols).grid;
+  newMaze[5][4] = -1; // right
+  newMaze[5][6] = -1; // left
+  newMaze[4][5] = -2; // up
+  newMaze[6][5] = -2; // down
+
+  let leftRight = mg.getSideBlocks({ r: 5, c: 5 }, dirs.down, newMaze);
+  let upDown = mg.getSideBlocks({ r: 5, c: 5 }, dirs.right, newMaze);
+
+  expect(leftRight[0]).toBe(-1); // left
+  expect(leftRight[1]).toBe(-1); // right
+  expect(upDown[0]).toBe(-2); // up
+  expect(upDown[1]).toBe(-2); // down
+});
+
 test("isWall", () => {
-  let newMaze = [...maze];
+  let newMaze = mg.generateMaze(nRows, nCols).grid;
 
   let wall = { r: 0, c: 1 };
   expect(mg.isWall(wall, dirs.down, newMaze)).toBe(true);
@@ -50,8 +60,10 @@ test("isWall", () => {
   expect(mg.isWall(wall, dirs.left, newMaze)).toBe(true);
 
   newMaze[3][3] = blocks.empty;
-  expect(mg.isWall({ r: 1, c: 3 }, dirs.down, newMaze)).toBe(true);
-  expect(mg.isWall({ r: 3, c: 1 }, dirs.right, newMaze)).toBe(true);
+  expect(mg.isWall({ r: 2, c: 2 }, dirs.down, newMaze)).toBe(true);
+  expect(mg.isWall({ r: 4, c: 4 }, dirs.left, newMaze)).toBe(true);
+  expect(mg.isWall({ r: 4, c: 2 }, dirs.right, newMaze)).toBe(true);
+  expect(mg.isWall({ r: 4, c: 3 }, dirs.up, newMaze)).toBe(true);
 
   expect(mg.isWall({ r: 10, c: 10 }, dirs.up, newMaze)).toBe(false);
   expect(mg.isWall({ r: 10, c: 10 }, dirs.down, newMaze)).toBe(false);
@@ -84,4 +96,10 @@ test("getTurnDirection", () => {
     expect(mg.getTurnDirection(prev, next)).toBe(dirs.right);
     expect(mg.getTurnDirection(next, prev)).toBe(dirs.left);
   }
+});
+
+test("generateMaze: maze should be nRows x nCols", () => {
+  let maze = mg.generateMaze(63, 63).grid;
+  expect(maze.length).toBe(63);
+  expect(maze[0].length).toBe(63);
 });
