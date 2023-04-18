@@ -3,7 +3,7 @@ import "./algoVisualizer.css";
 import * as algorithms from "./algorithms";
 const blocks = require("./blocks");
 const utils = require("../../utils");
-const mg = require("./mazeGenerator");
+// const mg = require("./mazeGenerator");
 
 const DEBUG = false;
 
