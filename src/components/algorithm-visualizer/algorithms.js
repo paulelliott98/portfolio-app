@@ -8,7 +8,7 @@ const messages = {
 };
 
 // DFS
-export async function dfs(start, end, grid, run, speed, setGrid) {
+async function dfs(start, end, grid, run, speed, setGrid) {
   var dirs = [
     [-1, 0], // up
     [0, 1], // right
@@ -67,7 +67,7 @@ export async function dfs(start, end, grid, run, speed, setGrid) {
 }
 
 // BFS
-export async function bfs(start, end, grid, run, speed, setGrid, setResult) {
+async function bfs(start, end, grid, run, speed, setGrid) {
   var dirs = [
     [-1, 0], // up
     [0, 1], // right
@@ -128,15 +128,7 @@ export async function bfs(start, end, grid, run, speed, setGrid, setResult) {
 }
 
 // BFS shortest path
-export async function bfsShortestPath(
-  start,
-  end,
-  grid,
-  run,
-  speed,
-  setGrid,
-  setResult
-) {
+async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
   var dirs = [
     [-1, 0], // up
     [0, 1], // right
@@ -178,7 +170,10 @@ export async function bfsShortestPath(
       let path = [];
       let currCoord = prev.get(`${curr.r},${curr.c}`);
 
-      while (prev.get(`${currCoord.r},${currCoord.c}`) !== null) {
+      while (
+        prev.get(`${currCoord.r},${currCoord.c}`) !== null &&
+        run.current
+      ) {
         path.push(currCoord);
 
         // update ui grid
@@ -194,7 +189,8 @@ export async function bfsShortestPath(
         currCoord = prev.get(`${currCoord.r},${currCoord.c}`);
 
         if (speed.current < 100) {
-          await utils.sleep(100 - 0.95 * speed.current);
+          // await utils.sleep(100 - 0.95 * speed.current);
+          await utils.sleep(100 - speed.current);
         }
       }
 
@@ -228,3 +224,5 @@ export async function bfsShortestPath(
   // no path between source and destination; return null
   return messages.shortestPathDoesNotExist;
 }
+
+module.exports = { bfs, dfs, bfsShortestPath };

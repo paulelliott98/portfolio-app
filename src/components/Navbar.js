@@ -12,16 +12,26 @@ export default function Navbar(props) {
   return (
     <div ref={navRef} className="nav-area ">
       <div className="navbar ">
-        <RouterLink to="/">home</RouterLink>
+        <RouterLink to="/" draggable={false}>
+          home
+        </RouterLink>
         <div className="nav-item">
-          <RouterLink to="/#projects">projects</RouterLink>
+          <RouterLink to="/#projects" draggable={false}>
+            projects
+          </RouterLink>
           <span className="arrow"></span>
           <ul className="dropdown">
-            <RouterLink to="/algorithm-visualizer">Algo Visualizer</RouterLink>
+            <RouterLink to="/algorithm-visualizer" draggable={false}>
+              Algo Visualizer
+            </RouterLink>
           </ul>
         </div>
-        <RouterLink to="/#about">about</RouterLink>
-        <RouterLink to="/#contact">contact</RouterLink>
+        <RouterLink to="/#about" draggable={false}>
+          about
+        </RouterLink>
+        <RouterLink to="/#contact" draggable={false}>
+          contact
+        </RouterLink>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+const algorithms = require("../components/algorithm-visualizer/algorithms");
 const utils = require("../utils");
 const blocks = require("../components/algorithm-visualizer/blocks");
 const mg = require("../components/algorithm-visualizer/mazeGenerator");
@@ -9,12 +10,12 @@ describe("Maze Generator Tests", () => {
   var newMaze;
 
   beforeAll(() => {
-    [nRows, nCols] = [64, 64];
+    [nRows, nCols] = [24, 24];
   });
 
-  // beforeEach(() => {
-  //   newMaze = null;
-  // });
+  beforeEach(() => {
+    newMaze = utils.createArray(nRows, nCols, blocks.wall);
+  });
 
   test("getSideBlocks", () => {
     newMaze = utils.createArray(nRows, nCols);
@@ -79,15 +80,47 @@ describe("Maze Generator Tests", () => {
     }
   });
 
-  // test("generateMaze: maze should be nRows x nCols", () => {
-  //   newMaze = mg.generateMaze(63, 63).grid;
-  //   expect(newMaze.length).toBe(63);
-  //   expect(newMaze[0].length).toBe(63);
+  test("generateMaze: start position should be on border", () => {
+    for (let i = 0; i < 20; i++) {
+      newMaze = mg.generateMaze(nRows, nCols);
+      let [sr, sc] = [newMaze.startPos.r, newMaze.startPos.c];
+      expect(sr === 0 || sr === nRows - 1 || sc === 0 || sc === nCols - 1).toBe(
+        true
+      );
+    }
+  });
+
+  test("generateMaze: end position should be on border", () => {
+    for (let i = 0; i < 20; i++) {
+      newMaze = mg.generateMaze(nRows, nCols);
+      let [er, ec] = [newMaze.endPos.r, newMaze.endPos.c];
+      expect(er === 0 || er === nRows - 1 || ec === 0 || ec === nCols - 1).toBe(
+        true
+      );
+    }
+  });
+
+  // test("generateMaze: path should exist between source and dest", () => {
+  //   const speed = { current: 100 };
+  //   const run = { current: true };
+
+  //   for (let i = 0; i < 50; i++) {
+  //     newMaze = mg.generateMaze(nRows, nCols);
+  //     expect(
+  //       algorithms.bfs(
+  //         newMaze.startPos,
+  //         newMaze.endPos,
+  //         newMaze.grid,
+  //         run,
+  //         speed
+  //       )
+  //     ).toBe(true);
+  //   }
   // });
 });
 
 describe("Util Functions Tests", () => {
-  test("randInt should pick random int between [a, b] inclusive", () => {
+  test("randInt should be able to pick any int between [a, b] inclusive", () => {
     let s = new Set();
     for (let i = 0; i < 200; i++) {
       s.add(utils.randInt(0, 3));
@@ -95,7 +128,7 @@ describe("Util Functions Tests", () => {
     expect(s.size).toBe(4); // 0,1,2,3
   });
 
-  test("randChoice should choose be able to pick any item in list", () => {
+  test("randChoice should be able to pick any item in list", () => {
     let s = new Set();
     const d = ["up", "right", "down", "left"];
     for (let i = 0; i < 200; i++) {

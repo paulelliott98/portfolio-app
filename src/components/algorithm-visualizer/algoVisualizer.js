@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./algoVisualizer.css";
-import * as algorithms from "./algorithms";
+const algorithms = require("./algorithms");
 const blocks = require("./blocks");
 const utils = require("../../utils");
-// const mg = require("./mazeGenerator");
+const mg = require("./mazeGenerator");
 
 const DEBUG = false;
 
@@ -640,6 +640,7 @@ export default function AlgorithmVisualizer(props) {
                 <a
                   href="/#"
                   rel="noopener noreferrer"
+                  draggable={false}
                   onClick={(e) => {
                     e.preventDefault();
                     resetVisited();
@@ -652,6 +653,7 @@ export default function AlgorithmVisualizer(props) {
                 <a
                   href="/#"
                   rel="noopener noreferrer"
+                  draggable={false}
                   onClick={(e) => {
                     e.preventDefault();
                     resetVisited();
@@ -661,10 +663,11 @@ export default function AlgorithmVisualizer(props) {
                   Clear Walls
                 </a>
               </div>
-              {/* <div className="control-panel-button">
+              <div className="control-panel-button">
                 <a
                   href="/#"
                   rel="noopener noreferrer"
+                  draggable={false}
                   onClick={(e) => {
                     e.preventDefault();
                     resetVisited();
@@ -678,11 +681,12 @@ export default function AlgorithmVisualizer(props) {
                 >
                   Generate Maze
                 </a>
-              </div> */}
+              </div>
               <div className="control-panel-button">
                 <a
                   href="/#"
                   rel="noopener noreferrer"
+                  draggable={false}
                   onClick={(e) => {
                     e.preventDefault();
                     if (startPos.r === -1 || run.current) return;
