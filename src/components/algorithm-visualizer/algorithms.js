@@ -8,7 +8,7 @@ const messages = {
 };
 
 // DFS
-async function dfs(start, end, grid, run, speed, setGrid) {
+export async function dfs(start, end, grid, run, speed, setGrid) {
   var dirs = [
     [-1, 0], // up
     [0, 1], // right
@@ -67,7 +67,7 @@ async function dfs(start, end, grid, run, speed, setGrid) {
 }
 
 // BFS
-async function bfs(start, end, grid, run, speed, setGrid, setResult) {
+export async function bfs(start, end, grid, run, speed, setGrid, setResult) {
   var dirs = [
     [-1, 0], // up
     [0, 1], // right
@@ -128,7 +128,7 @@ async function bfs(start, end, grid, run, speed, setGrid, setResult) {
 }
 
 // BFS shortest path
-async function bfsShortestPath(
+export async function bfsShortestPath(
   start,
   end,
   grid,
@@ -229,4 +229,4 @@ async function bfsShortestPath(
   return messages.shortestPathDoesNotExist;
 }
 
-module.exports = { bfs, dfs, bfsShortestPath };
+// module.exports = { bfs, dfs, bfsShortestPath };

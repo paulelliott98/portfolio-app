@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./algoVisualizer.css";
-const algorithms = require("./algorithms");
+// const algorithms = require("./algorithms");
+import * as algorithms from "./algorithms";
 const blocks = require("./blocks");
 const utils = require("../../utils");
 const mg = require("./mazeGenerator");
