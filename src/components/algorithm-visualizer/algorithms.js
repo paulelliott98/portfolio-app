@@ -67,7 +67,7 @@ async function dfs(start, end, grid, run, speed, setGrid) {
 }
 
 // BFS
-async function bfs(start, end, grid, run, speed, setGrid) {
+async function bfs(start, end, grid, run, speed, setGrid, setResult) {
   var dirs = [
     [-1, 0], // up
     [0, 1], // right
@@ -128,7 +128,15 @@ async function bfs(start, end, grid, run, speed, setGrid) {
 }
 
 // BFS shortest path
-async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
+async function bfsShortestPath(
+  start,
+  end,
+  grid,
+  run,
+  speed,
+  setGrid,
+  setResult
+) {
   var dirs = [
     [-1, 0], // up
     [0, 1], // right
@@ -170,10 +178,7 @@ async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
       let path = [];
       let currCoord = prev.get(`${curr.r},${curr.c}`);
 
-      while (
-        prev.get(`${currCoord.r},${currCoord.c}`) !== null &&
-        run.current
-      ) {
+      while (prev.get(`${currCoord.r},${currCoord.c}`) !== null) {
         path.push(currCoord);
 
         // update ui grid
@@ -189,8 +194,7 @@ async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
         currCoord = prev.get(`${currCoord.r},${currCoord.c}`);
 
         if (speed.current < 100) {
-          // await utils.sleep(100 - 0.95 * speed.current);
-          await utils.sleep(100 - speed.current);
+          await utils.sleep(100 - 0.95 * speed.current);
         }
       }
 
