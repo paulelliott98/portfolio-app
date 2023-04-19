@@ -228,5 +228,3 @@ export async function bfsShortestPath(
   // no path between source and destination; return null
   return messages.shortestPathDoesNotExist;
 }
-
-// module.exports = { bfs, dfs, bfsShortestPath };

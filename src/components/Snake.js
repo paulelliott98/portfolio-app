@@ -136,6 +136,7 @@ export default function Snake(props) {
   const resetArena = () => {
     setPos(startPos);
     setPrevDir(startDir);
+    setDir(startDir);
     nextDir.current = startDir;
     setLen(startLen);
     setScore(0);
@@ -309,9 +310,9 @@ export default function Snake(props) {
           rel="noopener noreferrer"
           onClick={(e) => {
             e.preventDefault();
-            resetArena();
             setPage("game");
             setGameState(-1);
+            resetArena();
           }}
         >
           <p className="inline-block text-end content-end">Play Again</p>
@@ -485,12 +486,13 @@ export default function Snake(props) {
             onClick={(e) => {
               e.preventDefault();
               if (page === "game" && score > 0) {
-                postScores(playerName, score, difficulty, new Date()).then(
-                  (d) => {
+                postScores(playerName, score, difficulty, new Date())
+                  .then((d) => {
                     setLastPostDate(d);
                     getHighScoresData();
-                  }
-                );
+                  })
+                  .catch((e) => console.log(e));
+
                 setPage("highScoresScreen");
                 setGameState(0);
               } else {
@@ -522,6 +524,7 @@ export default function Snake(props) {
       })
       .catch((err) => {
         console.log(err);
+        setHighScores([]);
       });
   }
 
@@ -546,8 +549,8 @@ export default function Snake(props) {
       })
       .catch((err) => {
         console.log(err);
+        return d;
       });
-    return d;
   }
 
   useEffect(() => {
@@ -1138,10 +1141,13 @@ export default function Snake(props) {
 
         // check win
         if (len === maxLen) {
-          postScores(playerName, score, difficulty, new Date()).then((d) => {
-            setLastPostDate(d);
-            getHighScoresData();
-          });
+          postScores(playerName, score, difficulty, new Date())
+            .then((d) => {
+              setLastPostDate(d);
+              getHighScoresData();
+            })
+            .catch((e) => console.log(e));
+
           setGameState(1);
           setPage("highScoresScreen");
           return;
@@ -1178,10 +1184,13 @@ export default function Snake(props) {
         // check collision/loss
         // if next cell is body (not 0 or -1), end game
         if (arr[nr][nc] > 1 && arr[nr][nc] !== len) {
-          postScores(playerName, score, difficulty, new Date()).then((d) => {
-            setLastPostDate(d);
-            getHighScoresData();
-          });
+          postScores(playerName, score, difficulty, new Date())
+            .then((d) => {
+              setLastPostDate(d);
+              getHighScoresData();
+            })
+            .catch((e) => console.log(e));
+
           setGameState(0);
           setPage("highScoresScreen");
           return;
@@ -1363,7 +1372,10 @@ export default function Snake(props) {
                         .reverse()
                         .find((item) => item.Score !== "-") || null;
                     var lowest = lowestItem ? lowestItem.Score : 0;
-                    if (highScores[highScores.length - 1].Score === "-")
+                    if (
+                      highScores.length > 0 &&
+                      highScores[highScores.length - 1].Score === "-"
+                    )
                       lowest = 0;
                     if (score > lowest && gameState === -1) {
                       if (!isHighScore) setIsHighScore(true);

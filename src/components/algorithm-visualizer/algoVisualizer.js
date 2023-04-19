@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./algoVisualizer.css";
-// const algorithms = require("./algorithms");
 import * as algorithms from "./algorithms";
-const blocks = require("./blocks");
+import * as mg from "./mazeGenerator";
+import blocks from "./blocks";
 const utils = require("../../utils");
-const mg = require("./mazeGenerator");
 
 const DEBUG = false;
 
@@ -421,6 +420,8 @@ export default function AlgorithmVisualizer(props) {
               style={{
                 width: "24px",
                 height: "24px",
+                minWidth: "24px",
+                minHeight: "24px",
                 backgroundColor: `${blockColors.source}${blockOpacity}`,
               }}
             />
@@ -432,6 +433,8 @@ export default function AlgorithmVisualizer(props) {
               style={{
                 width: "24px",
                 height: "24px",
+                minWidth: "24px",
+                minHeight: "24px",
                 backgroundColor: `${blockColors.sink}${blockOpacity}`,
               }}
             />
@@ -443,6 +446,8 @@ export default function AlgorithmVisualizer(props) {
               style={{
                 width: "24px",
                 height: "24px",
+                minWidth: "24px",
+                minHeight: "24px",
                 backgroundColor: `${blockColors.wall}${blockOpacity}`,
               }}
             />
@@ -454,6 +459,8 @@ export default function AlgorithmVisualizer(props) {
               style={{
                 width: "24px",
                 height: "24px",
+                minWidth: "24px",
+                minHeight: "24px",
                 backgroundColor: `${blockColors.empty}${blockOpacity}`,
               }}
             />
@@ -465,6 +472,8 @@ export default function AlgorithmVisualizer(props) {
               style={{
                 width: "24px",
                 height: "24px",
+                minWidth: "24px",
+                minHeight: "24px",
                 backgroundColor: `${blockColors.visited}${blockOpacity}`,
               }}
             />
@@ -476,6 +485,8 @@ export default function AlgorithmVisualizer(props) {
               style={{
                 width: "24px",
                 height: "24px",
+                minWidth: "24px",
+                minHeight: "24px",
                 backgroundColor: `${blockColors.path}${blockOpacity}`,
               }}
             />

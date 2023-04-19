@@ -1,8 +1,9 @@
 // const algorithms = require("../components/algorithm-visualizer/algorithms");
 // import * as algorithms from "../components/algorithm-visualizer/algorithms";
+
+import blocks from "../components/algorithm-visualizer/blocks";
+import * as mg from "../components/algorithm-visualizer/mazeGenerator";
 const utils = require("../utils");
-const blocks = require("../components/algorithm-visualizer/blocks");
-const mg = require("../components/algorithm-visualizer/mazeGenerator");
 
 const dirs = { up: 0, right: 1, down: 2, left: 3 };
 
