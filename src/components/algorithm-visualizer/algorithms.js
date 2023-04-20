@@ -40,7 +40,8 @@ export async function dfs(start, end, grid, run, speed, setGrid) {
       visited[curr.r][curr.c] = 1; // set internal grid to visited
     }
 
-    setGrid(newGrid);
+    if (typeof setGrid === "function" && setGrid) setGrid(newGrid);
+    else grid = newGrid;
 
     for (let i in dirs) {
       const [nr, nc] = [curr.r + dirs[i][0], curr.c + dirs[i][1]];
@@ -67,7 +68,7 @@ export async function dfs(start, end, grid, run, speed, setGrid) {
 }
 
 // BFS
-export async function bfs(start, end, grid, run, speed, setGrid, setResult) {
+export async function bfs(start, end, grid, run, speed, setGrid) {
   var dirs = [
     [-1, 0], // up
     [0, 1], // right
@@ -99,7 +100,8 @@ export async function bfs(start, end, grid, run, speed, setGrid, setResult) {
       newGrid[curr.r][curr.c] = 1; // if not source, set to visited in ui grid
     }
 
-    setGrid(newGrid);
+    if (typeof setGrid === "function" && setGrid) setGrid(newGrid);
+    else grid = newGrid;
 
     visited[curr.r][curr.c] = 1; // set internal grid to visited
 
@@ -128,15 +130,7 @@ export async function bfs(start, end, grid, run, speed, setGrid, setResult) {
 }
 
 // BFS shortest path
-export async function bfsShortestPath(
-  start,
-  end,
-  grid,
-  run,
-  speed,
-  setGrid,
-  setResult
-) {
+export async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
   var dirs = [
     [-1, 0], // up
     [0, 1], // right
@@ -188,13 +182,15 @@ export async function bfsShortestPath(
         ) {
           let newGrid = [...grid];
           newGrid[currCoord.r][currCoord.c] = 5; // set to path block
-          setGrid(newGrid);
+
+          if (typeof setGrid === "function" && setGrid) setGrid(newGrid);
+          else grid = newGrid;
         }
 
         currCoord = prev.get(`${currCoord.r},${currCoord.c}`);
 
         if (speed.current < 100) {
-          await utils.sleep(100 - 0.95 * speed.current);
+          await utils.sleep(100 - speed.current);
         }
       }
 
@@ -215,7 +211,9 @@ export async function bfsShortestPath(
       newGrid[curr.r][curr.c] = 1; // if not source, set to visited in ui grid
     }
 
-    setGrid(newGrid);
+    if (typeof setGrid === "function" && setGrid) setGrid(newGrid);
+    else grid = newGrid;
+
     visited[curr.r][curr.c] = 1; // set internal grid to visited
 
     if (speed.current < 100) {
