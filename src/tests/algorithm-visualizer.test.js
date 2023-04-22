@@ -83,7 +83,7 @@ describe("Maze Generator Tests", () => {
         start.c + dirChange[startDir][1],
       ];
 
-      var endPos = mg.makeAllCorridors(
+      var endPos = mg.carveMainPath(
         { r: startR, c: startC },
         startDir,
         grid,

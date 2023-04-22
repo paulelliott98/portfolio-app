@@ -192,11 +192,18 @@ export async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
         currCoord = prev.get(`${currCoord.r},${currCoord.c}`);
 
         if (speed.current < 100) {
-          await utils.sleep(100 - speed.current);
+          await utils.sleep(100 - 0.95 * speed.current);
         }
       }
 
-      path.reverse();
+      //   path.reverse();
+
+      //   let res = "";
+      //   path.forEach((obj) => {
+      //     if (res.length > 0) res += " -> ";
+      //     res += `(${obj.r}, ${obj.c})`;
+      //   });
+
       return path.length + 1;
     }
 
