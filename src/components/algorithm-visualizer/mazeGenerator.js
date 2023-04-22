@@ -26,31 +26,31 @@ reverseDir.set(dirCodes.left, dirCodes.right);
 reverseDir.set(dirCodes.right, dirCodes.left);
 
 export function generateMaze(nRows, nCols) {
-  var nCorridors = Math.floor(nRows);
+  const nCorridors = Math.floor(nRows / 2);
   var grid = utils.createArray(nRows, nCols, blocks.wall);
+  const startDir = utils.randInt(0, 3);
+  const startPos = initStartPos(startDir, nRows, nCols); // start coordinate
+  const startNext = {
+    r: startPos.r + dirChange[startDir][0],
+    c: startPos.c + dirChange[startDir][1],
+  };
 
-  var startDir = utils.randInt(0, 3);
-  const start = initStartPos(startDir, nRows, nCols); // start coordinate
+  // carve out main path from one border coordinate to another boorder coordinate
+  const endPos = carveMainPath(startNext, startDir, grid, nCorridors);
 
-  const [startR, startC] = [
-    start.r + dirChange[startDir][0],
-    start.c + dirChange[startDir][1],
-  ];
+  // carve out side paths starting from coords on the main path
+  let isSidePathsCarvable = false;
+  do {
+    isSidePathsCarvable = carveSidePaths(startPos, grid);
+  } while (isSidePathsCarvable);
 
-  var endPos = makeAllCorridors(
-    { r: startR, c: startC },
-    startDir,
-    grid,
-    nCorridors
-  );
-
-  grid[start.r][start.c] = blocks.source;
+  grid[startPos.r][startPos.c] = blocks.source;
   grid[endPos.r][endPos.c] = blocks.sink;
 
   return {
     grid: grid,
-    startPos: start,
-    endPos: { r: endPos.r, c: endPos.c },
+    startPos: startPos,
+    endPos: endPos,
   };
 }
 
@@ -132,7 +132,7 @@ export function drawCorridorsToEdge(path, grid) {
   return end;
 }
 
-export function makeAllCorridors(start, direction, grid, nCorridors) {
+export function carveMainPath(start, direction, grid, nCorridors) {
   let end = [start.r, start.c];
   let dir = direction;
 
@@ -141,8 +141,8 @@ export function makeAllCorridors(start, direction, grid, nCorridors) {
   for (let i = 0; i < nCorridors; i++) {
     if (end !== null && typeof end !== "undefined") prevEnd = [...end];
 
-    end = makeCorridor({ r: end[0], c: end[1] }, dir, grid);
-    dir = getNewDirection({ r: end[0], c: end[1] }, dir, grid);
+    end = makeCorridor(end, dir, grid);
+    dir = getNewDirection(end, dir, grid);
 
     if (end === null || dir === null) break;
   }
@@ -161,14 +161,83 @@ export function makeAllCorridors(start, direction, grid, nCorridors) {
   return { r: end[0], c: end[1] };
 }
 
+// check if (i, j) is a valid start coordinate for side paths to branch off of
+function isValidStartCoord(i, j, startPos, grid) {
+  // return false if corner coordinate
+  // if (
+  //   !(
+  //     (grid[i - 1][j] === blocks.wall && grid[i + 1][j] === blocks.wall) ||
+  //     (grid[i][j - 1] === blocks.wall && grid[i][j + 1] === blocks.wall)
+  //   )
+  // )
+  //   return false;
+
+  let [r, c] = [startPos.r, startPos.c];
+
+  if (r % 2 !== 0 && c % 2 !== 0)
+    // if both r and c of startPos are odd, then all valid positions we can carve side paths
+    // from are [even, odd] or [odd, even]
+    return (i % 2 === 0 && j % 2 !== 0) || (i % 2 !== 0 && j % 2 === 0);
+  // if either r or c of startPos is even, then all valid positions we can carve side paths
+  // from are [odd, odd]
+  else if (r % 2 === 0 || c % 2 === 0) return i % 2 !== 0 && j % 2 !== 0;
+}
+
+export function carveSidePaths(startPos, grid) {
+  let validCoords = [];
+  let isCarvable = false;
+
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid.length; j++) {
+      if (
+        isInMaze(i, j, grid) &&
+        grid[i][j] === blocks.empty &&
+        isValidStartCoord(i, j, startPos, grid)
+      ) {
+        validCoords.push([i, j]);
+      }
+    }
+  }
+
+  // utils.shuffleArray(validCoords);
+
+  for (let h in validCoords) {
+    let [i, j] = validCoords[h];
+
+    let dirs = utils.shuffleArray([0, 1, 2, 3]);
+    for (let k in dirs) {
+      let [di, dj] = [dirChange[dirs[k]][0], dirChange[dirs[k]][1]];
+      if (
+        !isInMaze(i + 2 * di, j + 2 * dj, grid) ||
+        grid[i + 2 * di][j + 2 * dj] !== blocks.wall
+      )
+        continue;
+
+      let end = [i, j];
+      let dir = dirs[k];
+
+      while (end !== null && dir !== null) {
+        end = makeCorridor(end, dir, grid, true);
+        dir = getNewDirection(end, dir, grid, true);
+        // console.log(end, dir);
+      }
+
+      // grid[i][j] = blocks.visited;
+      isCarvable = true;
+      break;
+    }
+  }
+
+  return isCarvable;
+}
+
 // return random end coords for a straight corridor given a start position and direction
 // corridors cannot cross walls: walls are wall blocks with thickness 1
 // corridors cannot cross the 4 edges of maze
-export function makeCorridor(st, direction, grid) {
-  if (st === null || typeof st === "undefined" || direction === null)
-    return null;
+export function makeCorridor(st, direction, grid, isDeadEnd = false) {
+  if (st === null || direction === null) return null;
 
-  let curr = { r: st.r, c: st.c };
+  let curr = { r: st[0], c: st[1] };
   let next = {
     r: curr.r + 2 * dirChange[direction][0],
     c: curr.c + 2 * dirChange[direction][1],
@@ -182,8 +251,9 @@ export function makeCorridor(st, direction, grid) {
   }
 
   let corridorLength = utils.randEven(
-    Math.min(4, maxCorridorLength),
+    Math.min(6, maxCorridorLength),
     Math.floor(maxCorridorLength / 2)
+    // maxCorridorLength
   );
 
   let remaining = corridorLength;
@@ -197,8 +267,9 @@ export function makeCorridor(st, direction, grid) {
     remaining > 0 &&
     isInMaze(next.r, next.c, grid) &&
     grid[next.r][next.c] === blocks.wall &&
-    !isWall(next, direction, grid) &&
-    shortestPathToEdge(curr, next, grid).nTraversable !== -1
+    // !isWall(next, direction, grid) &&
+    ((!isDeadEnd && shortestPathToEdge(curr, next, grid).nTraversable !== -1) ||
+      isDeadEnd)
   ) {
     grid[curr.r][curr.c] = blocks.empty;
     grid[curr.r + dirChange[direction][0]][curr.c + dirChange[direction][1]] =
@@ -210,6 +281,8 @@ export function makeCorridor(st, direction, grid) {
 
     remaining -= 2;
   }
+
+  grid[curr.r][curr.c] = blocks.empty;
 
   return [curr.r, curr.c];
 }
@@ -286,7 +359,9 @@ export function shortestPathToEdge(prevCoord, coord, grid) {
 }
 
 // determine possible next directions at a given point
-export function getNewDirection(start, direction, grid) {
+export function getNewDirection(start, direction, grid, isDeadEnd = false) {
+  if (start === null || direction === null) return null;
+
   let newDir = null;
   let largestTraversableArea = -1;
   let isSameDirValid = false;
@@ -295,20 +370,20 @@ export function getNewDirection(start, direction, grid) {
 
   for (let i = 0; i < 4; i++) {
     const [nr, nc] = [
-      start.r + 2 * dirChange[i][0],
-      start.c + 2 * dirChange[i][1],
+      start[0] + 2 * dirChange[i][0],
+      start[1] + 2 * dirChange[i][1],
     ];
 
     if (i === reverseDir[direction] || !isInMaze(nr, nc, grid)) continue;
 
     if (!isWall({ r: nr, c: nc }, i, grid) && grid[nr][nc] === blocks.wall) {
       let traversableArea = shortestPathToEdge(
-        { r: start.r, c: start.c },
+        { r: start[0], c: start[1] },
         { r: nr, c: nc },
         grid
       ).nTraversable;
 
-      if (traversableArea === -1) continue;
+      if (!isDeadEnd && traversableArea === -1) continue;
 
       if (i === direction) {
         isSameDirValid = true;

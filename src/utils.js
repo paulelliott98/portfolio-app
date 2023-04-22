@@ -63,6 +63,14 @@ function randOdd(min, max) {
   return n;
 }
 
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 function isInViewport(x, y) {
   if (x >= 0 && x <= 100 && y >= 0 && y <= 100) return true;
   return false;
@@ -93,6 +101,7 @@ module.exports = {
   randChoice,
   randEven,
   randOdd,
+  shuffleArray,
   isInViewport,
   getPageHeight,
 };

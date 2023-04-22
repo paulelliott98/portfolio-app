@@ -1,3 +1,4 @@
+// import blocks from "./blocks";
 const utils = require("../../utils");
 
 const messages = {
@@ -171,6 +172,7 @@ export async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
     if (curr.r === end.r && curr.c === end.c) {
       let path = [];
       let currCoord = prev.get(`${curr.r},${curr.c}`);
+      // utils.changeAll(blocks.visited, blocks.empty, grid); // unset all visited blocks
 
       while (prev.get(`${currCoord.r},${currCoord.c}`) !== null) {
         path.push(currCoord);
@@ -194,14 +196,7 @@ export async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
         }
       }
 
-      //   path.reverse();
-
-      //   let res = "";
-      //   path.forEach((obj) => {
-      //     if (res.length > 0) res += " -> ";
-      //     res += `(${obj.r}, ${obj.c})`;
-      //   });
-
+      path.reverse();
       return path.length + 1;
     }
 
