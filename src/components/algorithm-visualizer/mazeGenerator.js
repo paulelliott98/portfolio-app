@@ -199,7 +199,7 @@ export function carveSidePaths(startPos, grid) {
     }
   }
 
-  // utils.shuffleArray(validCoords);
+  utils.shuffleArray(validCoords);
 
   for (let h in validCoords) {
     let [i, j] = validCoords[h];
@@ -250,11 +250,19 @@ export function makeCorridor(st, direction, grid, isDeadEnd = false) {
     next.c += 2 * dirChange[direction][1];
   }
 
-  let corridorLength = utils.randEven(
-    Math.min(6, maxCorridorLength),
-    Math.floor(maxCorridorLength / 2)
-    // maxCorridorLength
-  );
+  let corridorLength;
+
+  if (!isDeadEnd) {
+    corridorLength = utils.randEven(
+      Math.min(2, maxCorridorLength),
+      maxCorridorLength
+    );
+  } else {
+    corridorLength = utils.randEven(
+      Math.min(2, maxCorridorLength),
+      Math.floor(maxCorridorLength)
+    );
+  }
 
   let remaining = corridorLength;
 
