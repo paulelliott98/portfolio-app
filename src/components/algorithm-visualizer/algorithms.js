@@ -174,7 +174,10 @@ export async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
       let currCoord = prev.get(`${curr.r},${curr.c}`);
       // utils.changeAll(blocks.visited, blocks.empty, grid); // unset all visited blocks
 
-      while (prev.get(`${currCoord.r},${currCoord.c}`) !== null) {
+      while (
+        prev.get(`${currCoord.r},${currCoord.c}`) !== null &&
+        run.current
+      ) {
         path.push(currCoord);
 
         // update ui grid
