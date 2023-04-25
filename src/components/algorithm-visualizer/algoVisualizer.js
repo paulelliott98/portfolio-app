@@ -25,9 +25,9 @@ export default function AlgorithmVisualizer(props) {
   const canvasRef = useRef(null);
   const scale = window.devicePixelRatio || 1;
 
-  const [minBlockScale, maxBlockScale] = [2, 4];
-  const defaultBlockScale = minBlockScale + 1;
-  const baseBlockSize = 3;
+  const [minBlockScale, maxBlockScale] = [1, 3];
+  const defaultBlockScale = minBlockScale;
+  const baseBlockSize = 7;
   const base = 2;
   let blockScale = useRef(defaultBlockScale);
   let blockSize = useRef(baseBlockSize * Math.pow(base, blockScale.current));
