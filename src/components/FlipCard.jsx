@@ -1,8 +1,9 @@
-import React from "react";
+import { Typography } from '@mui/material';
+import React from 'react';
 
 export default function FlipCard({ classes, style, href, title, path, alt }) {
   return (
-    <div className={"flip-card " + classes || ""} style={style}>
+    <div className={'flip-card ' + classes || ''} style={style}>
       <a
         className="logo-container"
         href={href}
@@ -15,7 +16,12 @@ export default function FlipCard({ classes, style, href, title, path, alt }) {
           </div>
           <div className="flip-card-back">
             <img className="logo" title={title} src={path} alt={alt} />
-            <p className="mt-4">{title}</p>
+            <Typography
+              variant="body1"
+              style={{ fontWeight: 'bold', marginTop: '12px' }}
+            >
+              {title}
+            </Typography>
           </div>
         </div>
       </a>

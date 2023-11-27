@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ThemeProvider } from '@mui/material';
 import theme from './theme';
 import { default as AppRoutes } from './Routes';
+import SortingVisualizer from './components/sorting-visualizer/SortingVisualizer';
 
 const utils = require('./utils');
 
@@ -79,7 +80,6 @@ export default function App() {
           documentHeight.current - window.innerHeight - offset
       ) {
         if (currPagePos.current > lastPagePos.current) {
-          // console.log("Scrolling down");
           if (
             (isUserScrolling.current === true ||
               isSmallScreen.current === true) &&
@@ -250,6 +250,10 @@ export default function App() {
                 getDocumentHeight={getDocumentHeight}
               />
             }
+          />
+          <Route
+            path={AppRoutes.sortingVisualizer}
+            element={<SortingVisualizer />}
           />
         </Routes>
       </ThemeProvider>

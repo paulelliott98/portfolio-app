@@ -178,68 +178,80 @@ export default function HomePage(props) {
         <div className="section-title">
           <h4>about</h4>
         </div>
-        <div ref={ref3} className="flex flex-col gap-y-10">
+        <div ref={ref3} className="flex flex-col gap-y-4">
           <div
             className={'container ' + anim('fade', inView3)}
             style={animDelay(0.5)}
           >
-            <h2>Bio</h2>
-            <div className="divider"></div>
-            <p>
+            <Typography variant="h4">Bio</Typography>
+            <Typography variant="body1">
               Hello and welcome to my website! I am a graduate of UCLA’s class
-              of 2022 (Go Bruins!) with a major in molecular, cell, and
-              development biology and a minor in bioinformatics.
-            </p>
-            <p>
+              of 2022 (Go Bruins!) with a molecular, cell, and development
+              biology major and bioinformatics minor.
+            </Typography>
+            <Typography>
               Previously pre-dental, I eventually made up my mind to pursue my
-              passion for software development and switched into tech during my
-              4th year of college.
-            </p>
-            <p>
+              passion for software development and switched my career path
+              during my 4th year of college.
+            </Typography>
+            <Typography variant="body1">
               Over the years, I’ve explored and completed personal projects in
               many areas including:
-            </p>
+            </Typography>
             <ul className="ul-indented">
-              <li key="0">Data Science / Deep Learning</li>
-              <li key="1">Web Development</li>
-              <li key="2">Web Scraping and Automation</li>
-              <li key="3">Game Development</li>
+              {[
+                'Data Science / Deep Learning',
+                'Web Development',
+                'Web Scraping and Automation',
+                'Game Development',
+              ].map((item, index) => (
+                <li key={index}>
+                  <Typography variant="subtitle1">{item}</Typography>
+                </li>
+              ))}
             </ul>
-            <p>
-              I am currently searching for a software developer position where I
-              can utilize my broad skillset, strong problem solving ability, and
-              resourcefulness to help the team succeed.
-            </p>
+            <Typography variant="body1">
+              I currently work at Language Computer where my experience in web
+              dev (design, Material UI, React/Redux, Javascript) along with my
+              strong problem solving ability and resourcefulness enable the team
+              to succeed.
+            </Typography>
           </div>
           <div
             className={'container ' + anim('fade', inView4)}
             style={animDelay(0.7)}
             ref={ref4}
           >
-            <h2>skills</h2>
-            <div className="divider"></div>
+            <Typography variant="h4">skills</Typography>
             <ul className="ul-unindented">
-              <li key="0">
-                <b>Machine Learning/Data Science</b> — Python, PyTorch,
-                Tensorflow, Scikit-learn, Numpy, Pandas, Matplotlib, Seaborn,
-                OpenCV, Pillow, Selenium, BeautifulSoup
-              </li>
-              <li key="1">
-                <b>Full Stack</b> — Javascript, CSS, HTML5, React.js, Axios,
-                Express.js, Sequelize, Fly.io, Flask, Microservices
-              </li>
-              <li key="2">
-                <b>Database</b> — PostgreSQL, MySQL
-              </li>
-              <li key="3">
-                <b>Containerization</b> — Docker, Docker Compose, Kubernetes
-              </li>
-              <li key="4">
-                <b>Cloud</b> — GCP
-              </li>
-              <li key="5">
-                <b>CI/CD</b> — Jenkins, Gitlab, Git
-              </li>
+              {[
+                <>
+                  <b>Machine Learning/Data Science</b> — Python, PyTorch,
+                  Tensorflow, Scikit-learn, Numpy, Pandas, Matplotlib, Seaborn,
+                  OpenCV, Pillow, Selenium, BeautifulSoup
+                </>,
+                <>
+                  <b>Full Stack</b> — Javascript, CSS, HTML5, React/Redux,
+                  Material UI, Axios, Express.js, Sequelize, Fly.io, Flask,
+                  Microservices
+                </>,
+                <>
+                  <b>Database</b> — PostgreSQL, MySQL
+                </>,
+                <>
+                  <b>Containerization</b> — Docker, Docker Compose, Kubernetes
+                </>,
+                <>
+                  <b>Cloud</b> — GCP
+                </>,
+                <>
+                  <b>CI/CD</b> — Jenkins, Gitlab, Git
+                </>,
+              ].map((item, index) => (
+                <li key={index}>
+                  <Typography variant="subtitle1">{item}</Typography>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

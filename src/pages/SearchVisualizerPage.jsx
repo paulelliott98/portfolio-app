@@ -1,5 +1,5 @@
 import { React, useEffect } from 'react';
-import SearchVisualizer from '../components/algorithm-visualizer/SearchVisualizer';
+import SearchVisualizer from '../components/search-visualizer/SearchVisualizer';
 import '../styles.css';
 
 const utils = require('../utils');

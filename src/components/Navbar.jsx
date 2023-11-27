@@ -1,5 +1,6 @@
 import { React, useEffect, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { default as AppRoutes } from '../Routes';
 
 // navbar component
 export default function Navbar(props) {
@@ -15,23 +16,23 @@ export default function Navbar(props) {
         <RouterLink to="/" draggable={false}>
           home
         </RouterLink>
-        <RouterLink to="/#projects" draggable={false}>
-          projects
-        </RouterLink>
         <div className="nav-item">
           <RouterLink to="#" draggable={false}>
-            algo visualization
+            visualize
           </RouterLink>
           <span className="arrow"></span>
           <ul className="navbar-dropdown">
-            <RouterLink to="/visualize/search" draggable={false}>
+            <RouterLink to={AppRoutes.searchVisualizer} draggable={false}>
               Search
             </RouterLink>
-            <RouterLink to="/visualize/sorting" draggable={false}>
+            {/* <RouterLink to={AppRoutes.sortingVisualizer} draggable={false}>
               Sorting
-            </RouterLink>
+            </RouterLink> */}
           </ul>
         </div>
+        <RouterLink to="/#projects" draggable={false}>
+          projects
+        </RouterLink>
         <RouterLink to="/#about" draggable={false}>
           about
         </RouterLink>

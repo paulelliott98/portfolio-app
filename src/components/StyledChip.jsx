@@ -19,7 +19,6 @@ const StyledChip = ({ ...props }) => {
       }
       sx={{
         backgroundColor: 'rgba(46,46,65,0.75)',
-        backdropFilter: 'blur(20px)',
       }}
     />
   );
