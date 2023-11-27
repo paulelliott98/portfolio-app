@@ -1,13 +1,16 @@
-import HomePage from "./pages/HomePage";
-import VisualizerToolPage from "./pages/VisualizerToolPage";
-import Navbar from "./components/Navbar";
-import { Route, Routes, useLocation } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import HomePage from './pages/HomePage';
+import SearchVisualizerPage from './pages/SearchVisualizerPage';
+import Navbar from './components/Navbar';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { ThemeProvider } from '@mui/material';
+import theme from './theme';
+import { default as AppRoutes } from './Routes';
 
-const utils = require("./utils");
+const utils = require('./utils');
 
 var isMobile =
-  "ontouchstart" in window ||
+  'ontouchstart' in window ||
   navigator.maxTouchPoints > 0 ||
   navigator.msMaxTouchPoints > 0;
 
@@ -45,10 +48,10 @@ export default function App() {
       isSmallScreen.current = isMobile === true || width <= 992;
     }
 
-    window.addEventListener("resize", handleWindowSizeChange);
+    window.addEventListener('resize', handleWindowSizeChange);
 
     return () => {
-      window.removeEventListener("resize", handleWindowSizeChange);
+      window.removeEventListener('resize', handleWindowSizeChange);
     };
   });
 
@@ -82,14 +85,14 @@ export default function App() {
               isSmallScreen.current === true) &&
             documentHeight.current > window.screen.height
           ) {
-            navRef.current.style.visibility = "hidden";
+            navRef.current.style.visibility = 'hidden';
 
             const dy = `-${navRef.current.clientHeight + 3}px`;
             navRef.current.style.transform = `translateY(${dy})`;
           }
         } else {
           // console.log("Scrolling up");
-          navRef.current.style = ""; // set to default defined css style
+          navRef.current.style = ''; // set to default defined css style
         }
       }
 
@@ -106,13 +109,13 @@ export default function App() {
 
     if (!isScrolling.current) {
       // if not a hash link, scroll to top
-      if (hash === "") {
+      if (hash === '') {
         window.scrollTo(0, 0);
       }
       // else scroll to id
       else {
         to = setTimeout(() => {
-          const id = hash.replace("#", "");
+          const id = hash.replace('#', '');
           const element = document.getElementById(id);
           if (element) {
             element.scrollIntoView();
@@ -121,18 +124,18 @@ export default function App() {
       }
     }
 
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("wheel", handleWheel);
-    window.addEventListener("touchmove", handleTouchMove);
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('wheel', handleWheel);
+    window.addEventListener('touchmove', handleTouchMove);
 
     isUserScrolling.current = false;
     isTouchMove.current = false;
 
     return () => {
       clearTimeout(to);
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchmove', handleTouchMove);
     };
   }, [
     pathname,
@@ -167,7 +170,7 @@ export default function App() {
         let size = sizes[i];
 
         let style1 = {
-          position: "fixed",
+          position: 'fixed',
           zIndex: `-${500 - size}`,
           left: `0`,
           top: `0`,
@@ -179,7 +182,7 @@ export default function App() {
         };
 
         let style2 = JSON.parse(JSON.stringify(style1));
-        style2["top"] = "100vh";
+        style2['top'] = '100vh';
 
         let boxShadows = ``;
 
@@ -190,8 +193,8 @@ export default function App() {
           ];
 
           let colors;
-          if (i < sizes.length / 2) colors = ["#4CA9E1", "#FAECDB", "#FFFFFF"];
-          else colors = ["#FAECDB", "#FFFFFF", "#D39A95"];
+          if (i < sizes.length / 2) colors = ['#4CA9E1', '#FAECDB', '#FFFFFF'];
+          else colors = ['#FAECDB', '#FFFFFF', '#D39A95'];
 
           const color = utils.randChoice(colors);
 
@@ -208,10 +211,10 @@ export default function App() {
           boxShadows += `${boxShadow}`;
         }
 
-        style1["boxShadow"] = boxShadows; // string of box shadows
+        style1['boxShadow'] = boxShadows; // string of box shadows
         starsDivs.push(<div key={i} style={style1}></div>);
 
-        style2["boxShadow"] = boxShadows; // string of box shadows
+        style2['boxShadow'] = boxShadows; // string of box shadows
         starsDivs.push(<div key={i + sizes.length} style={style2}></div>);
       }
       return starsDivs;
@@ -222,30 +225,34 @@ export default function App() {
 
   return (
     <>
-      <Navbar getNavRef={getNavRef} />
-      {isSmallScreen.current === true ? null : <div className="space-bg"></div>}
-      {stars}
+      <ThemeProvider theme={theme}>
+        <Navbar getNavRef={getNavRef} />
+        {isSmallScreen.current === true ? null : (
+          <div className="space-bg"></div>
+        )}
+        {stars}
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage
-              isMobile={isSmallScreen.current}
-              getDocumentHeight={getDocumentHeight}
-            />
-          }
-        />
-        <Route
-          path="/algorithm-visualizer"
-          element={
-            <VisualizerToolPage
-              isMobile={isSmallScreen.current}
-              getDocumentHeight={getDocumentHeight}
-            />
-          }
-        />
-      </Routes>
+        <Routes>
+          <Route
+            path={AppRoutes.homePage}
+            element={
+              <HomePage
+                isMobile={isSmallScreen.current}
+                getDocumentHeight={getDocumentHeight}
+              />
+            }
+          />
+          <Route
+            path={AppRoutes.searchVisualizer}
+            element={
+              <SearchVisualizerPage
+                isMobile={isSmallScreen.current}
+                getDocumentHeight={getDocumentHeight}
+              />
+            }
+          />
+        </Routes>
+      </ThemeProvider>
     </>
   );
 }

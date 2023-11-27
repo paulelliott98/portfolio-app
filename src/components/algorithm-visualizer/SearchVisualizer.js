@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useRef } from "react";
-import "./algoVisualizer.css";
-import * as algorithms from "./algorithms";
-import * as mg from "./mazeGenerator";
-import blocks from "./blocks";
-const utils = require("../../utils");
+import React, { useState, useEffect, useRef } from 'react';
+import './algoVisualizer.css';
+import * as algorithms from './algorithms';
+import * as mg from './mazeGenerator';
+import blocks from './blocks';
+const utils = require('../../utils');
 
 const DEBUG = false;
 
 const blockColors = {
-  source: "#d21f3c",
-  sink: "#1aa7ec",
-  visited: "#3ded97",
-  empty: "#ffffff",
-  wall: "#444444",
-  path: "#ffff00",
+  source: '#d21f3c',
+  sink: '#1aa7ec',
+  visited: '#3ded97',
+  empty: '#ffffff',
+  wall: '#444444',
+  path: '#ffff00',
 };
-const blockOpacity = "BB";
+const blockOpacity = 'BB';
 
-export default function AlgorithmVisualizer(props) {
+export default function SearchVisualizer(props) {
   const randomInteger = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
@@ -38,8 +38,8 @@ export default function AlgorithmVisualizer(props) {
 
   let gap = useRef((props.h % blockSize.current) / (nCols.current + 1)); // gap size
 
-  const [result, setResult] = useState("-");
-  const [algorithm, setAlgorithm] = useState("bfs");
+  const [result, setResult] = useState('-');
+  const [algorithm, setAlgorithm] = useState('bfs');
   let run = useRef(false);
 
   const [sliderMin, sliderMax] = [0, 100];
@@ -84,11 +84,11 @@ export default function AlgorithmVisualizer(props) {
   function runSearch(start, end) {
     run.current = true;
     let res = null;
-    if (algorithm === "dfs")
+    if (algorithm === 'dfs')
       res = algorithms.dfs(start, end, grid, run, speed, setGrid);
-    else if (algorithm === "bfs")
+    else if (algorithm === 'bfs')
       res = algorithms.bfs(start, end, grid, run, speed, setGrid);
-    else if (algorithm === "bfsShortestPath")
+    else if (algorithm === 'bfsShortestPath')
       res = algorithms.bfsShortestPath(start, end, grid, run, speed, setGrid);
 
     return res;
@@ -101,7 +101,7 @@ export default function AlgorithmVisualizer(props) {
     utils.changeAll(blocks.visited, blocks.empty, newGrid);
     utils.changeAll(blocks.path, blocks.empty, newGrid);
     setGrid(newGrid);
-    setResult("-");
+    setResult('-');
   }
 
   useEffect(() => {
@@ -112,12 +112,12 @@ export default function AlgorithmVisualizer(props) {
       let n; // type of block we want to add to grid
 
       if (isLeftMouseDown.current) {
-        if (result !== "-") setResult("-");
+        if (result !== '-') setResult('-');
         // if shift is pressed, we are adding wall (n = 4)
         if (isShiftDown.current) n = blocks.wall;
         else n = blocks.source; // source block
       } else if (isRightMouseDown.current) {
-        if (result !== "-") setResult("-");
+        if (result !== '-') setResult('-');
         if (isShiftDown.current) n = blocks.empty;
         else n = blocks.sink; // sink block
       } else {
@@ -169,7 +169,7 @@ export default function AlgorithmVisualizer(props) {
 
     // return color based on value of grid[j][i]
     const getFillColor = (j, i) => {
-      var color = "";
+      var color = '';
       // unvisited block
       if (grid[j][i] === blocks.empty) {
         color = blockColors.empty;
@@ -220,8 +220,8 @@ export default function AlgorithmVisualizer(props) {
           }
 
           if (DEBUG) {
-            ctx.font = "10px Arial";
-            ctx.fillStyle = "#000";
+            ctx.font = '10px Arial';
+            ctx.fillStyle = '#000';
             ctx.fillText(String(grid[j][i]), c + 7, r + 14);
           }
         }
@@ -240,7 +240,7 @@ export default function AlgorithmVisualizer(props) {
         ctx.fill();
 
         ctx.lineWidth = lineThickness;
-        ctx.strokeStyle = "#00ff00ff";
+        ctx.strokeStyle = '#00ff00ff';
         ctx.stroke();
       }
     };
@@ -335,21 +335,21 @@ export default function AlgorithmVisualizer(props) {
       let cv = canvasRef.current;
       cv.width = w * scale;
       cv.height = h * scale;
-      cv.style.width = w + "px";
-      cv.style.height = h + "px";
-      cv.getContext("2d").scale(scale, scale);
+      cv.style.width = w + 'px';
+      cv.style.height = h + 'px';
+      cv.getContext('2d').scale(scale, scale);
       return cv;
     }
 
     const canvas = createHiPPICanvas(props.w, props.h);
-    const context = canvas.getContext("2d");
+    const context = canvas.getContext('2d');
 
     if (!isEventListenersAttached.current) {
-      window.addEventListener("mousemove", (e) => {
+      window.addEventListener('mousemove', (e) => {
         handleMouseMove(e, canvas);
       });
 
-      window.addEventListener("contextmenu", (e) => {
+      window.addEventListener('contextmenu', (e) => {
         const rect = canvas.getBoundingClientRect();
         if (
           e.clientX >= rect.left &&
@@ -360,16 +360,16 @@ export default function AlgorithmVisualizer(props) {
           e.preventDefault();
         }
       });
-      window.addEventListener("mousedown", (e) => {
+      window.addEventListener('mousedown', (e) => {
         handleKeyDown(e, canvas);
       });
-      window.addEventListener("keydown", (e) => {
+      window.addEventListener('keydown', (e) => {
         handleKeyDown(e, canvas);
       });
-      window.addEventListener("mouseup", (e) => {
+      window.addEventListener('mouseup', (e) => {
         handleKeyRelease(e, canvas);
       });
-      window.addEventListener("keyup", (e) => {
+      window.addEventListener('keyup', (e) => {
         handleKeyRelease(e, canvas);
       });
     }
@@ -379,12 +379,12 @@ export default function AlgorithmVisualizer(props) {
     drawGrid(context, canvas);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mousedown", handleKeyDown);
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("contextmenu", handleKeyDown);
-      window.removeEventListener("mouseup", handleKeyRelease);
-      window.removeEventListener("keyup", handleKeyRelease);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('contextmenu', handleKeyDown);
+      window.removeEventListener('mouseup', handleKeyRelease);
+      window.removeEventListener('keyup', handleKeyRelease);
     };
   }, [
     props,
@@ -413,15 +413,15 @@ export default function AlgorithmVisualizer(props) {
 
         <div
           className="flex flex-col gap-2 justify-start "
-          style={{ display: showInstructions ? "" : "none" }}
+          style={{ display: showInstructions ? '' : 'none' }}
         >
           <div className="flex gap-4">
             <div
               style={{
-                width: "24px",
-                height: "24px",
-                minWidth: "24px",
-                minHeight: "24px",
+                width: '24px',
+                height: '24px',
+                minWidth: '24px',
+                minHeight: '24px',
                 backgroundColor: `${blockColors.source}${blockOpacity}`,
               }}
             />
@@ -431,10 +431,10 @@ export default function AlgorithmVisualizer(props) {
           <div className="flex gap-4">
             <div
               style={{
-                width: "24px",
-                height: "24px",
-                minWidth: "24px",
-                minHeight: "24px",
+                width: '24px',
+                height: '24px',
+                minWidth: '24px',
+                minHeight: '24px',
                 backgroundColor: `${blockColors.sink}${blockOpacity}`,
               }}
             />
@@ -444,10 +444,10 @@ export default function AlgorithmVisualizer(props) {
           <div className="flex gap-4">
             <div
               style={{
-                width: "24px",
-                height: "24px",
-                minWidth: "24px",
-                minHeight: "24px",
+                width: '24px',
+                height: '24px',
+                minWidth: '24px',
+                minHeight: '24px',
                 backgroundColor: `${blockColors.wall}${blockOpacity}`,
               }}
             />
@@ -457,10 +457,10 @@ export default function AlgorithmVisualizer(props) {
           <div className="flex gap-4">
             <div
               style={{
-                width: "24px",
-                height: "24px",
-                minWidth: "24px",
-                minHeight: "24px",
+                width: '24px',
+                height: '24px',
+                minWidth: '24px',
+                minHeight: '24px',
                 backgroundColor: `${blockColors.empty}${blockOpacity}`,
               }}
             />
@@ -470,10 +470,10 @@ export default function AlgorithmVisualizer(props) {
           <div className="flex gap-4">
             <div
               style={{
-                width: "24px",
-                height: "24px",
-                minWidth: "24px",
-                minHeight: "24px",
+                width: '24px',
+                height: '24px',
+                minWidth: '24px',
+                minHeight: '24px',
                 backgroundColor: `${blockColors.visited}${blockOpacity}`,
               }}
             />
@@ -483,10 +483,10 @@ export default function AlgorithmVisualizer(props) {
           <div className="flex gap-4">
             <div
               style={{
-                width: "24px",
-                height: "24px",
-                minWidth: "24px",
-                minHeight: "24px",
+                width: '24px',
+                height: '24px',
+                minWidth: '24px',
+                minHeight: '24px',
                 backgroundColor: `${blockColors.path}${blockOpacity}`,
               }}
             />
@@ -496,7 +496,7 @@ export default function AlgorithmVisualizer(props) {
 
         <div
           className="flex flex-col justify-between control-panel"
-          style={{ display: showInstructions ? "none" : "" }}
+          style={{ display: showInstructions ? 'none' : '' }}
         >
           <div className="flex flex-col justify-start gap-16">
             <div className="options-block">
@@ -505,7 +505,7 @@ export default function AlgorithmVisualizer(props) {
                 <div
                   className="mr-5"
                   onClick={() => {
-                    setAlgorithm("bfs");
+                    setAlgorithm('bfs');
                     resetVisited();
                   }}
                 >
@@ -515,9 +515,9 @@ export default function AlgorithmVisualizer(props) {
                       type="radio"
                       name="algorithm"
                       value={algorithm}
-                      checked={algorithm === "bfs"}
+                      checked={algorithm === 'bfs'}
                       onChange={() => {
-                        setAlgorithm("bfs");
+                        setAlgorithm('bfs');
                         resetVisited();
                       }}
                     />
@@ -527,7 +527,7 @@ export default function AlgorithmVisualizer(props) {
                 <div
                   className="mr-5"
                   onClick={() => {
-                    setAlgorithm("dfs");
+                    setAlgorithm('dfs');
                     resetVisited();
                   }}
                 >
@@ -537,9 +537,9 @@ export default function AlgorithmVisualizer(props) {
                       type="radio"
                       name="algorithm"
                       value={algorithm}
-                      checked={algorithm === "dfs"}
+                      checked={algorithm === 'dfs'}
                       onChange={() => {
-                        setAlgorithm("dfs");
+                        setAlgorithm('dfs');
                         resetVisited();
                       }}
                     />
@@ -549,7 +549,7 @@ export default function AlgorithmVisualizer(props) {
                 <div
                   className="mr-5"
                   onClick={() => {
-                    setAlgorithm("bfsShortestPath");
+                    setAlgorithm('bfsShortestPath');
                     resetVisited();
                   }}
                 >
@@ -559,9 +559,9 @@ export default function AlgorithmVisualizer(props) {
                       type="radio"
                       name="algorithm"
                       value={algorithm}
-                      checked={algorithm === "bfsShortestPath"}
+                      checked={algorithm === 'bfsShortestPath'}
                       onChange={() => {
-                        setAlgorithm("bfsShortestPath");
+                        setAlgorithm('bfsShortestPath');
                         resetVisited();
                       }}
                     />
@@ -590,7 +590,7 @@ export default function AlgorithmVisualizer(props) {
                   blockScale.current = val;
 
                   run.current = false;
-                  setResult("-");
+                  setResult('-');
 
                   blockSize.current = baseBlockSize * Math.pow(base, val);
                   nRows.current = Math.floor(props.h / blockSize.current);
@@ -628,7 +628,7 @@ export default function AlgorithmVisualizer(props) {
 
             <div className="options-block">
               <label htmlFor="speed">
-                Speed: {speed.current === sliderMax ? "Max" : speed.current + 1}
+                Speed: {speed.current === sliderMax ? 'Max' : speed.current + 1}
               </label>
               <input
                 className="block"
@@ -719,9 +719,9 @@ export default function AlgorithmVisualizer(props) {
 
           <div className="options-block">
             <p>
-              {algorithm === "bfsShortestPath"
-                ? "Shortest Path Length"
-                : "Path Exists"}
+              {algorithm === 'bfsShortestPath'
+                ? 'Shortest Path Length'
+                : 'Path Exists'}
               {`\xa0:\xa0\xa0${result}`}
             </p>
           </div>
@@ -744,7 +744,7 @@ export default function AlgorithmVisualizer(props) {
                   ? ` ${grid[hoverRow.current][hoverCol.current]}, (${
                       hoverRow.current
                     }, ${hoverCol.current})`
-                  : ""}
+                  : ''}
               </div>
               <div>nRows, nCols: {`(${nRows.current}, ${nCols.current})`}</div>
               <div>

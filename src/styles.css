@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400;1,9..40,500;1,9..40,600;1,9..40,700&family=PT+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400;1,9..40,500;1,9..40,600;1,9..40,700&family=PT+Sans&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
 
 :root {
   --bg-color-main: #090a0f;
@@ -39,7 +41,7 @@ html {
 body {
   position: absolute;
   z-index: -1001;
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 400;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
@@ -73,7 +75,7 @@ body {
 /* name */
 h1 {
   color: var(--heading-color-name);
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 8vw;
@@ -103,7 +105,7 @@ h3 {
 }
 
 /* section title */
-h4 {
+/* h4 {
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
@@ -111,7 +113,7 @@ h4 {
   letter-spacing: 0.2em;
   display: flex;
   align-self: center;
-}
+} */
 
 h5 {
   color: var(--text-color-main);
@@ -174,7 +176,7 @@ form {
   font-size: 14px;
 }
 
-input[type="text"] {
+input[type='text'] {
   font-size: 14px;
   margin: 8px;
   padding-inline: 3px;
@@ -183,7 +185,7 @@ input[type="text"] {
   border-radius: 3px;
 }
 
-input[type="text"]:focus {
+input[type='text']:focus {
   outline: none;
 }
 
@@ -192,11 +194,11 @@ input[type="text"]:focus {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
-input[type="range"] {
+input[type='range'] {
   appearance: none;
   -webkit-appearance: none;
   background: transparent;
@@ -204,7 +206,7 @@ input[type="range"] {
 }
 
 /* chrome */
-input[type="range"]::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   margin-block-start: -5px;
   height: 16px;
@@ -216,7 +218,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* firefox */
-input[type="range"]::-moz-range-thumb {
+input[type='range']::-moz-range-thumb {
   appearance: none;
   -webkit-appearance: none;
   height: 16px;
@@ -228,7 +230,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* IE */
-input[type="range"]::-ms-thumb {
+input[type='range']::-ms-thumb {
   appearance: none;
   -webkit-appearance: none;
   height: 6px;
@@ -240,7 +242,7 @@ input[type="range"]::-ms-thumb {
 }
 
 /* chrome */
-input[type="range"]::-webkit-slider-runnable-track {
+input[type='range']::-webkit-slider-runnable-track {
   width: 100%;
   height: 4px;
   cursor: pointer;
@@ -248,7 +250,7 @@ input[type="range"]::-webkit-slider-runnable-track {
   border-radius: 3px;
 }
 /* firefox */
-input[type="range"]::-moz-range-track {
+input[type='range']::-moz-range-track {
   width: 100%;
   height: 4px;
   cursor: pointer;
@@ -257,7 +259,7 @@ input[type="range"]::-moz-range-track {
 }
 
 /* IE */
-input[type="range"]::-ms-track {
+input[type='range']::-ms-track {
   width: 100%;
   height: 4px;
   cursor: pointer;
@@ -270,7 +272,7 @@ canvas {
 }
 
 .snake-container {
-  letter-spacing: 0.08em;
+  font-weight: 500;
 }
 
 .snake-top-bar,
@@ -314,7 +316,7 @@ canvas {
 .game-options a,
 .pink-on-hover a,
 .main-menu a {
-  transition: ease 0.2s;
+  transition: 0.2s ease;
 }
 
 .game-options a {
@@ -351,39 +353,16 @@ canvas {
   -ms-user-select: none; /* IE 10 and IE 11 */
 }
 
-.tech-stack-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 11px;
-  margin-block: 18px;
-}
-
-.tech-item-div {
-  margin-inline-start: 0.5px;
-  margin-inline-end: 3px;
-  padding-block: 5px;
-  padding-inline: 12px;
-  background-color: var(--bg-color-3);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  transition: ease 0.2s;
-}
-
-.tech-item-div:hover {
-  transform: scale(1.15);
-}
-
 .section-title h4::before,
 .section-title h4::after {
   align-self: center;
-  content: "";
-  border-bottom: 1px solid var(--text-color-grey);
+  content: '';
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .section-title h4::before {
+  display: inline-flex;
+  align-items: center;
   margin-inline-end: 15px;
   width: 10%;
 }
@@ -392,7 +371,7 @@ canvas {
   display: block;
   margin-block-start: 0px;
   align-self: center;
-  content: "";
+  content: '';
   width: 100%;
   height: 20px;
   border-bottom: 0.5px solid var(--text-color-grey);
@@ -412,6 +391,7 @@ canvas {
 }
 
 .section-title {
+  flex-flow: row nowrap;
   color: var(--text-color-grey);
   padding-block-start: 20vh;
   padding-block-end: 10vh;
@@ -485,18 +465,19 @@ li {
   justify-content: flex-end;
   align-items: center;
   padding-inline: 0.3em;
-  letter-spacing: 0.3vw;
   height: 100%;
+  font-weight: 500;
+  font-size: 18px;
+  text-transform: capitalize;
 }
 
 .navbar > a:hover,
 .navbar > .nav-item:hover > a,
-.dropdown > a:hover,
+.navbar-dropdown > a:hover,
 .game-options a:hover,
 .main-menu a:hover,
 .pink-on-hover a:hover {
   color: var(--heading-color-main);
-  transform: scale(1.08);
   animation: glow 0.7s linear infinite alternate;
 }
 
@@ -527,7 +508,7 @@ li {
   margin-top: -0.25em;
 }
 
-.dropdown {
+.navbar-dropdown {
   position: absolute;
   z-index: 9999;
   display: flex;
@@ -535,26 +516,35 @@ li {
   flex-direction: column;
   justify-content: flex-start;
   top: 100%;
-  height: 0;
-  padding-inline: 1.5em;
   overflow: auto;
-  visibility: hidden;
-
-  /* background-color: var(--nav-bg-color);
-  backdrop-filter: blur(15px);
-  filter: blur(0); */
+  border-radius: 8px;
   background-color: var(--bg-color-3);
+  padding: 6px 0;
 }
 
-.dropdown a {
-  padding-block: 0.5em;
+.navbar-dropdown a {
+  display: flex;
+  justify-content: flex-start;
+  padding: 0.5em 1.5em;
   font-size: 14px;
-  letter-spacing: 0.08em;
 }
 
-.nav-item:hover > .dropdown {
+.navbar-dropdown a:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item > .navbar-dropdown {
+  animation: fadeOut 0.1s;
+  transform: scale(0);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.nav-item:hover > .navbar-dropdown {
+  animation: fadeIn 0.1s;
+  transform: scale(1);
+  opacity: 1;
   visibility: visible;
-  height: 2em;
 }
 
 .nav-item:hover > .arrow {
@@ -632,15 +622,6 @@ li {
 .github-logo img {
   width: 100%;
   height: 100%;
-}
-
-.github-logo-container {
-  padding-inline-start: 1px;
-  padding-block-end: 1px;
-  text-align: center;
-  align-content: center;
-  align-items: center;
-  justify-content: center;
 }
 
 .github-logo {

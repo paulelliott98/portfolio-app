@@ -1,10 +1,10 @@
-import { React, useEffect } from "react";
-import AlgorithmVisualizer from "../components/algorithm-visualizer/algoVisualizer";
-import "../styles.css";
+import { React, useEffect } from 'react';
+import SearchVisualizer from '../components/algorithm-visualizer/SearchVisualizer';
+import '../styles.css';
 
-const utils = require("../utils");
+const utils = require('../utils');
 
-export default function VisualizerToolPage(props) {
+export default function SearchVisualizerPage(props) {
   const maxSize = 580;
   const getDocumentHeight = props.getDocumentHeight;
 
@@ -23,7 +23,7 @@ export default function VisualizerToolPage(props) {
       ) : (
         <>
           <div className="nav-fill"></div>
-          <AlgorithmVisualizer w={maxSize} h={maxSize} />
+          <SearchVisualizer w={maxSize} h={maxSize} />
         </>
       )}
     </section>
