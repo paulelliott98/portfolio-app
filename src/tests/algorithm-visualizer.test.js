@@ -1,7 +1,7 @@
-import * as algorithms from "../components/algorithm-visualizer/algorithms";
-import * as mg from "../components/algorithm-visualizer/mazeGenerator";
-import blocks from "../components/algorithm-visualizer/blocks";
-const utils = require("../utils");
+import * as algorithms from '../components/search-visualizer/algorithms';
+import * as mg from '../components/search-visualizer/mazeGenerator';
+import blocks from '../components/search-visualizer/blocks';
+const utils = require('../utils');
 
 const dirs = { up: 0, right: 1, down: 2, left: 3 };
 const dirChange = [
@@ -11,7 +11,7 @@ const dirChange = [
   [0, -1], // left
 ];
 
-describe("Maze Generator Tests", () => {
+describe('Maze Generator Tests', () => {
   var nRows, nCols;
   var newMaze;
 
@@ -23,7 +23,7 @@ describe("Maze Generator Tests", () => {
     newMaze = utils.createArray(nRows, nCols, blocks.wall);
   });
 
-  test("getSideBlocks", () => {
+  test('getSideBlocks', () => {
     newMaze = utils.createArray(nRows, nCols);
     newMaze[5][4] = -1; // right
     newMaze[5][6] = -1; // left
@@ -39,7 +39,7 @@ describe("Maze Generator Tests", () => {
     expect(upDown[1]).toBe(-2); // down
   });
 
-  test("isWall", () => {
+  test('isWall', () => {
     newMaze = utils.createArray(nRows, nCols, blocks.wall);
 
     expect(mg.isWall({ r: 0, c: 1 }, dirs.down, newMaze)).toBe(true);
@@ -59,7 +59,7 @@ describe("Maze Generator Tests", () => {
     expect(mg.isWall({ r: 10, c: 10 }, dirs.right, newMaze)).toBe(false);
   });
 
-  test("initStartPos should return coord on border of grid", () => {
+  test('initStartPos should return coord on border of grid', () => {
     for (let i = 0; i < 4; i++) {
       for (let k = 0; k < nRows * 3; k++) {
         const startPos = mg.initStartPos(i, nRows, nCols);
@@ -71,7 +71,7 @@ describe("Maze Generator Tests", () => {
     }
   });
 
-  test("makeAllCorridors should not return null or undefined", () => {
+  test('makeAllCorridors should not return null or undefined', () => {
     for (let i = 0; i < 200; i++) {
       const nCorridors = utils.randInt(1, 8);
       var grid = utils.createArray(nRows, nCols, blocks.wall);
@@ -90,7 +90,7 @@ describe("Maze Generator Tests", () => {
         nCorridors
       );
       expect(endPos === null).toBe(false);
-      expect(typeof endPos === "undefined").toBe(false);
+      expect(typeof endPos === 'undefined').toBe(false);
     }
   });
 
@@ -109,7 +109,7 @@ describe("Maze Generator Tests", () => {
   //   }
   // });
 
-  test("generateMaze: start position should be on border", () => {
+  test('generateMaze: start position should be on border', () => {
     for (let i = 0; i < 100; i++) {
       newMaze = mg.generateMaze(nRows, nCols);
       let [sr, sc] = [newMaze.startPos.r, newMaze.startPos.c];
@@ -119,7 +119,7 @@ describe("Maze Generator Tests", () => {
     }
   });
 
-  test("generateMaze: end position should be on border", () => {
+  test('generateMaze: end position should be on border', () => {
     const n = 100;
     for (let i = 0; i < n; i++) {
       newMaze = mg.generateMaze(nRows, nCols);
@@ -130,7 +130,7 @@ describe("Maze Generator Tests", () => {
     }
   });
 
-  test("generateMaze: path should exist between source and dest", () => {
+  test('generateMaze: path should exist between source and dest', () => {
     const speed = { current: 100 };
     const run = { current: true };
 
@@ -140,14 +140,14 @@ describe("Maze Generator Tests", () => {
       algorithms
         .bfs(newMaze.startPos, newMaze.endPos, newMaze.grid, run, speed, null)
         .then((res) => {
-          expect(res).toBe("Yes");
+          expect(res).toBe('Yes');
         });
     }
   });
 });
 
-describe("Util Functions Tests", () => {
-  test("randInt should be able to pick any int between [a, b] inclusive", () => {
+describe('Util Functions Tests', () => {
+  test('randInt should be able to pick any int between [a, b] inclusive', () => {
     let s = new Set();
     for (let i = 0; i < 200; i++) {
       s.add(utils.randInt(0, 3));
@@ -155,7 +155,7 @@ describe("Util Functions Tests", () => {
     expect(s.size).toBe(4); // 0,1,2,3
   });
 
-  test("randEven should return an even number between [a, b] inclusive", () => {
+  test('randEven should return an even number between [a, b] inclusive', () => {
     const [a, b] = [2, 6];
     let [min, max] = [Infinity, -Infinity];
 
@@ -176,17 +176,17 @@ describe("Util Functions Tests", () => {
     expect(max).toBe(b);
   });
 
-  test("randChoice should be able to pick any item in list", () => {
+  test('randChoice should be able to pick any item in list', () => {
     let s = new Set();
-    const d = ["up", "right", "down", "left"];
+    const d = ['up', 'right', 'down', 'left'];
     for (let i = 0; i < 200; i++) {
       let item = utils.randChoice(d);
       s.add(item);
     }
     expect(s.size).toBe(d.length);
-    expect(s.has("up")).toBe(true);
-    expect(s.has("down")).toBe(true);
-    expect(s.has("left")).toBe(true);
-    expect(s.has("right")).toBe(true);
+    expect(s.has('up')).toBe(true);
+    expect(s.has('down')).toBe(true);
+    expect(s.has('left')).toBe(true);
+    expect(s.has('right')).toBe(true);
   });
 });
