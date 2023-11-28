@@ -1,5 +1,12 @@
 const projects = [
   {
+    listName: 'person recognition',
+    name: 'Real-time Person Recognition with Ring Camera',
+    techStack: ['Python', 'Flask', 'pyttsx3', 'PyTorch', 'MQTT'],
+    dx:
+      'My most recent project focused on person recognition via my Ring camera. After collecting and annotating some video data, I trained a YOLOv7 detection model and set up a Flask server for making predictions through REST API calls. Using MQTT for motion events allowed for real-time responsiveness. Finally, I added a unique dimension by announcing results using the pyttsx3 text-to-speech library.',
+  },
+  {
     listName: 'snake',
     name: 'Snake',
     techStack: [

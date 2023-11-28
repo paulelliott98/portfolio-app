@@ -15,7 +15,7 @@ export default function Project({ techStack, name, dx, gitUrl }) {
         ))}
       </Grid>
 
-      {gitUrl === '' ? null : (
+      {!gitUrl ? null : (
         <Grid item container>
           <a href={gitUrl} target="_blank" rel="noopener noreferrer">
             <img
