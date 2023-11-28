@@ -85,13 +85,12 @@ export default function App() {
               isSmallScreen.current === true) &&
             documentHeight.current > window.screen.height
           ) {
-            navRef.current.style.visibility = 'hidden';
-
-            const dy = `-${navRef.current.clientHeight + 3}px`;
-            navRef.current.style.transform = `translateY(${dy})`;
+            // navRef.current.style.visibility = 'hidden';
+            // const dy = `-${navRef.current.clientHeight + 3}px`;
+            // navRef.current.style.transform = `translateY(${dy})`;
+            // navRef.current.style.backdropFilter = 'none';
           }
         } else {
-          // console.log("Scrolling up");
           navRef.current.style = ''; // set to default defined css style
         }
       }

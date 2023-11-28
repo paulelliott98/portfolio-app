@@ -104,17 +104,6 @@ h3 {
   text-shadow: 0 0 2px var(--heading-color-2);
 }
 
-/* section title */
-/* h4 {
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 31px;
-  letter-spacing: 0.2em;
-  display: flex;
-  align-self: center;
-} */
-
 h5 {
   color: var(--text-color-main);
   font-style: normal;
@@ -441,16 +430,12 @@ li {
   display: flex;
   justify-content: flex-end;
   z-index: 9999;
-  background-color: var(--nav-bg-color);
-  transition-duration: 0.6s;
   transform: translateY(0);
   align-items: center;
-  backdrop-filter: blur(15px);
-  filter: blur(0);
-}
-
-.nav-area * {
-  transition-duration: 0.3s;
+  backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition-duration: 0.5s;
 }
 
 .navbar {
@@ -508,6 +493,7 @@ li {
   transform: rotate(-45deg);
   margin-left: 0.38em;
   margin-top: -0.25em;
+  transition-duration: 0.2s;
 }
 
 .navbar-dropdown {
@@ -521,6 +507,7 @@ li {
   overflow: auto;
   border-radius: 8px;
   background-color: var(--bg-color-3);
+  transition-duration: 0.1s;
 }
 
 .navbar-dropdown a {
@@ -535,7 +522,7 @@ li {
 }
 
 .nav-item > .navbar-dropdown {
-  animation: fadeOut 0.1s;
+  animation: fadeOut;
   transform: scale(0.7);
   opacity: 0;
   visibility: hidden;
