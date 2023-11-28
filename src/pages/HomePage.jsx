@@ -231,9 +231,9 @@ export default function HomePage(props) {
                   OpenCV, Pillow, Selenium, BeautifulSoup
                 </>,
                 <>
-                  <b>Full Stack</b> — Javascript, CSS, HTML5, React/Redux,
-                  Material UI, Axios, Express.js, Sequelize, Fly.io, Flask,
-                  Microservices
+                  <b>Full Stack</b> — REST APIs, Javascript/CSS/HTML,
+                  React/Redux, Material UI, Express, Sequelize, Jest, Cypress,
+                  Flask, Microservices
                 </>,
                 <>
                   <b>Database</b> — PostgreSQL, MySQL
@@ -242,10 +242,10 @@ export default function HomePage(props) {
                   <b>Containerization</b> — Docker, Docker Compose, Kubernetes
                 </>,
                 <>
-                  <b>Cloud</b> — GCP
+                  <b>Cloud</b> — AWS (Lightsail)
                 </>,
                 <>
-                  <b>CI/CD</b> — Jenkins, Gitlab, Git
+                  <b>CI/CD</b> — Jenkins, Git
                 </>,
               ].map((item, index) => (
                 <li key={index}>
