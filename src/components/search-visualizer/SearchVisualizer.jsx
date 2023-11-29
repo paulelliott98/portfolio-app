@@ -559,6 +559,7 @@ export default function SearchVisualizer(props) {
                     row
                     onChange={(e) => {
                       setAlgorithm(e.target.value);
+                      setResult('-');
                     }}
                   >
                     <FormControlLabel
@@ -779,30 +780,6 @@ export default function SearchVisualizer(props) {
           </div>
         )}
       </Grid>
-
-      {/* <div className="flex justify-between" style={{ width: `${props.w}px` }}>
-        <div>
-          <p>
-            {hoverRow.current !== -1
-              ? `${hoverRow.current}, ${hoverCol.current}`
-              : null}
-          </p>
-        </div>
-        <a
-          href="/#"
-          rel="noopener noreferrer"
-          className=""
-          onClick={(e) => e.preventDefault()}
-          onMouseOver={() => {
-            setShowInstructions(true);
-          }}
-          onMouseLeave={() => {
-            setShowInstructions(false);
-          }}
-        >
-          Help
-        </a>
-      </div> */}
     </Grid>
   );
 }
