@@ -3,6 +3,17 @@ import './algoVisualizer.css';
 import * as algorithms from './algorithms';
 import * as mg from './mazeGenerator';
 import blocks from './blocks';
+import {
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Grid,
+  Radio,
+  RadioGroup,
+  Slider,
+  Typography,
+} from '@mui/material';
+import GridGlass from '../GridGlass';
 const utils = require('../../utils');
 
 const DEBUG = false;
@@ -43,7 +54,8 @@ export default function SearchVisualizer(props) {
   let run = useRef(false);
 
   const [sliderMin, sliderMax] = [0, 100];
-  let speed = useRef(sliderMax - 1);
+  const defaultSpeed = 100;
+  let speed = useRef(defaultSpeed);
 
   // mouse data
   const [mousePos, setMousePos] = useState({ x: -1, y: -1 });
@@ -407,325 +419,331 @@ export default function SearchVisualizer(props) {
   ]);
 
   return (
-    <div className="flex flex-col mt-14 h-full justify-center content-center">
-      <div className="flex gap-10">
-        <canvas className="bfs-canvas" ref={canvasRef} {...props} />
-
-        <div
-          className="flex flex-col gap-2 justify-start "
-          style={{ display: showInstructions ? '' : 'none' }}
-        >
-          <div className="flex gap-4">
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                minWidth: '24px',
-                minHeight: '24px',
-                backgroundColor: `${blockColors.source}${blockOpacity}`,
+    <Grid item container alignItems="center">
+      <Grid
+        item
+        container
+        sx={{ flexFlow: 'row nowrap', gap: '16px', height: 'min-content' }}
+      >
+        <Grid item container style={{ flexFlow: 'column nowrap' }}>
+          <canvas className="bfs-canvas" ref={canvasRef} {...props} />
+          <div
+            className="flex justify-between"
+            style={{ width: `${props.w}px` }}
+          >
+            <div>
+              <p>
+                {hoverRow.current !== -1
+                  ? `${hoverRow.current}, ${hoverCol.current}`
+                  : null}
+              </p>
+            </div>
+            <a
+              href="/#"
+              rel="noopener noreferrer"
+              className=""
+              onClick={(e) => e.preventDefault()}
+              onMouseOver={() => {
+                setShowInstructions(true);
               }}
-            />
-            <p>Source – Left Click</p>
-          </div>
-
-          <div className="flex gap-4">
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                minWidth: '24px',
-                minHeight: '24px',
-                backgroundColor: `${blockColors.sink}${blockOpacity}`,
+              onMouseLeave={() => {
+                setShowInstructions(false);
               }}
-            />
-            <p>Destination – Right Click</p>
+            >
+              Help
+            </a>
           </div>
+        </Grid>
 
-          <div className="flex gap-4">
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                minWidth: '24px',
-                minHeight: '24px',
-                backgroundColor: `${blockColors.wall}${blockOpacity}`,
-              }}
-            />
-            <p>Wall – Shift + Left Click</p>
-          </div>
-
-          <div className="flex gap-4">
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                minWidth: '24px',
-                minHeight: '24px',
-                backgroundColor: `${blockColors.empty}${blockOpacity}`,
-              }}
-            />
-            <p>Empty – Shift + Right Click</p>
-          </div>
-
-          <div className="flex gap-4">
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                minWidth: '24px',
-                minHeight: '24px',
-                backgroundColor: `${blockColors.visited}${blockOpacity}`,
-              }}
-            />
-            <p>Visited</p>
-          </div>
-
-          <div className="flex gap-4">
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                minWidth: '24px',
-                minHeight: '24px',
-                backgroundColor: `${blockColors.path}${blockOpacity}`,
-              }}
-            />
-            <p>Path</p>
-          </div>
-        </div>
-
-        <div
-          className="flex flex-col justify-between control-panel"
-          style={{ display: showInstructions ? 'none' : '' }}
-        >
-          <div className="flex flex-col justify-start gap-16">
-            <div className="options-block">
-              <p>Search Algorithm:</p>
-              <div className="flex">
+        <Grid item container style={{ height: `${props.h}px`, width: '100%' }}>
+          {showInstructions ? (
+            <GridGlass style={{ flex: '1 1 auto', padding: '24px' }}>
+              <div className="flex gap-4">
                 <div
-                  className="mr-5"
-                  onClick={() => {
-                    setAlgorithm('bfs');
-                    resetVisited();
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    minWidth: '24px',
+                    minHeight: '24px',
+                    backgroundColor: `${blockColors.source}${blockOpacity}`,
                   }}
-                >
-                  <label>
-                    <input
-                      className="mr-1"
-                      type="radio"
-                      name="algorithm"
-                      value={algorithm}
+                />
+                <p>Source – Left Click</p>
+              </div>
+
+              <div className="flex gap-4">
+                <div
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    minWidth: '24px',
+                    minHeight: '24px',
+                    backgroundColor: `${blockColors.sink}${blockOpacity}`,
+                  }}
+                />
+                <p>Destination – Right Click</p>
+              </div>
+
+              <div className="flex gap-4">
+                <div
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    minWidth: '24px',
+                    minHeight: '24px',
+                    backgroundColor: `${blockColors.wall}${blockOpacity}`,
+                  }}
+                />
+                <p>Wall – Shift + Left Click</p>
+              </div>
+
+              <div className="flex gap-4">
+                <div
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    minWidth: '24px',
+                    minHeight: '24px',
+                    backgroundColor: `${blockColors.empty}${blockOpacity}`,
+                  }}
+                />
+                <p>Empty – Shift + Right Click</p>
+              </div>
+
+              <div className="flex gap-4">
+                <div
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    minWidth: '24px',
+                    minHeight: '24px',
+                    backgroundColor: `${blockColors.visited}${blockOpacity}`,
+                  }}
+                />
+                <p>Visited</p>
+              </div>
+
+              <div className="flex gap-4">
+                <div
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    minWidth: '24px',
+                    minHeight: '24px',
+                    backgroundColor: `${blockColors.path}${blockOpacity}`,
+                  }}
+                />
+                <p>Path</p>
+              </div>
+            </GridGlass>
+          ) : (
+            <GridGlass style={{ flex: '1 1 auto', padding: '16px 24px' }}>
+              <Grid
+                item
+                container
+                justifyContent="flex-start"
+                style={{
+                  flex: '1 1 auto',
+                  flexFlow: 'column nowrap',
+                  gap: '16px',
+                }}
+              >
+                <FormControl>
+                  <FormLabel>Search Algorithm</FormLabel>
+                  <RadioGroup
+                    row
+                    onChange={(e) => {
+                      setAlgorithm(e.target.value);
+                    }}
+                  >
+                    <FormControlLabel
                       checked={algorithm === 'bfs'}
-                      onChange={() => {
-                        setAlgorithm('bfs');
-                        resetVisited();
-                      }}
+                      value="bfs"
+                      label="bfs"
+                      control={<Radio />}
                     />
-                    <span className="inline-block">BFS</span>
-                  </label>
-                </div>
-                <div
-                  className="mr-5"
-                  onClick={() => {
-                    setAlgorithm('dfs');
-                    resetVisited();
-                  }}
-                >
-                  <label>
-                    <input
-                      className="mr-1"
-                      type="radio"
-                      name="algorithm"
-                      value={algorithm}
+                    <FormControlLabel
                       checked={algorithm === 'dfs'}
-                      onChange={() => {
-                        setAlgorithm('dfs');
-                        resetVisited();
-                      }}
+                      value="dfs"
+                      label="dfs"
+                      control={<Radio />}
                     />
-                    <span className="inline-block">DFS</span>
-                  </label>
-                </div>
-                <div
-                  className="mr-5"
-                  onClick={() => {
-                    setAlgorithm('bfsShortestPath');
-                    resetVisited();
-                  }}
-                >
-                  <label>
-                    <input
-                      className="mr-1"
-                      type="radio"
-                      name="algorithm"
-                      value={algorithm}
+                    <FormControlLabel
                       checked={algorithm === 'bfsShortestPath'}
-                      onChange={() => {
-                        setAlgorithm('bfsShortestPath');
+                      value="bfsShortestPath"
+                      label="Shortest Path (BFS)"
+                      control={<Radio />}
+                    />
+                  </RadioGroup>
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel>
+                    Block Size: {Math.round(blockSize.current)}
+                  </FormLabel>
+                  <Slider
+                    aria-label="Block Size"
+                    defaultValue={defaultBlockScale}
+                    getAriaValueText={() => blockSize.current}
+                    valueLabelDisplay="auto"
+                    min={minBlockScale}
+                    max={maxBlockScale}
+                    marks
+                    valueLabelFormat={(val) => <div>{blockSize.current}</div>}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      const val = parseInt(e.target.value);
+                      blockScale.current = val;
+
+                      run.current = false;
+                      setResult('-');
+
+                      blockSize.current = baseBlockSize * Math.pow(base, val);
+                      nRows.current = Math.floor(props.h / blockSize.current);
+                      nCols.current = Math.floor(props.w / blockSize.current);
+                      gap.current =
+                        (props.h % blockSize.current) / (nCols.current + 1);
+
+                      // initialize random start and end positions
+                      _start = {
+                        r: randomInteger(
+                          0,
+                          Math.floor((nRows.current - 1) / 2)
+                        ),
+                        c: randomInteger(0, nCols.current - 1),
+                      };
+
+                      _end = {
+                        r: randomInteger(
+                          Math.floor((nRows.current - 1) / 2) + 1,
+                          nRows.current - 1
+                        ),
+                        c: randomInteger(0, nCols.current - 1),
+                      };
+
+                      let tempGrid = utils.createArray(
+                        nRows.current,
+                        nCols.current
+                      );
+                      tempGrid[_start.r][_start.c] = blocks.source;
+                      tempGrid[_end.r][_end.c] = blocks.sink;
+
+                      setStartPos(_start);
+                      setEndPos(_end);
+                      setGrid(tempGrid);
+                    }}
+                  />
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel>
+                    {`Speed: ${
+                      speed.current === sliderMax ? 'Max' : speed.current
+                    }`}
+                  </FormLabel>
+                  <Slider
+                    aria-label="Speed"
+                    defaultValue={defaultSpeed}
+                    getAriaValueText={() => speed.current}
+                    valueLabelDisplay="auto"
+                    min={sliderMin}
+                    max={sliderMax}
+                    step={1}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      const val = parseInt(e.target.value);
+                      speed.current = val;
+                    }}
+                  />
+                </FormControl>
+
+                <div className="options-block flex flex-col">
+                  <div className="control-panel-button">
+                    <a
+                      href="/#"
+                      rel="noopener noreferrer"
+                      draggable={false}
+                      onClick={(e) => {
+                        e.preventDefault();
                         resetVisited();
                       }}
-                    />
-                    <span className="inline-block">BFS Shortest Path</span>
-                  </label>
+                    >
+                      Clear Visited
+                    </a>
+                  </div>
+                  <div className="control-panel-button">
+                    <a
+                      href="/#"
+                      rel="noopener noreferrer"
+                      draggable={false}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        resetVisited();
+                        utils.changeAll(blocks.wall, blocks.empty, grid);
+                      }}
+                    >
+                      Clear Walls
+                    </a>
+                  </div>
+                  <div className="control-panel-button">
+                    <a
+                      href="/#"
+                      rel="noopener noreferrer"
+                      draggable={false}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        resetVisited();
+
+                        const obj = mg.generateMaze(
+                          nRows.current,
+                          nCols.current
+                        );
+
+                        setStartPos(obj.startPos);
+                        setEndPos(obj.endPos);
+                        setGrid(obj.grid);
+                      }}
+                    >
+                      Generate Maze
+                    </a>
+                  </div>
+                  <div
+                    className="control-panel-button"
+                    style={{ marginTop: '16px' }}
+                  >
+                    <a
+                      href="/#"
+                      rel="noopener noreferrer"
+                      draggable={false}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (startPos.r === -1 || run.current) return;
+
+                        resetVisited();
+
+                        runSearch(startPos, endPos).then((res) => {
+                          setResult(res);
+                          run.current = false;
+                        });
+                      }}
+                    >
+                      Begin Search
+                    </a>
+                  </div>
                 </div>
+              </Grid>
+
+              <div className="options-block">
+                <Typography variant="body1">
+                  {algorithm === 'bfsShortestPath'
+                    ? 'Shortest Path Length'
+                    : 'Path Exists'}
+                  {`\xa0:\xa0\xa0${result}`}
+                </Typography>
               </div>
-            </div>
-
-            <div className="options-block">
-              <label htmlFor="block-size">
-                Block Size: {Math.round(blockSize.current)}
-              </label>
-              <input
-                className="block"
-                type="range"
-                id="block-size"
-                name="block-size"
-                min={minBlockScale}
-                max={maxBlockScale}
-                defaultValue={defaultBlockScale}
-                step={1}
-                onInput={(e) => {
-                  e.preventDefault();
-                  const val = parseInt(e.target.value);
-                  blockScale.current = val;
-
-                  run.current = false;
-                  setResult('-');
-
-                  blockSize.current = baseBlockSize * Math.pow(base, val);
-                  nRows.current = Math.floor(props.h / blockSize.current);
-                  nCols.current = Math.floor(props.w / blockSize.current);
-                  gap.current =
-                    (props.h % blockSize.current) / (nCols.current + 1);
-
-                  // initialize random start and end positions
-                  _start = {
-                    r: randomInteger(0, Math.floor((nRows.current - 1) / 2)),
-                    c: randomInteger(0, nCols.current - 1),
-                  };
-
-                  _end = {
-                    r: randomInteger(
-                      Math.floor((nRows.current - 1) / 2) + 1,
-                      nRows.current - 1
-                    ),
-                    c: randomInteger(0, nCols.current - 1),
-                  };
-
-                  let tempGrid = utils.createArray(
-                    nRows.current,
-                    nCols.current
-                  );
-                  tempGrid[_start.r][_start.c] = blocks.source;
-                  tempGrid[_end.r][_end.c] = blocks.sink;
-
-                  setStartPos(_start);
-                  setEndPos(_end);
-                  setGrid(tempGrid);
-                }}
-              />
-            </div>
-
-            <div className="options-block">
-              <label htmlFor="speed">
-                Speed: {speed.current === sliderMax ? 'Max' : speed.current + 1}
-              </label>
-              <input
-                className="block"
-                type="range"
-                id="speed"
-                name="speed"
-                min={sliderMin}
-                max={sliderMax}
-                defaultValue={speed.current}
-                step={1}
-                onInput={(e) => {
-                  e.preventDefault();
-                  const val = parseInt(e.target.value);
-                  speed.current = val;
-                }}
-              />
-            </div>
-
-            <div className="options-block flex flex-col">
-              <div className="control-panel-button">
-                <a
-                  href="/#"
-                  rel="noopener noreferrer"
-                  draggable={false}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    resetVisited();
-                  }}
-                >
-                  Clear Visited
-                </a>
-              </div>
-              <div className="control-panel-button">
-                <a
-                  href="/#"
-                  rel="noopener noreferrer"
-                  draggable={false}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    resetVisited();
-                    utils.changeAll(blocks.wall, blocks.empty, grid);
-                  }}
-                >
-                  Clear Walls
-                </a>
-              </div>
-              <div className="control-panel-button">
-                <a
-                  href="/#"
-                  rel="noopener noreferrer"
-                  draggable={false}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    resetVisited();
-
-                    const obj = mg.generateMaze(nRows.current, nCols.current);
-
-                    setStartPos(obj.startPos);
-                    setEndPos(obj.endPos);
-                    setGrid(obj.grid);
-                  }}
-                >
-                  Generate Maze
-                </a>
-              </div>
-              <div className="control-panel-button">
-                <a
-                  href="/#"
-                  rel="noopener noreferrer"
-                  draggable={false}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (startPos.r === -1 || run.current) return;
-
-                    resetVisited();
-
-                    runSearch(startPos, endPos).then((res) => {
-                      setResult(res);
-                      run.current = false;
-                    });
-                  }}
-                >
-                  Begin Search
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="options-block">
-            <p>
-              {algorithm === 'bfsShortestPath'
-                ? 'Shortest Path Length'
-                : 'Path Exists'}
-              {`\xa0:\xa0\xa0${result}`}
-            </p>
-          </div>
-        </div>
+            </GridGlass>
+          )}
+        </Grid>
 
         {DEBUG === false ? null : (
           <div className="mx-3 w-70">
@@ -755,9 +773,9 @@ export default function SearchVisualizer(props) {
             </div>
           </div>
         )}
-      </div>
+      </Grid>
 
-      <div className="flex justify-between" style={{ width: `${props.w}px` }}>
+      {/* <div className="flex justify-between" style={{ width: `${props.w}px` }}>
         <div>
           <p>
             {hoverRow.current !== -1
@@ -779,7 +797,7 @@ export default function SearchVisualizer(props) {
         >
           Help
         </a>
-      </div>
-    </div>
+      </div> */}
+    </Grid>
   );
 }

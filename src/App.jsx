@@ -3,7 +3,7 @@ import SearchVisualizerPage from './pages/SearchVisualizerPage';
 import Navbar from './components/Navbar';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import { ThemeProvider } from '@mui/material';
+import { Grid, ThemeProvider } from '@mui/material';
 import theme from './theme';
 import { default as AppRoutes } from './Routes';
 import SortingVisualizer from './components/sorting-visualizer/SortingVisualizer';
@@ -223,7 +223,14 @@ export default function App() {
   }, []);
 
   return (
-    <>
+    <Grid
+      item
+      container
+      style={{
+        flexFlow: 'column nowrap',
+        paddingBlockStart: `${navRef.current?.clientHeight || 0}px`,
+      }}
+    >
       <ThemeProvider theme={theme}>
         <Navbar getNavRef={getNavRef} />
         {isSmallScreen.current === true ? null : (
@@ -256,6 +263,6 @@ export default function App() {
           />
         </Routes>
       </ThemeProvider>
-    </>
+    </Grid>
   );
 }

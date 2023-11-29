@@ -13,7 +13,10 @@ export default function SearchVisualizerPage(props) {
   }, [getDocumentHeight]);
 
   return (
-    <section className="scroll-window">
+    <section
+      className="scroll-window-full"
+      style={{ paddingTop: '0', display: 'flex', justifyContent: 'center' }}
+    >
       {props.isMobile ? (
         <div className="flex mx-10 text-center justify-center items-center h-screen">
           <p>
@@ -21,10 +24,7 @@ export default function SearchVisualizerPage(props) {
           </p>
         </div>
       ) : (
-        <>
-          <div className="nav-fill"></div>
-          <SearchVisualizer w={maxSize} h={maxSize} />
-        </>
+        <SearchVisualizer w={maxSize} h={maxSize} />
       )}
     </section>
   );

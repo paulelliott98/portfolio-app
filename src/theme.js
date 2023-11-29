@@ -3,6 +3,7 @@ import { createTheme } from '@mui/material';
 export const colors = {
   neonBlue: '#6bcfe4',
   neonPink: '#c792e9',
+  neonGreen: 'rgb(221, 254, 144)',
 };
 
 const theme = createTheme({
@@ -29,6 +30,31 @@ const theme = createTheme({
           fontSize: '22px',
           fontFamily: 'DM Sans',
           fontWeight: '500',
+        },
+      },
+    },
+    MuiRadio: {
+      defaultProps: {
+        size: 'small',
+      },
+      styleOverrides: {
+        root: {
+          color: '#fff',
+          //   '&.Mui-checked': {
+          //     color: colors.neonGreen,
+          //   },
+        },
+      },
+    },
+    MuiFormLabel: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'DM Sans, Roboto',
+          color: '#fff',
+          '&.Mui-focused': {
+            color: '#fff',
+            // color: colors.neonGreen,
+          },
         },
       },
     },

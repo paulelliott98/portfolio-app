@@ -8,6 +8,7 @@ import { useInView } from 'react-intersection-observer';
 import projects from '../content/Projects';
 import 'animate.css';
 import { Typography, Grid } from '@mui/material';
+import GridGlass from '../components/GridGlass';
 
 const utils = require('../utils');
 
@@ -77,19 +78,19 @@ export default function HomePage(props) {
 
   return (
     <div>
-      <section key="0" className="scroll-window-full" id="home">
-        <div className="nav-fill"></div>
+      <section key="0" className="scroll-window" id="home">
         <Grid
           item
           container
-          justifyContent="space-between"
-          style={{ flexFlow: 'row nowrap', gap: '24px' }}
+          justifyContent="space-evenly"
+          style={{ flexFlow: 'row nowrap', gap: '8px' }}
         >
           <Grid
             item
             container
             ref={ref}
-            style={{ flexFlow: 'column nowrap', marginTop: '20vh' }}
+            justifyContent="center"
+            style={{ flexFlow: 'column nowrap' }}
             className="intro"
           >
             <Typography
@@ -112,7 +113,7 @@ export default function HomePage(props) {
             </Typography>
           </Grid>
           {props.isMobile ? null : (
-            <div className={'mt-24 snake ' + anim('fade', inView)}>
+            <div className={'snake ' + anim('fade', inView)}>
               <Snake w={362} h={362} />
             </div>
           )}
@@ -178,8 +179,9 @@ export default function HomePage(props) {
         <div className="section-title">
           <h4>about</h4>
         </div>
-        <div ref={ref3} className="flex flex-col gap-y-4">
-          <div
+        <div className="flex flex-col gap-y-4">
+          <GridGlass
+            ref={ref3}
             className={'container ' + anim('fade', inView3)}
             style={animDelay(0.5)}
           >
@@ -216,8 +218,8 @@ export default function HomePage(props) {
               strong problem solving ability and resourcefulness enable the team
               to succeed.
             </Typography>
-          </div>
-          <div
+          </GridGlass>
+          <GridGlass
             className={'container ' + anim('fade', inView4)}
             style={animDelay(0.7)}
             ref={ref4}
@@ -253,9 +255,8 @@ export default function HomePage(props) {
                 </li>
               ))}
             </ul>
-          </div>
+          </GridGlass>
         </div>
-        <div className="flex justify-between gap-3"></div>
       </section>
 
       <section key="3" className="scroll-window" id="contact">
@@ -302,10 +303,12 @@ export default function HomePage(props) {
           />
         </div>
       </section>
-      <footer className="footer">
-        <div>
-          <span>A React App designed and built by Paul Gan</span>
-        </div>
+      <footer>
+        <Grid item container justifyContent="center">
+          <Typography variant="body1">
+            A React App designed and built by Paul Gan
+          </Typography>
+        </Grid>
       </footer>
     </div>
   );
