@@ -423,20 +423,25 @@ export default function SearchVisualizer(props) {
       <Grid
         item
         container
+        justifyContent="center"
         sx={{ flexFlow: 'row nowrap', gap: '16px', height: 'min-content' }}
       >
-        <Grid item container style={{ flexFlow: 'column nowrap' }}>
+        <Grid
+          item
+          container
+          style={{ flexFlow: 'column nowrap', width: 'fit-content' }}
+        >
           <canvas className="bfs-canvas" ref={canvasRef} {...props} />
           <div
             className="flex justify-between"
             style={{ width: `${props.w}px` }}
           >
             <div>
-              <p>
+              <Typography variant="body1">
                 {hoverRow.current !== -1
                   ? `${hoverRow.current}, ${hoverCol.current}`
                   : null}
-              </p>
+              </Typography>
             </div>
             <a
               href="/#"
@@ -455,7 +460,7 @@ export default function SearchVisualizer(props) {
           </div>
         </Grid>
 
-        <Grid item container style={{ height: `${props.h}px`, width: '100%' }}>
+        <Grid item container style={{ height: `${props.h}px`, width: '500px' }}>
           {showInstructions ? (
             <GridGlass style={{ flex: '1 1 auto', padding: '24px' }}>
               <div className="flex gap-4">
