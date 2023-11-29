@@ -124,7 +124,13 @@ export default function HomePage(props) {
         <div className="section-title">
           <h4>projects</h4>
         </div>
-        <div ref={ref2} className="flex justify-between gap-10">
+        <Grid
+          item
+          container
+          justifyContent="center"
+          ref={ref2}
+          style={{ gap: '32px' }}
+        >
           <div className="projects-list">
             {projects.map((p, index) => (
               <a
@@ -149,7 +155,7 @@ export default function HomePage(props) {
           </div>
           <div
             className={'project-container ' + anim('fade', inView2)}
-            style={animDelay(0.8)}
+            style={{ ...animDelay(0.8), marginTop: '36px' }}
           >
             {projects
               .filter((_, index) => {
@@ -172,14 +178,19 @@ export default function HomePage(props) {
                 </CSSTransition>
               ))}
           </div>
-        </div>
+        </Grid>
       </section>
 
       <section key="2" className="scroll-window" id="about">
         <div className="section-title">
           <h4>about</h4>
         </div>
-        <div className="flex flex-col gap-y-4">
+        <Grid
+          item
+          container
+          alignItems="center"
+          style={{ flexFlow: 'column nowrap', gap: '16px' }}
+        >
           <GridGlass
             ref={ref3}
             className={'container ' + anim('fade', inView3)}
@@ -256,7 +267,7 @@ export default function HomePage(props) {
               ))}
             </ul>
           </GridGlass>
-        </div>
+        </Grid>
       </section>
 
       <section key="3" className="scroll-window" id="contact">
