@@ -1,12 +1,11 @@
 import HomePage from './pages/HomePage';
-import SearchVisualizerPage from './pages/SearchVisualizerPage';
+import AlgorithmVisualizerPage from './pages/AlgorithmVisualizerPage';
 import Navbar from './components/Navbar';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { Grid, ThemeProvider } from '@mui/material';
 import theme from './theme';
 import { default as AppRoutes } from './Routes';
-import SortingVisualizer from './components/sorting-visualizer/SortingVisualizer';
 
 const utils = require('./utils');
 
@@ -251,15 +250,22 @@ export default function App() {
           <Route
             path={AppRoutes.searchVisualizer}
             element={
-              <SearchVisualizerPage
+              <AlgorithmVisualizerPage
                 isMobile={isSmallScreen.current}
                 getDocumentHeight={getDocumentHeight}
+                render="search"
               />
             }
           />
           <Route
             path={AppRoutes.sortingVisualizer}
-            element={<SortingVisualizer />}
+            element={
+              <AlgorithmVisualizerPage
+                isMobile={isSmallScreen.current}
+                getDocumentHeight={getDocumentHeight}
+                render="sorting"
+              />
+            }
           />
         </Routes>
       </ThemeProvider>

@@ -506,7 +506,6 @@ li {
   position: absolute;
   z-index: 9999;
   display: flex;
-  gap: 5px;
   flex-direction: column;
   justify-content: flex-start;
   top: 100%;

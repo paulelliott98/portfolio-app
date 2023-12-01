@@ -23,11 +23,11 @@ export default function Navbar(props) {
           <span className="arrow"></span>
           <ul className="navbar-dropdown">
             <RouterLink to={AppRoutes.searchVisualizer} draggable={false}>
-              Search
+              Search Algorithms
             </RouterLink>
-            {/* <RouterLink to={AppRoutes.sortingVisualizer} draggable={false}>
-              Sorting
-            </RouterLink> */}
+            <RouterLink to={AppRoutes.sortingVisualizer} draggable={false}>
+              Sorting Algorithms
+            </RouterLink>
           </ul>
         </div>
         <RouterLink to="/#projects" draggable={false}>

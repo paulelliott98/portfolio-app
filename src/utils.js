@@ -92,6 +92,17 @@ function getPageHeight(document) {
   return documentHeight;
 }
 
+// create HD canvas
+function createHiPPICanvas(w, h, canvasRef, scale) {
+  let cv = canvasRef.current;
+  cv.width = w * scale;
+  cv.height = h * scale;
+  cv.style.width = w + 'px';
+  cv.style.height = h + 'px';
+  cv.getContext('2d').scale(scale, scale);
+  return cv;
+}
+
 module.exports = {
   sleep,
   createArray,
@@ -104,4 +115,5 @@ module.exports = {
   shuffleArray,
   isInViewport,
   getPageHeight,
+  createHiPPICanvas,
 };

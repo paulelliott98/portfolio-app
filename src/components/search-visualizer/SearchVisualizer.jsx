@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './algoVisualizer.css';
 import * as algorithms from './algorithms';
 import * as mg from './mazeGenerator';
+import * as utils from '../../utils';
 import blocks from './blocks';
 import {
   FormControl,
@@ -14,14 +15,13 @@ import {
   Typography,
 } from '@mui/material';
 import GridGlass from '../GridGlass';
-const utils = require('../../utils');
 
 const DEBUG = false;
 
 const blockColors = {
   source: '#d21f3c',
   sink: '#1aa7ec',
-  visited: '#3ded97',
+  visited: '#b6ffdb',
   empty: '#ffffff',
   wall: '#444444',
   path: '#ffff00',
@@ -342,18 +342,7 @@ export default function SearchVisualizer(props) {
       }
     }
 
-    // create HD canvas
-    function createHiPPICanvas(w, h) {
-      let cv = canvasRef.current;
-      cv.width = w * scale;
-      cv.height = h * scale;
-      cv.style.width = w + 'px';
-      cv.style.height = h + 'px';
-      cv.getContext('2d').scale(scale, scale);
-      return cv;
-    }
-
-    const canvas = createHiPPICanvas(props.w, props.h);
+    const canvas = utils.createHiPPICanvas(props.w, props.h, canvasRef, scale);
     const context = canvas.getContext('2d');
 
     if (!isEventListenersAttached.current) {
@@ -429,7 +418,7 @@ export default function SearchVisualizer(props) {
         <Grid
           item
           container
-          style={{ flexFlow: 'column nowrap', width: 'fit-content' }}
+          sx={{ flexFlow: 'column nowrap', width: 'fit-content' }}
         >
           <canvas className="bfs-canvas" ref={canvasRef} {...props} />
           <div
