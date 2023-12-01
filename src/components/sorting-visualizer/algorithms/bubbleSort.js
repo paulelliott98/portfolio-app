@@ -16,8 +16,9 @@ async function bubbleSort(arr, drawData) {
       }
 
       // draw to canvas
-      drawData.context.clearRect(0, 0, drawData.w, drawData.h);
-      drawBars(drawData.barData, arr, drawData.context, drawData.h);
+      drawData.ctx.clearRect(0, 0, drawData.w, drawData.h);
+      drawBars(arr, drawData);
+      if (!drawData.run) return;
       await sleep(0);
     }
     end--;

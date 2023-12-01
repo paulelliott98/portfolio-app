@@ -47,24 +47,29 @@ function shuffle(array) {
   return array;
 }
 
+/**
+ * Create a shuffled array containing 0 to n-1
+ * @param {*} n - Array size
+ * @returns Shuffled array
+ */
 function makeShuffledArray(n) {
   const arr = Array.from(Array(n).keys());
   return shuffle(arr);
 }
 
-function drawBars(barData, arr, ctx, bottom) {
-  const left = 0; // TODO: calculate left position
-  const width = 5; // TODO: calculate individual bar width based on total width
+function drawBars(arr, drawData) {
+  const left = 0;
   const gap = 1;
+  const width = (drawData.w - (arr.length - 1) * gap) / arr.length;
   for (let i = 0; i < arr.length; i++) {
     // draw
     const x = left + i * width + i * gap;
     drawRectBottomLeft(
-      ctx,
+      drawData.ctx,
       x,
-      bottom,
+      drawData.h,
       width,
-      barData[arr[i]].height,
+      drawData.barData[arr[i]].height,
       colors.neonBlue
     );
   }

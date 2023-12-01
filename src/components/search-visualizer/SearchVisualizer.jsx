@@ -554,13 +554,13 @@ export default function SearchVisualizer(props) {
                     <FormControlLabel
                       checked={algorithm === 'bfs'}
                       value="bfs"
-                      label="bfs"
+                      label="BFS"
                       control={<Radio />}
                     />
                     <FormControlLabel
                       checked={algorithm === 'dfs'}
                       value="dfs"
-                      label="dfs"
+                      label="BFS"
                       control={<Radio />}
                     />
                     <FormControlLabel
