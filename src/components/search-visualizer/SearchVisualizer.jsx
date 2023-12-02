@@ -5,6 +5,7 @@ import * as mg from './mazeGenerator';
 import * as utils from '../../utils';
 import blocks from './blocks';
 import {
+  Button,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -15,13 +16,14 @@ import {
   Typography,
 } from '@mui/material';
 import GridGlass from '../GridGlass';
+import { colors } from '../../theme';
 
 const DEBUG = false;
 
 const blockColors = {
   source: '#d21f3c',
   sink: '#1aa7ec',
-  visited: '#b6ffdb',
+  visited: colors.neonPink,
   empty: '#ffffff',
   wall: '#444444',
   path: '#ffff00',
@@ -55,7 +57,7 @@ export default function SearchVisualizer(props) {
 
   const [sliderMin, sliderMax] = [0, 100];
   const defaultSpeed = 100;
-  let speed = useRef(defaultSpeed);
+  const speed = useRef(defaultSpeed);
 
   // mouse data
   const [mousePos, setMousePos] = useState({ x: -1, y: -1 });
@@ -418,6 +420,7 @@ export default function SearchVisualizer(props) {
         <Grid
           item
           container
+          justifyContent="center"
           sx={{ flexFlow: 'column nowrap', width: 'fit-content' }}
         >
           <canvas className="bfs-canvas" ref={canvasRef} {...props} />
@@ -449,9 +452,13 @@ export default function SearchVisualizer(props) {
           </div>
         </Grid>
 
-        <Grid item container style={{ height: `${props.h}px`, width: '500px' }}>
+        <Grid
+          item
+          container
+          style={{ height: `${props.h}px`, flex: '0 1 350px' }}
+        >
           {showInstructions ? (
-            <GridGlass style={{ flex: '1 1 auto', padding: '24px' }}>
+            <GridGlass item container style={{ padding: '1em' }}>
               <div className="flex gap-4">
                 <div
                   style={{
@@ -462,7 +469,7 @@ export default function SearchVisualizer(props) {
                     backgroundColor: `${blockColors.source}${blockOpacity}`,
                   }}
                 />
-                <p>Source – Left Click</p>
+                <Typography>Source – Left Click</Typography>
               </div>
 
               <div className="flex gap-4">
@@ -475,7 +482,7 @@ export default function SearchVisualizer(props) {
                     backgroundColor: `${blockColors.sink}${blockOpacity}`,
                   }}
                 />
-                <p>Destination – Right Click</p>
+                <Typography>Destination – Right Click</Typography>
               </div>
 
               <div className="flex gap-4">
@@ -488,7 +495,7 @@ export default function SearchVisualizer(props) {
                     backgroundColor: `${blockColors.wall}${blockOpacity}`,
                   }}
                 />
-                <p>Wall – Shift + Left Click</p>
+                <Typography>Wall – Shift + Left Click</Typography>
               </div>
 
               <div className="flex gap-4">
@@ -501,7 +508,7 @@ export default function SearchVisualizer(props) {
                     backgroundColor: `${blockColors.empty}${blockOpacity}`,
                   }}
                 />
-                <p>Empty – Shift + Right Click</p>
+                <Typography>Empty – Shift + Right Click</Typography>
               </div>
 
               <div className="flex gap-4">
@@ -514,7 +521,7 @@ export default function SearchVisualizer(props) {
                     backgroundColor: `${blockColors.visited}${blockOpacity}`,
                   }}
                 />
-                <p>Visited</p>
+                <Typography>Visited</Typography>
               </div>
 
               <div className="flex gap-4">
@@ -527,166 +534,163 @@ export default function SearchVisualizer(props) {
                     backgroundColor: `${blockColors.path}${blockOpacity}`,
                   }}
                 />
-                <p>Path</p>
+                <Typography>Path</Typography>
               </div>
             </GridGlass>
           ) : (
-            <GridGlass style={{ flex: '1 1 auto', padding: '16px 24px' }}>
-              <Grid
+            <Grid
+              item
+              container
+              style={{ flexFlow: 'column nowrap', gap: '8px' }}
+            >
+              <GridGlass
                 item
                 container
-                justifyContent="flex-start"
-                style={{
-                  flex: '1 1 auto',
-                  flexFlow: 'column nowrap',
-                  gap: '16px',
-                }}
+                style={{ flex: '1 1 auto', padding: '1em' }}
               >
-                <FormControl>
-                  <FormLabel>Search Algorithm</FormLabel>
-                  <RadioGroup
-                    row
-                    onChange={(e) => {
-                      setAlgorithm(e.target.value);
-                      setResult('-');
-                    }}
-                  >
-                    <FormControlLabel
-                      checked={algorithm === 'bfs'}
-                      value="bfs"
-                      label="BFS"
-                      control={<Radio />}
-                    />
-                    <FormControlLabel
-                      checked={algorithm === 'dfs'}
-                      value="dfs"
-                      label="BFS"
-                      control={<Radio />}
-                    />
-                    <FormControlLabel
-                      checked={algorithm === 'bfsShortestPath'}
-                      value="bfsShortestPath"
-                      label="Shortest Path (BFS)"
-                      control={<Radio />}
-                    />
-                  </RadioGroup>
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>
-                    Block Size: {Math.round(blockSize.current)}
-                  </FormLabel>
-                  <Slider
-                    aria-label="Block Size"
-                    defaultValue={defaultBlockScale}
-                    getAriaValueText={() => blockSize.current}
-                    valueLabelDisplay="auto"
-                    min={minBlockScale}
-                    max={maxBlockScale}
-                    marks
-                    valueLabelFormat={(val) => <div>{blockSize.current}</div>}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      const val = parseInt(e.target.value);
-                      blockScale.current = val;
-
-                      run.current = false;
-                      setResult('-');
-
-                      blockSize.current = baseBlockSize * Math.pow(base, val);
-                      nRows.current = Math.floor(props.h / blockSize.current);
-                      nCols.current = Math.floor(props.w / blockSize.current);
-                      gap.current =
-                        (props.h % blockSize.current) / (nCols.current + 1);
-
-                      // initialize random start and end positions
-                      _start = {
-                        r: randomInteger(
-                          0,
-                          Math.floor((nRows.current - 1) / 2)
-                        ),
-                        c: randomInteger(0, nCols.current - 1),
-                      };
-
-                      _end = {
-                        r: randomInteger(
-                          Math.floor((nRows.current - 1) / 2) + 1,
-                          nRows.current - 1
-                        ),
-                        c: randomInteger(0, nCols.current - 1),
-                      };
-
-                      let tempGrid = utils.createArray(
-                        nRows.current,
-                        nCols.current
-                      );
-                      tempGrid[_start.r][_start.c] = blocks.source;
-                      tempGrid[_end.r][_end.c] = blocks.sink;
-
-                      setStartPos(_start);
-                      setEndPos(_end);
-                      setGrid(tempGrid);
-                    }}
-                  />
-                </FormControl>
-
-                <FormControl>
-                  <FormLabel>
-                    {`Speed: ${
-                      speed.current === sliderMax ? 'Max' : speed.current
-                    }`}
-                  </FormLabel>
-                  <Slider
-                    aria-label="Speed"
-                    defaultValue={defaultSpeed}
-                    getAriaValueText={() => speed.current}
-                    valueLabelDisplay="auto"
-                    min={sliderMin}
-                    max={sliderMax}
-                    step={1}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      const val = parseInt(e.target.value);
-                      speed.current = val;
-                    }}
-                  />
-                </FormControl>
-
-                <div className="options-block flex flex-col">
-                  <div className="control-panel-button">
-                    <a
-                      href="/#"
-                      rel="noopener noreferrer"
-                      draggable={false}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        resetVisited();
+                <Grid
+                  item
+                  container
+                  justifyContent="flex-start"
+                  style={{
+                    flex: '1 1 auto',
+                    flexFlow: 'column nowrap',
+                    gap: '16px',
+                  }}
+                >
+                  <FormControl>
+                    <FormLabel>Search Algorithm</FormLabel>
+                    <RadioGroup
+                      row
+                      onChange={(e) => {
+                        setAlgorithm(e.target.value);
+                        setResult('-');
                       }}
                     >
-                      Clear Visited
-                    </a>
-                  </div>
-                  <div className="control-panel-button">
-                    <a
-                      href="/#"
-                      rel="noopener noreferrer"
-                      draggable={false}
-                      onClick={(e) => {
+                      <FormControlLabel
+                        checked={algorithm === 'bfs'}
+                        value="bfs"
+                        label="BFS"
+                        control={<Radio />}
+                      />
+                      <FormControlLabel
+                        checked={algorithm === 'dfs'}
+                        value="dfs"
+                        label="DFS"
+                        control={<Radio />}
+                      />
+                      <FormControlLabel
+                        checked={algorithm === 'bfsShortestPath'}
+                        value="bfsShortestPath"
+                        label="Shortest Path"
+                        control={<Radio />}
+                      />
+                    </RadioGroup>
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel>
+                      Block Size: {Math.round(blockSize.current)}
+                    </FormLabel>
+                    <Slider
+                      aria-label="Block Size"
+                      defaultValue={defaultBlockScale}
+                      getAriaValueText={() => blockSize.current}
+                      valueLabelDisplay="auto"
+                      min={minBlockScale}
+                      max={maxBlockScale}
+                      marks
+                      valueLabelFormat={(val) => <div>{blockSize.current}</div>}
+                      onChange={(e) => {
                         e.preventDefault();
+                        const val = parseInt(e.target.value);
+                        blockScale.current = val;
+
+                        run.current = false;
+                        setResult('-');
+
+                        blockSize.current = baseBlockSize * Math.pow(base, val);
+                        nRows.current = Math.floor(props.h / blockSize.current);
+                        nCols.current = Math.floor(props.w / blockSize.current);
+                        gap.current =
+                          (props.h % blockSize.current) / (nCols.current + 1);
+
+                        // initialize random start and end positions
+                        _start = {
+                          r: randomInteger(
+                            0,
+                            Math.floor((nRows.current - 1) / 2)
+                          ),
+                          c: randomInteger(0, nCols.current - 1),
+                        };
+
+                        _end = {
+                          r: randomInteger(
+                            Math.floor((nRows.current - 1) / 2) + 1,
+                            nRows.current - 1
+                          ),
+                          c: randomInteger(0, nCols.current - 1),
+                        };
+
+                        let tempGrid = utils.createArray(
+                          nRows.current,
+                          nCols.current
+                        );
+                        tempGrid[_start.r][_start.c] = blocks.source;
+                        tempGrid[_end.r][_end.c] = blocks.sink;
+
+                        setStartPos(_start);
+                        setEndPos(_end);
+                        setGrid(tempGrid);
+                      }}
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel>
+                      {`Speed: ${
+                        speed.current === sliderMax ? 'Max' : speed.current
+                      }`}
+                    </FormLabel>
+                    <Slider
+                      aria-label="Speed"
+                      value={speed.current}
+                      getAriaValueText={() => speed.current}
+                      valueLabelDisplay="auto"
+                      min={sliderMin}
+                      max={sliderMax}
+                      step={1}
+                      onChange={(e) => {
+                        speed.current = e.target.value;
+                      }}
+                    />
+                  </FormControl>
+
+                  <Grid
+                    item
+                    container
+                    style={{
+                      flex: '1 1 auto',
+                      flexFlow: 'column nowrap',
+                      justifyContent: 'flex-end',
+                      gap: '8px',
+                    }}
+                  >
+                    <Button variant="outlined" onClick={resetVisited}>
+                      Clear Visited
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
                         resetVisited();
                         utils.changeAll(blocks.wall, blocks.empty, grid);
                       }}
                     >
                       Clear Walls
-                    </a>
-                  </div>
-                  <div className="control-panel-button">
-                    <a
-                      href="/#"
-                      rel="noopener noreferrer"
-                      draggable={false}
-                      onClick={(e) => {
-                        e.preventDefault();
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
                         resetVisited();
 
                         const obj = mg.generateMaze(
@@ -700,18 +704,10 @@ export default function SearchVisualizer(props) {
                       }}
                     >
                       Generate Maze
-                    </a>
-                  </div>
-                  <div
-                    className="control-panel-button"
-                    style={{ marginTop: '16px' }}
-                  >
-                    <a
-                      href="/#"
-                      rel="noopener noreferrer"
-                      draggable={false}
-                      onClick={(e) => {
-                        e.preventDefault();
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
                         if (startPos.r === -1 || run.current) return;
 
                         resetVisited();
@@ -723,20 +719,20 @@ export default function SearchVisualizer(props) {
                       }}
                     >
                       Begin Search
-                    </a>
-                  </div>
-                </div>
-              </Grid>
-
-              <div className="options-block">
-                <Typography variant="body1">
+                    </Button>
+                  </Grid>
+                </Grid>
+              </GridGlass>
+              <GridGlass item container style={{ padding: '1em' }}>
+                <Typography variant="subtitle1">
                   {algorithm === 'bfsShortestPath'
-                    ? 'Shortest Path Length'
-                    : 'Path Exists'}
-                  {`\xa0:\xa0\xa0${result}`}
+                    ? `Shortest Path: ${result}${
+                        result === '-' ? '' : ' blocks'
+                      }`
+                    : `Path Exists: ${result}`}
                 </Typography>
-              </div>
-            </GridGlass>
+              </GridGlass>
+            </Grid>
           )}
         </Grid>
 

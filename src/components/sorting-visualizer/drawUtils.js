@@ -1,4 +1,5 @@
 const { colors } = require('../../theme');
+const { sleep } = require('../../utils');
 
 /**
  * Draw a rect of specified height, using bottom-left corner as basis
@@ -79,10 +80,17 @@ function swap(i, j, arr) {
   [arr[i], arr[j]] = [arr[j], arr[i]];
 }
 
+async function drawToCanvas(arr, drawData) {
+  drawData.ctx.clearRect(0, 0, drawData.w, drawData.h);
+  drawBars(arr, drawData);
+  await sleep((drawData.maxSpeed - drawData.speed.current) * 10);
+}
+
 module.exports = {
   drawRectBottomLeft,
   makeBarData,
   drawBars,
   makeShuffledArray,
   swap,
+  drawToCanvas,
 };

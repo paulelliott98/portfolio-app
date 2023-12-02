@@ -1,8 +1,6 @@
+import { drawToCanvas, swap } from '../drawUtils';
+
 // bubble sort
-
-import { sleep } from '../../../utils';
-import { drawBars, swap } from '../drawUtils';
-
 async function bubbleSort(arr, drawData) {
   if (arr.length < 2) return arr;
 
@@ -16,10 +14,8 @@ async function bubbleSort(arr, drawData) {
       }
 
       // draw to canvas
-      drawData.ctx.clearRect(0, 0, drawData.w, drawData.h);
-      drawBars(arr, drawData);
-      if (!drawData.run) return;
-      await sleep(0);
+      if (!drawData.run.bubbleSort) return;
+      await drawToCanvas(arr, drawData);
     }
     end--;
   }

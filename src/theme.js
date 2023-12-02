@@ -3,7 +3,7 @@ import { createTheme } from '@mui/material';
 export const colors = {
   neonBlue: '#6bcfe4',
   neonPink: '#c792e9',
-  neonGreen: 'rgb(221, 254, 144)',
+  neonGreen: '#ddfe90',
 };
 
 const theme = createTheme({
@@ -53,9 +53,18 @@ const theme = createTheme({
           color: '#fff',
           '&.Mui-focused': {
             color: '#fff',
-            // color: colors.neonGreen,
           },
         },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'DM Sans, Roboto',
+          textTransform: 'capitalize',
+          //   color: colors.neonGreen,
+        },
+        // contained: {},
       },
     },
   },

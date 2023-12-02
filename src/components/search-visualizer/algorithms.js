@@ -1,11 +1,10 @@
-// import blocks from "./blocks";
-const utils = require("../../utils");
+const utils = require('../../utils');
 
 const messages = {
-  placeholder: "-",
-  pathExists: "Yes",
-  pathDoesNotExist: "No",
-  shortestPathDoesNotExist: "Destination Unreachable!",
+  placeholder: '-',
+  pathExists: 'Yes',
+  pathDoesNotExist: 'No',
+  shortestPathDoesNotExist: 'Destination Unreachable!',
 };
 
 // DFS
@@ -41,7 +40,7 @@ export async function dfs(start, end, grid, run, speed, setGrid) {
       visited[curr.r][curr.c] = 1; // set internal grid to visited
     }
 
-    if (typeof setGrid === "function" && setGrid) setGrid(newGrid);
+    if (typeof setGrid === 'function' && setGrid) setGrid(newGrid);
     else grid = newGrid;
 
     for (let i in dirs) {
@@ -101,7 +100,7 @@ export async function bfs(start, end, grid, run, speed, setGrid) {
       newGrid[curr.r][curr.c] = 1; // if not source, set to visited in ui grid
     }
 
-    if (typeof setGrid === "function" && setGrid) setGrid(newGrid);
+    if (typeof setGrid === 'function' && setGrid) setGrid(newGrid);
     else grid = newGrid;
 
     visited[curr.r][curr.c] = 1; // set internal grid to visited
@@ -143,7 +142,7 @@ export async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
 
   let visited = utils.createArray(nRows, nCols);
   let prev = new Map();
-  prev.set(start.r + "," + start.c, null);
+  prev.set(start.r + ',' + start.c, null);
 
   var queue = [start];
 
@@ -164,7 +163,7 @@ export async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
         grid[nr][nc] !== 4
       ) {
         queue.push({ r: nr, c: nc });
-        prev.set(nr + "," + nc, curr);
+        prev.set(nr + ',' + nc, curr);
       }
     }
 
@@ -188,7 +187,7 @@ export async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
           let newGrid = [...grid];
           newGrid[currCoord.r][currCoord.c] = 5; // set to path block
 
-          if (typeof setGrid === "function" && setGrid) setGrid(newGrid);
+          if (typeof setGrid === 'function' && setGrid) setGrid(newGrid);
           else grid = newGrid;
         }
 
@@ -216,7 +215,7 @@ export async function bfsShortestPath(start, end, grid, run, speed, setGrid) {
       newGrid[curr.r][curr.c] = 1; // if not source, set to visited in ui grid
     }
 
-    if (typeof setGrid === "function" && setGrid) setGrid(newGrid);
+    if (typeof setGrid === 'function' && setGrid) setGrid(newGrid);
     else grid = newGrid;
 
     visited[curr.r][curr.c] = 1; // set internal grid to visited

@@ -13,24 +13,21 @@ import GridGlass from '../GridGlass';
 import * as utils from '../../utils';
 import { drawBars, makeBarData, makeShuffledArray } from './drawUtils';
 import bubbleSort from './algorithms/bubbleSort';
+import quickSort from './algorithms/quickSort';
 
-const SortingVisualizer = ({ ...props }) => {
+const SortingVisualizer = () => {
   const canvasRef = useRef(null);
-
+  const [render, setRender] = useState(false);
   const [algorithm, setAlgorithm] = useState('bubbleSort');
   const [arraySize, setArraySize] = useState(50); // n items in array
-  const arr = useRef(makeShuffledArray(arraySize));
-  const drawData = useRef({});
-  //   const BubbleSort = useCallback((arr, drawData) => {
-  //     const { barData, ctx, w, h, run } = drawData;
-  //     bubbleSort(arr, {
-  //       barData,
-  //       ctx,
-  //       w,
-  //       h,
-  //       run
-  //     });
-  //   }, []);
+  const arr = useRef(makeShuffledArray(arraySize)); // array to sort
+  const arrCopy = useRef([...arr.current]); // store copy of arr to allow reset
+  const minSpeed = 0;
+  const maxSpeed = 100;
+  const speed = useRef(maxSpeed);
+  const drawData = useRef({
+    run: { bubbleSort: false, quickSort: false },
+  }); // all variables not part of the algorithm itself used in rendering
 
   // initialize variables. Re-run when variables are changed on the control panel
   useEffect(() => {
@@ -42,16 +39,18 @@ const SortingVisualizer = ({ ...props }) => {
     const canvas = utils.createHiPPICanvas(w, h, canvasRef, scale);
     const context = canvas.getContext('2d');
     const barData = makeBarData(arr.current.length, h);
+
     drawData.current = {
+      ...drawData.current,
       barData,
       ctx: context,
       w,
       h,
-      run: false,
+      speed, // ref; access using speed.current
+      maxSpeed,
     };
-
     drawBars(arr.current, drawData.current);
-  }, [arraySize]);
+  }, [arraySize, render]);
 
   // ---------- make canvas responsive ----------
   function handleResize() {
@@ -67,12 +66,38 @@ const SortingVisualizer = ({ ...props }) => {
   });
   // ---------- make canvas responsive ----------
 
+  function isRunning(algorithm) {
+    return drawData.current.run[algorithm];
+  }
+
+  function stopAlgorithms() {
+    drawData.current.run.bubbleSort = false;
+    drawData.current.run.quickSort = false;
+  }
+
   function runAlgorithm() {
-    drawData.current.run = false;
-    if (algorithm === 'bubbleSort') {
-      drawData.current.run = true;
+    if (algorithm === 'bubbleSort' && !isRunning(algorithm)) {
+      drawData.current.run.bubbleSort = true;
       bubbleSort(arr.current, drawData.current);
+    } else if (algorithm === 'quickSort' && !isRunning(algorithm)) {
+      drawData.current.run.quickSort = true;
+      quickSort(arr.current, drawData.current);
     }
+  }
+
+  function resetArray() {
+    stopAlgorithms();
+
+    arr.current = [...arrCopy.current];
+    setRender((prev) => !prev);
+  }
+
+  function shuffleArray() {
+    stopAlgorithms();
+
+    arr.current = makeShuffledArray(arraySize);
+    arrCopy.current = [...arr.current];
+    setRender((prev) => !prev);
   }
 
   return (
@@ -81,12 +106,10 @@ const SortingVisualizer = ({ ...props }) => {
         item
         container
         justifyContent="center"
-        sx={{ flexFlow: 'row nowrap', gap: '16px', height: '500px' }}
+        sx={{ flexFlow: 'row nowrap', gap: '16px', height: '70vh' }}
       >
         <GridGlass item container sx={{ flex: '1 1 auto', padding: '16px' }}>
           <canvas
-            // width="100%"
-            // height="100%"
             ref={canvasRef}
             style={{
               width: '100%',
@@ -95,10 +118,16 @@ const SortingVisualizer = ({ ...props }) => {
             }}
           />
         </GridGlass>
-        <GridGlass item container sx={{ flex: '1 1 500px' }}>
+        <GridGlass item container sx={{ flex: '1 0 350px', padding: '1em' }}>
           <FormControl>
             <FormLabel>Sorting Algorithm</FormLabel>
-            <RadioGroup row onChange={(e) => setAlgorithm(e.target.value)}>
+            <RadioGroup
+              row
+              onChange={(e) => {
+                stopAlgorithms();
+                setAlgorithm(e.target.value);
+              }}
+            >
               <FormControlLabel
                 checked={algorithm === 'bubbleSort'}
                 value="bubbleSort"
@@ -125,14 +154,55 @@ const SortingVisualizer = ({ ...props }) => {
               max={500}
               step={1}
               onChange={(e) => {
-                drawData.current.run = false;
+                stopAlgorithms();
+
                 setArraySize(() => e.target.value);
                 arr.current = makeShuffledArray(arraySize);
+                arrCopy.current = [...arr.current];
               }}
             />
           </FormControl>
 
-          <Button onClick={runAlgorithm}>Run</Button>
+          <FormControl>
+            <FormLabel>
+              {`Speed: ${speed.current === maxSpeed ? 'Max' : speed.current}`}
+            </FormLabel>
+            <Slider
+              aria-label="Speed"
+              value={speed.current}
+              getAriaValueText={() => speed.current}
+              valueLabelDisplay="auto"
+              min={minSpeed}
+              max={maxSpeed}
+              step={1}
+              onChange={(e) => {
+                speed.current = e.target.value;
+                drawData.current.speed.current = e.target.value;
+                setRender((prev) => !prev);
+              }}
+            />
+          </FormControl>
+
+          <Grid
+            item
+            container
+            style={{
+              flex: '1 1 auto',
+              flexFlow: 'column nowrap',
+              justifyContent: 'flex-end',
+              gap: '8px',
+            }}
+          >
+            <Button variant="outlined" onClick={shuffleArray}>
+              Shuffle
+            </Button>
+            <Button variant="outlined" onClick={resetArray}>
+              Reset
+            </Button>
+            <Button variant="contained" onClick={runAlgorithm}>
+              {`Run ${algorithm}`}
+            </Button>
+          </Grid>
         </GridGlass>
       </Grid>
     </Grid>
