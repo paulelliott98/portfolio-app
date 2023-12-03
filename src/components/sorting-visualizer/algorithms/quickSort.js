@@ -1,8 +1,8 @@
 import { drawToCanvas, swap } from '../drawUtils';
 
 // quicksort
-function quickSort(arr, drawData) {
-  quickSortUtil(arr, 0, arr.length - 1, drawData);
+async function quickSort(arr, drawData) {
+  await quickSortUtil(arr, 0, arr.length - 1, drawData);
 }
 
 async function quickSortUtil(arr, l, r, drawData) {
@@ -35,7 +35,7 @@ async function partition(arr, l, r, drawData) {
 
     // draw to canvas
     if (!drawData.run.quickSort) return;
-    await drawToCanvas(arr, drawData);
+    await drawToCanvas(arr, drawData, { left, right });
   }
 }
 

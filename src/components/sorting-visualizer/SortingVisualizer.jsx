@@ -75,14 +75,17 @@ const SortingVisualizer = () => {
     drawData.current.run.quickSort = false;
   }
 
-  function runAlgorithm() {
+  async function runAlgorithm() {
     if (algorithm === 'bubbleSort' && !isRunning(algorithm)) {
       drawData.current.run.bubbleSort = true;
-      bubbleSort(arr.current, drawData.current);
+      await bubbleSort(arr.current, drawData.current);
+      drawData.current.run.bubbleSort = false;
     } else if (algorithm === 'quickSort' && !isRunning(algorithm)) {
       drawData.current.run.quickSort = true;
-      quickSort(arr.current, drawData.current);
+      await quickSort(arr.current, drawData.current);
+      drawData.current.run.quickSort = false;
     }
+    drawBars(arr.current, drawData.current);
   }
 
   function resetArray() {

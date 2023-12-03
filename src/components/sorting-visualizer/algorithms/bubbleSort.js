@@ -15,7 +15,7 @@ async function bubbleSort(arr, drawData) {
 
       // draw to canvas
       if (!drawData.run.bubbleSort) return;
-      await drawToCanvas(arr, drawData);
+      await drawToCanvas(arr, drawData, { left, right });
     }
     end--;
   }

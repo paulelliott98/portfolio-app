@@ -2,7 +2,7 @@ const { colors } = require('../../theme');
 const { sleep } = require('../../utils');
 
 /**
- * Draw a rect of specified height, using bottom-left corner as basis
+ * Draw a rect of specified dimensions and color, using bottom-left corner as basis
  * @param {*} ctx - Context
  * @param {*} x - Left edge x value
  * @param {*} y - Bottom edge y value
@@ -58,7 +58,12 @@ function makeShuffledArray(n) {
   return shuffle(arr);
 }
 
-function drawBars(arr, drawData) {
+function isSwapping(i, swapData) {
+  if (!swapData) return false;
+  return i === swapData.left || i === swapData.right;
+}
+
+function drawBars(arr, drawData, swapData) {
   const left = 0;
   const gap = 1;
   const width = (drawData.w - (arr.length - 1) * gap) / arr.length;
@@ -71,7 +76,7 @@ function drawBars(arr, drawData) {
       drawData.h,
       width,
       drawData.barData[arr[i]].height,
-      colors.neonBlue
+      isSwapping(i, swapData) ? colors.neonGreen : colors.neonBlue
     );
   }
 }
@@ -80,10 +85,16 @@ function swap(i, j, arr) {
   [arr[i], arr[j]] = [arr[j], arr[i]];
 }
 
-async function drawToCanvas(arr, drawData) {
+/**
+ * Draw
+ * @param {*} arr
+ * @param {*} drawData
+ * @param {{ left: Number, right: Number }} swapData - Index of items currently being swapped
+ */
+async function drawToCanvas(arr, drawData, swapData) {
   drawData.ctx.clearRect(0, 0, drawData.w, drawData.h);
-  drawBars(arr, drawData);
-  await sleep((drawData.maxSpeed - drawData.speed.current) * 10);
+  drawBars(arr, drawData, swapData);
+  await sleep((drawData.maxSpeed - drawData.speed.current) * 5);
 }
 
 module.exports = {
