@@ -157,7 +157,7 @@ const SortingVisualizer = () => {
                 stopAlgorithms();
 
                 setArraySize(() => e.target.value);
-                arr.current = makeShuffledArray(arraySize);
+                arr.current = makeShuffledArray(e.target.value);
                 arrCopy.current = [...arr.current];
               }}
             />
