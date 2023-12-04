@@ -219,6 +219,10 @@ const SortingVisualizer = () => {
               onChange={(e) => {
                 speed.current = e.target.value;
                 drawData.current.speed.current = e.target.value;
+
+                // Re-render only if algorithm isn't running,
+                // since forcing re-render when it is already happening will make the draws lag
+                if (!algorithmRunning) setRender((b) => !b);
               }}
             />
           </FormControl>
@@ -227,14 +231,14 @@ const SortingVisualizer = () => {
             item
             container
             justifyContent="space-between"
-            style={{ flexFlow: 'column nowrap', flex: '1 1 auto' }}
+            sx={{ flexFlow: 'column nowrap', flex: '1 1 auto' }}
           >
             <Grid
               item
               container
               alignItems="center"
               justifyContent="center"
-              style={{ flex: '1 1 auto' }}
+              sx={{ flex: '1 1 auto' }}
             >
               <Typography
                 variant="subtitle1"
@@ -246,7 +250,7 @@ const SortingVisualizer = () => {
             <Grid
               item
               container
-              style={{
+              sx={{
                 flex: '0 1 auto',
                 flexFlow: 'column nowrap',
                 justifyContent: 'flex-end',
