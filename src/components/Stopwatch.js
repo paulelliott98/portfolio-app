@@ -34,11 +34,17 @@ class Stopwatch {
     this.startTime = Date.now();
     this.interval = setInterval(() => {
       this.func();
-    }, 10); // update about every 10ms
+    }, 2); // update about every 10ms
   }
 
   stop() {
     clearInterval(this.interval);
+  }
+
+  reset() {
+    this.elapsed = { m: 0, s: 0, ms: 0 };
+    this.timeString = makeTimeString(this.elapsed);
+    this.setState(this.elapsed);
   }
 }
 

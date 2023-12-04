@@ -91,12 +91,15 @@ const SortingVisualizer = () => {
     return drawData.current.run[algorithm];
   }
 
+  // Stop running timer, but does not clear its elapsed value
   function stopTimer() {
     stopwatch.current.stop();
   }
 
+  // Stop running timer, and clear timer's elapsed value
   function resetTimer() {
-    setTime({ m: 0, s: 0, ms: 0 });
+    stopwatch.current.stop();
+    stopwatch.current.reset();
   }
 
   // Stop running all algorithms
@@ -216,7 +219,6 @@ const SortingVisualizer = () => {
               onChange={(e) => {
                 speed.current = e.target.value;
                 drawData.current.speed.current = e.target.value;
-                setRender((prev) => !prev);
               }}
             />
           </FormControl>
