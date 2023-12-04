@@ -15,7 +15,10 @@ async function bubbleSort(arr, drawData) {
 
       // draw to canvas
       if (!drawData.run.bubbleSort) return;
-      await drawToCanvas(arr, drawData, { left, right });
+      await drawToCanvas(arr, drawData, {
+        compare: { left, right },
+        boundary: { left: 0, right: end },
+      });
     }
     end--;
   }

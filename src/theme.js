@@ -62,9 +62,10 @@ const theme = createTheme({
         root: {
           fontFamily: 'DM Sans, Roboto',
           textTransform: 'capitalize',
-          //   color: colors.neonGreen,
+          '&.Mui-disabled': {
+            color: 'rgba(255,255,255,0.3)',
+          },
         },
-        // contained: {},
       },
     },
   },

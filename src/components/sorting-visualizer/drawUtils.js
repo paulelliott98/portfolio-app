@@ -58,27 +58,45 @@ function makeShuffledArray(n) {
   return shuffle(arr);
 }
 
-function isSwapping(i, swapData) {
-  if (!swapData) return false;
-  return i === swapData.left || i === swapData.right;
+function isComparing(i, sortData) {
+  if (!sortData || !sortData.compare) return false;
+  return i === sortData.compare.left || i === sortData.compare.right;
 }
 
-function drawBars(arr, drawData, swapData) {
+function drawBars(arr, drawData, sortData) {
   const left = 0;
-  const gap = 1;
-  const width = (drawData.w - (arr.length - 1) * gap) / arr.length;
   for (let i = 0; i < arr.length; i++) {
     // draw
-    const x = left + i * width + i * gap;
+    const x = left + i * drawData.barWidth + i * drawData.barGap;
     drawRectBottomLeft(
       drawData.ctx,
       x,
       drawData.h,
-      width,
-      drawData.barData[arr[i]].height,
-      isSwapping(i, swapData) ? colors.neonGreen : colors.neonBlue
+      drawData.barWidth,
+      drawData.barData[arr[i]]?.height || 0,
+      isComparing(i, sortData) ? colors.neonGreen : colors.neonBlue
     );
   }
+}
+
+/**
+ * Highlight a region on the canvas showing the section of array the sort algorithm is operating on
+ */
+function drawWindow(drawData, sortData) {
+  if (!sortData || !sortData.boundary) return;
+  const span = Math.abs(sortData.boundary.right - sortData.boundary.left) + 1;
+  const highlightLeft =
+    sortData.boundary.left * drawData.barWidth +
+    (sortData.boundary.left - 1) * drawData.barGap;
+  const highlightWidth = (drawData.barGap + drawData.barWidth) * span;
+  drawRectBottomLeft(
+    drawData.ctx,
+    highlightLeft,
+    drawData.h,
+    highlightWidth,
+    drawData.h,
+    'rgba(68, 255, 76, 0.1)'
+  );
 }
 
 function swap(i, j, arr) {
@@ -89,12 +107,13 @@ function swap(i, j, arr) {
  * Draw
  * @param {*} arr
  * @param {*} drawData
- * @param {{ left: Number, right: Number }} swapData - Index of items currently being swapped
+ * @param {{ compare: { left: Number, right: Number}, boundary: { left: Number, right: Number} }} sortData - Index of items currently being swapped
  */
-async function drawToCanvas(arr, drawData, swapData) {
+async function drawToCanvas(arr, drawData, sortData) {
   drawData.ctx.clearRect(0, 0, drawData.w, drawData.h);
-  drawBars(arr, drawData, swapData);
-  await sleep((drawData.maxSpeed - drawData.speed.current) * 5);
+  drawWindow(drawData, sortData);
+  drawBars(arr, drawData, sortData);
+  await sleep((drawData.maxSpeed - drawData.speed.current) * 2);
 }
 
 module.exports = {

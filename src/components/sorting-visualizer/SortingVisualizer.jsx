@@ -8,26 +8,45 @@ import {
   Radio,
   Slider,
   Button,
+  Typography,
 } from '@mui/material';
 import GridGlass from '../GridGlass';
 import * as utils from '../../utils';
-import { drawBars, makeBarData, makeShuffledArray } from './drawUtils';
+import { drawToCanvas, makeBarData, makeShuffledArray } from './drawUtils';
+import Stopwatch, { makeTimeString } from '../Stopwatch';
 import bubbleSort from './algorithms/bubbleSort';
 import quickSort from './algorithms/quickSort';
+import insertionSort from './algorithms/insertionSort';
+import selectionSort from './algorithms/selectionSort';
+
+const sortFunctions = {
+  bubbleSort: bubbleSort,
+  quickSort: quickSort,
+  insertionSort: insertionSort,
+  selectionSort: selectionSort,
+};
 
 const SortingVisualizer = () => {
   const canvasRef = useRef(null);
   const [render, setRender] = useState(false);
   const [algorithm, setAlgorithm] = useState('bubbleSort');
+  const [algorithmRunning, setAlgorithmRunning] = useState(false);
   const [arraySize, setArraySize] = useState(50); // n items in array
+  const [time, setTime] = useState({ m: 0, s: 0, ms: 0 });
+  const stopwatch = useRef(null);
   const arr = useRef(makeShuffledArray(arraySize)); // array to sort
   const arrCopy = useRef([...arr.current]); // store copy of arr to allow reset
-  const minSpeed = 0;
+  const minSpeed = 1;
   const maxSpeed = 100;
   const speed = useRef(maxSpeed);
   const drawData = useRef({
     run: { bubbleSort: false, quickSort: false },
   }); // all variables not part of the algorithm itself used in rendering
+
+  useEffect(() => {
+    stopwatch.current = new Stopwatch(setTime);
+    setTime(stopwatch.current.elapsed);
+  }, []);
 
   // initialize variables. Re-run when variables are changed on the control panel
   useEffect(() => {
@@ -39,17 +58,19 @@ const SortingVisualizer = () => {
     const canvas = utils.createHiPPICanvas(w, h, canvasRef, scale);
     const context = canvas.getContext('2d');
     const barData = makeBarData(arr.current.length, h);
-
+    const barGap = 1;
     drawData.current = {
       ...drawData.current,
       barData,
       ctx: context,
       w,
       h,
+      barGap,
+      barWidth: (w - (arr.current.length - 1) * barGap) / arr.current.length,
       speed, // ref; access using speed.current
       maxSpeed,
     };
-    drawBars(arr.current, drawData.current);
+    drawToCanvas(arr.current, drawData.current);
   }, [arraySize, render]);
 
   // ---------- make canvas responsive ----------
@@ -70,26 +91,42 @@ const SortingVisualizer = () => {
     return drawData.current.run[algorithm];
   }
 
+  function stopTimer() {
+    stopwatch.current.stop();
+  }
+
+  function resetTimer() {
+    setTime({ m: 0, s: 0, ms: 0 });
+  }
+
+  // Stop running all algorithms
   function stopAlgorithms() {
-    drawData.current.run.bubbleSort = false;
-    drawData.current.run.quickSort = false;
+    for (const func in sortFunctions) {
+      drawData.current.run[func] = false;
+    }
+    stopTimer();
+    setAlgorithmRunning(() => false);
+    drawToCanvas(arr.current, drawData.current);
   }
 
   async function runAlgorithm() {
-    if (algorithm === 'bubbleSort' && !isRunning(algorithm)) {
-      drawData.current.run.bubbleSort = true;
-      await bubbleSort(arr.current, drawData.current);
-      drawData.current.run.bubbleSort = false;
-    } else if (algorithm === 'quickSort' && !isRunning(algorithm)) {
-      drawData.current.run.quickSort = true;
-      await quickSort(arr.current, drawData.current);
-      drawData.current.run.quickSort = false;
-    }
-    drawBars(arr.current, drawData.current);
+    if (!Object.keys(sortFunctions).includes(algorithm) || isRunning(algorithm))
+      return;
+
+    setAlgorithmRunning(() => true);
+    drawData.current.run[algorithm] = true;
+    stopwatch.current.start();
+    await sortFunctions[algorithm](arr.current, drawData.current);
+    drawData.current.run[algorithm] = false;
+    stopwatch.current.stop();
+
+    drawToCanvas(arr.current, drawData.current);
+    stopAlgorithms();
   }
 
   function resetArray() {
     stopAlgorithms();
+    resetTimer();
 
     arr.current = [...arrCopy.current];
     setRender((prev) => !prev);
@@ -97,6 +134,7 @@ const SortingVisualizer = () => {
 
   function shuffleArray() {
     stopAlgorithms();
+    resetTimer();
 
     arr.current = makeShuffledArray(arraySize);
     arrCopy.current = [...arr.current];
@@ -131,18 +169,15 @@ const SortingVisualizer = () => {
                 setAlgorithm(e.target.value);
               }}
             >
-              <FormControlLabel
-                checked={algorithm === 'bubbleSort'}
-                value="bubbleSort"
-                label="BubbleSort"
-                control={<Radio />}
-              />
-              <FormControlLabel
-                checked={algorithm === 'quickSort'}
-                value="quickSort"
-                label="QuickSort"
-                control={<Radio />}
-              />
+              {Object.keys(sortFunctions).map((item, index) => (
+                <FormControlLabel
+                  key={index}
+                  checked={algorithm === item}
+                  value={item}
+                  label={`${item[0].toUpperCase()}${item.substring(1)}`}
+                  control={<Radio />}
+                />
+              ))}
             </RadioGroup>
           </FormControl>
 
@@ -189,22 +224,47 @@ const SortingVisualizer = () => {
           <Grid
             item
             container
-            style={{
-              flex: '1 1 auto',
-              flexFlow: 'column nowrap',
-              justifyContent: 'flex-end',
-              gap: '8px',
-            }}
+            justifyContent="space-between"
+            style={{ flexFlow: 'column nowrap', flex: '1 1 auto' }}
           >
-            <Button variant="outlined" onClick={shuffleArray}>
-              Shuffle
-            </Button>
-            <Button variant="outlined" onClick={resetArray}>
-              Reset
-            </Button>
-            <Button variant="contained" onClick={runAlgorithm}>
-              {`Run ${algorithm}`}
-            </Button>
+            <Grid
+              item
+              container
+              alignItems="center"
+              justifyContent="center"
+              style={{ flex: '1 1 auto' }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{ fontFamily: 'Space Mono', fontSize: '20px' }}
+              >
+                {makeTimeString(time)}
+              </Typography>
+            </Grid>
+            <Grid
+              item
+              container
+              style={{
+                flex: '0 1 auto',
+                flexFlow: 'column nowrap',
+                justifyContent: 'flex-end',
+                gap: '8px',
+              }}
+            >
+              <Button variant="outlined" onClick={shuffleArray}>
+                Shuffle
+              </Button>
+              <Button variant="outlined" onClick={resetArray}>
+                Reset
+              </Button>
+              <Button
+                disabled={algorithmRunning}
+                variant="contained"
+                onClick={runAlgorithm}
+              >
+                {algorithmRunning ? 'Sorting...' : `Run ${algorithm}`}
+              </Button>
+            </Grid>
           </Grid>
         </GridGlass>
       </Grid>
