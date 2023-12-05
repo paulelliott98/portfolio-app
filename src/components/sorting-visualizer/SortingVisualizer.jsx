@@ -18,12 +18,14 @@ import bubbleSort from './algorithms/bubbleSort';
 import quickSort from './algorithms/quickSort';
 import insertionSort from './algorithms/insertionSort';
 import selectionSort from './algorithms/selectionSort';
+import mergeSort from './algorithms/mergeSort';
 
 const sortFunctions = {
   bubbleSort: bubbleSort,
   quickSort: quickSort,
   insertionSort: insertionSort,
   selectionSort: selectionSort,
+  mergeSort: mergeSort,
 };
 
 const SortingVisualizer = () => {

@@ -58,9 +58,31 @@ function makeShuffledArray(n) {
   return shuffle(arr);
 }
 
-function isComparing(i, sortData) {
-  if (!sortData || !sortData.compare) return false;
-  return i === sortData.compare.left || i === sortData.compare.right;
+/**
+ * Return bar color based on its index
+ * @param {*} i
+ * @param {*} sortData
+ * @returns - Color
+ */
+function getBarColor(i, sortData) {
+  const defaultColor = colors.neonPink;
+  if (!sortData || !sortData.compare) return defaultColor; // default
+
+  const colorsMap = {
+    left: colors.neonGreen,
+    right: colors.neonGreen,
+    mid: colors.neonBlue,
+  };
+
+  for (let k in sortData.compare) {
+    if (i === sortData.compare[k]) return colorsMap[k];
+  }
+
+  return defaultColor;
+  //   if (Object.values(sortData.compare).includes(i)) {
+  //     return colors[]
+  //   }
+  //   return Object.values(sortData.compare).includes(i);
 }
 
 function drawBars(arr, drawData, sortData) {
@@ -74,7 +96,7 @@ function drawBars(arr, drawData, sortData) {
       drawData.h,
       drawData.barWidth,
       drawData.barData[arr[i]]?.height || 0,
-      isComparing(i, sortData) ? colors.neonGreen : colors.neonBlue
+      getBarColor(i, sortData)
     );
   }
 }

@@ -27,7 +27,7 @@ async function partition(arr, l, r, drawData) {
       left++;
       // draw to canvas
       await drawToCanvas(arr, drawData, {
-        compare: { left, right },
+        compare: { left, right, mid },
         boundary: { left: l, right: r },
       });
     } while (arr[left] < pivot);
@@ -36,7 +36,7 @@ async function partition(arr, l, r, drawData) {
       right--;
       // draw to canvas
       await drawToCanvas(arr, drawData, {
-        compare: { left, right },
+        compare: { left, right, mid },
         boundary: { left: l, right: r },
       });
     } while (arr[right] > pivot);
@@ -49,7 +49,7 @@ async function partition(arr, l, r, drawData) {
 
     // draw to canvas
     await drawToCanvas(arr, drawData, {
-      compare: { left, right },
+      compare: { left, right, mid },
       boundary: { left: l, right: r },
     });
     if (!drawData.run.quickSort) return;

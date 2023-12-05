@@ -176,7 +176,7 @@ export default function App() {
           height: `${size}px`,
           background: `transparent`,
           borderRadius: `50% 50%`,
-          animation: `animStar ${Math.pow(size, 0.5) * 200}s linear infinite`,
+          //   animation: `animStar ${Math.pow(size, 0.5) * 200}s linear infinite`,
         };
 
         let style2 = JSON.parse(JSON.stringify(style1));
