@@ -19,13 +19,15 @@ import quickSort from './algorithms/quickSort';
 import insertionSort from './algorithms/insertionSort';
 import selectionSort from './algorithms/selectionSort';
 import mergeSort from './algorithms/mergeSort';
+import heapSort from './algorithms/heapSort';
 
 const sortFunctions = {
-  bubbleSort: bubbleSort,
-  quickSort: quickSort,
-  insertionSort: insertionSort,
-  selectionSort: selectionSort,
-  mergeSort: mergeSort,
+  bubbleSort,
+  quickSort,
+  insertionSort,
+  selectionSort,
+  mergeSort,
+  heapSort,
 };
 
 const SortingVisualizer = () => {
