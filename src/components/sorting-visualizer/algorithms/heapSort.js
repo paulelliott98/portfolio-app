@@ -39,11 +39,11 @@ async function heapify(arr, i, n, drawData) {
   if (left <= n && arr[left] > arr[largest]) largest = left;
   if (right <= n && arr[right] > arr[largest]) largest = right;
 
-  drawToCanvas(arr, drawData, { compare: { left: largest, right: i } });
+  await drawToCanvas(arr, drawData, { compare: { left: largest, right: i } });
 
   if (largest !== i) {
     swap(largest, i, arr);
-    await drawToCanvas(arr, drawData, { compare: { left: largest, right: i } });
+    drawToCanvas(arr, drawData);
 
     await heapify(arr, largest, n, drawData);
   }

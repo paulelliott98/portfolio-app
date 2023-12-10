@@ -173,6 +173,7 @@ const SortingVisualizer = () => {
               row
               onChange={(e) => {
                 stopAlgorithms();
+                resetArray();
                 setAlgorithm(e.target.value);
               }}
             >

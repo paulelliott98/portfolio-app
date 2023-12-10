@@ -727,7 +727,7 @@ export default function SearchVisualizer(props) {
                 <Typography variant="subtitle1">
                   {algorithm === 'bfsShortestPath'
                     ? `Shortest Path: ${result}${
-                        result === '-' ? '' : ' blocks'
+                        isNaN(result) ? '' : ' blocks'
                       }`
                     : `Path Exists: ${result}`}
                 </Typography>
