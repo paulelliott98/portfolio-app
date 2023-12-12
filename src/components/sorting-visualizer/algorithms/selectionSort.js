@@ -20,6 +20,9 @@ async function selectionSort(arr, drawData) {
       });
     }
     swap(boundary, index, arr);
+    await drawToCanvas(arr, drawData, {
+      compare: { left: boundary, right: index },
+    });
   }
 }
 

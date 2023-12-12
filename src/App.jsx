@@ -2,7 +2,7 @@ import HomePage from './pages/HomePage';
 import AlgorithmVisualizerPage from './pages/AlgorithmVisualizerPage';
 import Navbar from './components/Navbar';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Grid, ThemeProvider } from '@mui/material';
 import theme from './theme';
 import { default as AppRoutes } from './Routes';
@@ -26,21 +26,9 @@ export default function App() {
 
   let navRef = useRef(null);
 
-  function getNavRef(ref) {
+  const getNavRef = useCallback((ref) => {
     navRef.current = ref;
-  }
-
-  let isScrolling = useRef(false);
-  let isUserScrolling = useRef(false);
-  let isTouchMove = useRef(false);
-
-  let [lastPagePos, currPagePos] = [
-    useRef(document.documentElement.scrollTop),
-    useRef(document.documentElement.scrollTop),
-  ];
-  let timer = useRef(null);
-
-  const { pathname, hash, key } = useLocation();
+  }, []);
 
   useEffect(() => {
     function handleWindowSizeChange() {
@@ -55,6 +43,44 @@ export default function App() {
     };
   });
 
+  let isScrolling = useRef(false);
+  let isUserScrolling = useRef(false);
+  let isTouchMove = useRef(false);
+
+  let [lastPagePos, currPagePos] = [
+    useRef(document.documentElement.scrollTop),
+    useRef(document.documentElement.scrollTop),
+  ];
+  let timer = useRef(null);
+
+  const { pathname, hash, key } = useLocation();
+
+  // make nav area background fade to transparent when scrolling to top
+  const setNavbarStyles = useCallback(() => {
+    const triggerHeight = 400;
+    const defaultBlur = 12;
+    const defaultBgOpacity = 0.05;
+    const defaultBorderOpacity = 0.08;
+
+    if (currPagePos.current <= triggerHeight) {
+      const scaleFactor = currPagePos.current / triggerHeight;
+      const blurAmount = defaultBlur * scaleFactor;
+      const backgroundOpacity = defaultBgOpacity * scaleFactor;
+      const borderOpacity = defaultBorderOpacity * scaleFactor;
+      navRef.current.style.backdropFilter = `blur(${blurAmount}px)`;
+      navRef.current.style.background = `rgba(255, 255, 255, ${backgroundOpacity})`;
+      navRef.current.style.borderBottom = `1px solid rgba(255, 255, 255, ${borderOpacity})`;
+    } else {
+      navRef.current.style.backdropFilter = ``;
+      navRef.current.style.background = ``;
+      navRef.current.style.borderBottom = ``;
+    }
+  }, [currPagePos]);
+
+  useEffect(() => {
+    setNavbarStyles();
+  }, [setNavbarStyles]);
+
   useEffect(() => {
     function handleWheel() {
       isUserScrolling.current = true;
@@ -64,35 +90,26 @@ export default function App() {
       isTouchMove.current = true;
     }
 
+    window.addEventListener('wheel', handleWheel);
+    window.addEventListener('touchmove', handleTouchMove);
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchmove', handleTouchMove);
+      isUserScrolling.current = false;
+      isTouchMove.current = false;
+    };
+  }, [pathname, key, timer, documentHeight]);
+
+  useEffect(() => {
     function handleScroll() {
       isScrolling.current = true;
 
       lastPagePos.current = currPagePos.current;
       currPagePos.current = document.documentElement.scrollTop;
 
-      const offset = 20;
-
-      if (
-        navRef.current !== null &&
-        currPagePos.current > offset &&
-        currPagePos.current <
-          documentHeight.current - window.innerHeight - offset
-      ) {
-        if (currPagePos.current > lastPagePos.current) {
-          if (
-            (isUserScrolling.current === true ||
-              isSmallScreen.current === true) &&
-            documentHeight.current > window.screen.height
-          ) {
-            // navRef.current.style.visibility = 'hidden';
-            // const dy = `-${navRef.current.clientHeight + 3}px`;
-            // navRef.current.style.transform = `translateY(${dy})`;
-            // navRef.current.style.backdropFilter = 'none';
-          }
-        } else {
-          navRef.current.style = ''; // set to default defined css style
-        }
-      }
+      // make nav area background fade to transparent when scrolling to top
+      setNavbarStyles();
 
       if (timer.current !== null) {
         clearTimeout(timer.current);
@@ -103,49 +120,15 @@ export default function App() {
       }, 50);
     }
 
-    let to = null;
-
-    if (!isScrolling.current) {
-      // if not a hash link, scroll to top
-      if (hash === '') {
-        window.scrollTo(0, 0);
-      }
-      // else scroll to id
-      else {
-        to = setTimeout(() => {
-          const id = hash.replace('#', '');
-          const element = document.getElementById(id);
-          if (element) {
-            element.scrollIntoView();
-          }
-        }, 0);
-      }
-    }
+    // scroll to element by id
+    const id = hash.replace('#', '');
+    document.getElementById(id)?.scrollIntoView();
 
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('wheel', handleWheel);
-    window.addEventListener('touchmove', handleTouchMove);
-
-    isUserScrolling.current = false;
-    isTouchMove.current = false;
-
     return () => {
-      clearTimeout(to);
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [
-    pathname,
-    hash,
-    key,
-    isScrolling,
-    timer,
-    lastPagePos,
-    currPagePos,
-    navRef,
-    documentHeight,
-  ]); // do this on route change
+  }, [hash, lastPagePos, currPagePos, setNavbarStyles]);
 
   let [stars, setStars] = useState(null);
 

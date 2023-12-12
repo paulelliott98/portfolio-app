@@ -441,7 +441,6 @@ li {
   backdrop-filter: blur(12px);
   background-color: rgba(255, 255, 255, 0.05);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  transition-duration: 0.5s;
 }
 
 .navbar {

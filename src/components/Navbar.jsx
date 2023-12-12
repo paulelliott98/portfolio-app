@@ -3,21 +3,25 @@ import { Link as RouterLink } from 'react-router-dom';
 import { default as AppRoutes } from '../Routes';
 
 // navbar component
-export default function Navbar(props) {
+export default function Navbar({ getNavRef }) {
   let navRef = useRef(null);
 
   useEffect(() => {
-    props.getNavRef(navRef.current);
-  }, [props]);
+    getNavRef(navRef.current);
+  }, [getNavRef]);
 
   return (
     <div ref={navRef} className="nav-area">
       <div className="navbar">
-        <RouterLink to="/" draggable={false}>
+        <RouterLink
+          to="/"
+          draggable={false}
+          onClick={() => window.scrollTo(0, 0)}
+        >
           home
         </RouterLink>
         <div className="nav-item">
-          <RouterLink to="#" draggable={false}>
+          <RouterLink to="/" draggable={false}>
             visualize
           </RouterLink>
           <span className="arrow"></span>
@@ -30,13 +34,25 @@ export default function Navbar(props) {
             </RouterLink>
           </ul>
         </div>
-        <RouterLink to="/#projects" draggable={false}>
+        <RouterLink
+          to="/#projects"
+          draggable={false}
+          onClick={() => document.getElementById('projects')?.scrollIntoView()}
+        >
           projects
         </RouterLink>
-        <RouterLink to="/#about" draggable={false}>
+        <RouterLink
+          to="/#about"
+          draggable={false}
+          onClick={() => document.getElementById('about')?.scrollIntoView()}
+        >
           about
         </RouterLink>
-        <RouterLink to="/#contact" draggable={false}>
+        <RouterLink
+          to="/#contact"
+          draggable={false}
+          onClick={() => document.getElementById('contact')?.scrollIntoView()}
+        >
           contact
         </RouterLink>
       </div>
