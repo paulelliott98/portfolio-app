@@ -30,7 +30,7 @@ html {
   background: radial-gradient(circle at bottom, #1b2735 0%, #090a0f 100%) fixed
     center;
   background-attachment: fixed;
-  height: 700px;
+  /* height: 700px; */
 }
 
 ::-webkit-scrollbar {
@@ -74,20 +74,6 @@ body {
 
 a {
   font-family: 'DM Sans';
-}
-
-/* name */
-h1 {
-  color: var(--heading-color-name);
-  font-family: 'Poppins', sans-serif;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 8vw;
-  margin-inline-start: -5px;
-  align-items: center;
-  letter-spacing: -0.05em;
-  white-space: nowrap;
-  text-shadow: 0 0 25px rgb(65, 231, 150);
 }
 
 /* project name */
@@ -734,13 +720,14 @@ footer {
   animation-fill-mode: both;
 }
 
-/* narrow screens */
-
-@media screen and (max-width: 992px) {
-  h1 {
-    font-size: 82px;
+@media screen and (max-width: 600px) {
+  .intro {
+    max-width: 100vw;
   }
+}
 
+/* narrow screens */
+@media screen and (max-width: 992px) {
   h2 {
     font-size: 18px;
   }
@@ -776,10 +763,6 @@ footer {
 
   .dropdown a {
     font-size: 10px;
-  }
-
-  .intro {
-    max-width: 100vw;
   }
 
   .projects-list {

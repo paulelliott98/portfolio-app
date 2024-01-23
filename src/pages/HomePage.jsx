@@ -77,7 +77,7 @@ export default function HomePage(props) {
   }, [getDocumentHeight]);
 
   return (
-    <div>
+    <Grid item container style={{ flexFlow: 'column nowrap' }}>
       <section key="0" className="scroll-window" id="home">
         <Grid
           item
@@ -100,9 +100,13 @@ export default function HomePage(props) {
             >
               Hi, my name is
             </Typography>
-            <h1 className={anim('slideUp', inView)} style={animDelay(0.3)}>
+            <Typography
+              variant="h1"
+              className={anim('slideUp', inView)}
+              style={animDelay(0.3)}
+            >
               Paul Gan
-            </h1>
+            </Typography>
             <Typography
               variant="h5"
               className={anim('slideUp', inView)}
@@ -321,6 +325,6 @@ export default function HomePage(props) {
           </Typography>
         </Grid>
       </footer>
-    </div>
+    </Grid>
   );
 }

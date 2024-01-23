@@ -215,9 +215,7 @@ export default function App() {
     >
       <ThemeProvider theme={theme}>
         <Navbar getNavRef={getNavRef} />
-        {isSmallScreen.current === true ? null : (
-          <div className="space-bg"></div>
-        )}
+        <div className="space-bg" />
         {stars}
 
         <Routes>

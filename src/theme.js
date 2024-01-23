@@ -17,6 +17,21 @@ const theme = createTheme({
         body1: {
           fontSize: '16px',
         },
+        h1: {
+          color: colors.neonGreen,
+          fontFamily: "'Poppins', sans-serif",
+          fontStyle: 'normal',
+          fontWeight: '400',
+          fontSize: '100px',
+          marginInlineStart: '-5px',
+          alignItems: 'center',
+          letterSpacing: '-0.05em',
+          whiteSpace: 'nowrap',
+          textShadow: '0 0 25px rgb(65, 231, 150)',
+          '@media (min-width: 300px)': {
+            fontSize: '84px',
+          },
+        },
         h4: {
           color: colors.neonPink,
           fontSize: '28px',

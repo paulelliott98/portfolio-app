@@ -154,7 +154,14 @@ const SortingVisualizer = () => {
         item
         container
         justifyContent="center"
-        sx={{ flexFlow: 'row nowrap', gap: '16px', height: '70vh' }}
+        sx={{
+          flexFlow: 'row nowrap',
+          gap: '16px',
+          minHeight: '600px',
+          maxHeight: '75vh',
+          flex: 1,
+          margin: '16px',
+        }}
       >
         <GridGlass item container sx={{ flex: '1 1 auto', padding: '16px' }}>
           <canvas
