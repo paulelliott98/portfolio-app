@@ -1,26 +1,39 @@
 import React from 'react';
-import { Chip, Typography } from '@mui/material';
+import { Typography, Tooltip } from '@mui/material';
 import { colors } from '../theme';
+import GridGlass from './GridGlass';
 
 const StyledChip = ({ ...props }) => {
   return (
-    <Chip
+    <GridGlass
+      item
+      container
+      alignItems="center"
+      justifyContent="center"
       {...props}
-      label={
+      style={{
+        padding: '4px 12px',
+        borderRadius: '8px',
+        width: 'fit-content',
+        maxWidth: '50vw',
+        ...props.style,
+      }}
+    >
+      <Tooltip title={props.label} disableInteractive>
         <Typography
-          sx={{
+          noWrap
+          style={{
             color: colors.neonBlue,
             textShadow: `0 0 2px ${colors.neonBlue}`,
+            padding: 0,
+            maxWidth: '100%',
             fontSize: '14px',
           }}
         >
           {props.label}
         </Typography>
-      }
-      sx={{
-        backgroundColor: 'rgba(46,46,65,0.75)',
-      }}
-    />
+      </Tooltip>
+    </GridGlass>
   );
 };
 

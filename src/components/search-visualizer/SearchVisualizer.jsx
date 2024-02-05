@@ -52,11 +52,11 @@ export default function SearchVisualizer(props) {
   let gap = useRef((props.h % blockSize.current) / (nCols.current + 1)); // gap size
 
   const [result, setResult] = useState('-');
-  const [algorithm, setAlgorithm] = useState('bfs');
+  const [algorithm, setAlgorithm] = useState('bfsShortestPath');
   let run = useRef(false);
 
   const [sliderMin, sliderMax] = [0, 100];
-  const defaultSpeed = 100;
+  const defaultSpeed = 99;
   const speed = useRef(defaultSpeed);
 
   // mouse data
@@ -541,7 +541,7 @@ export default function SearchVisualizer(props) {
             <Grid
               item
               container
-              style={{ flexFlow: 'column nowrap', gap: '8px' }}
+              style={{ flexFlow: 'column nowrap', gap: '16px' }}
             >
               <GridGlass
                 item
@@ -568,21 +568,15 @@ export default function SearchVisualizer(props) {
                       }}
                     >
                       <FormControlLabel
-                        checked={algorithm === 'bfs'}
-                        value="bfs"
-                        label="BFS"
+                        checked={algorithm === 'bfsShortestPath'}
+                        value="bfsShortestPath"
+                        label="BFS Shortest Path"
                         control={<Radio />}
                       />
                       <FormControlLabel
                         checked={algorithm === 'dfs'}
                         value="dfs"
                         label="DFS"
-                        control={<Radio />}
-                      />
-                      <FormControlLabel
-                        checked={algorithm === 'bfsShortestPath'}
-                        value="bfsShortestPath"
-                        label="Shortest Path"
                         control={<Radio />}
                       />
                     </RadioGroup>
@@ -649,7 +643,9 @@ export default function SearchVisualizer(props) {
                   <FormControl>
                     <FormLabel>
                       {`Speed: ${
-                        speed.current === sliderMax ? 'Max' : speed.current
+                        speed.current === sliderMax
+                          ? 'Max'
+                          : `${speed.current} / ${sliderMax}`
                       }`}
                     </FormLabel>
                     <Slider

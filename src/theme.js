@@ -18,18 +18,21 @@ const theme = createTheme({
           fontSize: '16px',
         },
         h1: {
-          color: colors.neonGreen,
+          background: `linear-gradient(${colors.neonGreen}, ${colors.neonBlue}, ${colors.neonPink})`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundSize: '100% 90%',
           fontFamily: "'Poppins', sans-serif",
           fontStyle: 'normal',
           fontWeight: '400',
-          fontSize: '100px',
+          fontSize: '80px',
           marginInlineStart: '-5px',
           alignItems: 'center',
           letterSpacing: '-0.05em',
           whiteSpace: 'nowrap',
           textShadow: '0 0 25px rgb(65, 231, 150)',
-          '@media (min-width: 300px)': {
-            fontSize: '84px',
+          '@media (min-width: 600px)': {
+            fontSize: '112px',
           },
         },
         h4: {
@@ -42,9 +45,7 @@ const theme = createTheme({
           width: 'fit-content',
         },
         h5: {
-          fontSize: '22px',
-          fontFamily: 'DM Sans',
-          fontWeight: '500',
+          font: '400 28px "Space Mono"',
         },
       },
     },
@@ -61,10 +62,18 @@ const theme = createTheme({
         },
       },
     },
+    MuiFormControlLabel: {
+      styleOverrides: {
+        label: {
+          fontSize: '14px',
+          fontFamily: 'Space Mono, Roboto',
+        },
+      },
+    },
     MuiFormLabel: {
       styleOverrides: {
         root: {
-          fontFamily: 'DM Sans, Roboto',
+          fontFamily: 'Space Mono, Roboto',
           color: '#fff',
           '&.Mui-focused': {
             color: '#fff',

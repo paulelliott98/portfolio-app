@@ -9,6 +9,8 @@ import projects from '../content/Projects';
 import 'animate.css';
 import { Typography, Grid } from '@mui/material';
 import GridGlass from '../components/GridGlass';
+import HackerTypography from '../components/HackerTypography';
+import FloatingTypography from '../components/FloatingTypography';
 
 const utils = require('../utils');
 
@@ -89,32 +91,19 @@ export default function HomePage(props) {
             item
             container
             ref={ref}
-            justifyContent="center"
-            style={{ flexFlow: 'column nowrap' }}
+            style={{ flexFlow: 'column nowrap', marginTop: '48px' }}
             className="intro"
           >
-            <Typography
+            <FloatingTypography variant="h1" text="Paul Gan" />
+            <HackerTypography
+              text="software engineer"
               variant="h5"
-              className={anim('slideUp', inView)}
-              style={animDelay(0)}
-            >
-              Hi, my name is
-            </Typography>
-            <Typography
-              variant="h1"
-              className={anim('slideUp', inView)}
-              style={animDelay(0.3)}
-            >
-              Paul Gan
-            </Typography>
-            <Typography
-              variant="h5"
-              className={anim('slideUp', inView)}
-              style={animDelay(0.6)}
-            >
-              I am a software engineer and web developer who transforms great
-              ideas into remarkable digital experiences
-            </Typography>
+              style={{
+                width: 'fit-content',
+                marginTop: '16px',
+                fontWeight: '600',
+              }}
+            />
           </Grid>
           {props.isMobile ? null : (
             <div className={'snake ' + anim('fade', inView)}>
@@ -159,7 +148,7 @@ export default function HomePage(props) {
           </div>
           <div
             className={'project-container ' + anim('fade', inView2)}
-            style={{ ...animDelay(0.8), marginTop: '36px' }}
+            style={{ ...animDelay(0.8), padding: '8px' }}
           >
             {projects
               .filter((_, index) => {
@@ -173,7 +162,7 @@ export default function HomePage(props) {
                   classNames="fade"
                 >
                   <Project
-                    key={i}
+                    key={`project_${i}`}
                     techStack={p.techStack}
                     name={p.name}
                     dx={p.dx}
@@ -278,8 +267,8 @@ export default function HomePage(props) {
         <div className="section-title">
           <h4>get in touch</h4>
         </div>
-        <div className="flex justify-center">
-          <div ref={ref5}></div>
+        <div ref={ref5}></div>
+        <div className="flip-card-container">
           <FlipCard
             key="0"
             classes={anim('slideLeft', inView5)}

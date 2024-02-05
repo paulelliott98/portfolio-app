@@ -1,10 +1,18 @@
 import { React, useEffect, useRef } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { default as AppRoutes } from '../Routes';
 
 // navbar component
 export default function Navbar({ getNavRef }) {
   let navRef = useRef(null);
+  const location = useLocation();
+
+  const closeDropdown = () => {
+    const focusedElement = document
+      .getElementById('navbar-dropdown')
+      .querySelector(':focus');
+    focusedElement.blur();
+  };
 
   useEffect(() => {
     getNavRef(navRef.current);
@@ -21,15 +29,23 @@ export default function Navbar({ getNavRef }) {
           home
         </RouterLink>
         <div className="nav-item">
-          <RouterLink to="/" draggable={false}>
+          <RouterLink to={location.pathname} draggable={false}>
             visualize
           </RouterLink>
           <span className="arrow"></span>
-          <ul className="navbar-dropdown">
-            <RouterLink to={AppRoutes.searchVisualizer} draggable={false}>
+          <ul className="navbar-dropdown" id="navbar-dropdown">
+            <RouterLink
+              to={AppRoutes.searchVisualizer}
+              onClick={closeDropdown}
+              draggable={false}
+            >
               Search Algorithms
             </RouterLink>
-            <RouterLink to={AppRoutes.sortingVisualizer} draggable={false}>
+            <RouterLink
+              to={AppRoutes.sortingVisualizer}
+              onClick={closeDropdown}
+              draggable={false}
+            >
               Sorting Algorithms
             </RouterLink>
           </ul>
