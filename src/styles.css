@@ -629,9 +629,10 @@ li {
   width: 100%;
 }
 
+/* github, linkedin, instagram, mail */
 .logo {
-  height: 100%;
-  width: auto;
+  height: 50px;
+  width: 50px;
 }
 
 .flip-card-container {
