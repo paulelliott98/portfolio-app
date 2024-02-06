@@ -45,7 +45,7 @@ const theme = createTheme({
           width: 'fit-content',
         },
         h5: {
-          font: '400 28px "Space Mono"',
+          font: '400 28px "Noto Sans Mono"',
         },
       },
     },
@@ -65,15 +65,14 @@ const theme = createTheme({
     MuiFormControlLabel: {
       styleOverrides: {
         label: {
-          fontSize: '14px',
-          fontFamily: 'Space Mono, Roboto',
+          fontFamily: '"DM Sans", Roboto',
         },
       },
     },
     MuiFormLabel: {
       styleOverrides: {
         root: {
-          fontFamily: 'Space Mono, Roboto',
+          fontFamily: '"DM Sans", Roboto',
           color: '#fff',
           '&.Mui-focused': {
             color: '#fff',
@@ -84,7 +83,7 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          fontFamily: 'DM Sans, Roboto',
+          fontFamily: '"DM Sans", Roboto',
           textTransform: 'capitalize',
           '&.Mui-disabled': {
             color: 'rgba(255,255,255,0.3)',

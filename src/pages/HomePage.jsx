@@ -17,8 +17,8 @@ export default function HomePage(props) {
   const [active, setActive] = useState(0);
   const [ref, inView] = useInView({ triggerOnce: true }); // intro
   const [ref2, inView2] = useInView({ triggerOnce: true }); // projects
-  const [ref3, inView3] = useInView({ triggerOnce: true }); // about bio
-  const [ref4, inView4] = useInView({ triggerOnce: true }); // about skills
+  const [ref3] = useInView({ triggerOnce: true }); // about bio
+  const [ref4] = useInView({ triggerOnce: true }); // about skills
   const [ref5, inView5] = useInView(); // contact
 
   // animations
@@ -28,7 +28,6 @@ export default function HomePage(props) {
     switch (type) {
       case 'slideLeft':
         animIn = 'animate__animated animate__fadeInLeft animate__fast';
-        // animOut = "animate__animated animate__fadeOutLeft animate__fast";
         animOut = 'fadeOut';
         break;
       case 'slideRight':
@@ -56,10 +55,9 @@ export default function HomePage(props) {
 
   // add animation delay in style
   const animDelay = (delay) => {
-    const style = {
+    return {
       animationDelay: `${delay}s`,
     };
-    return style;
   };
 
   const handleDisplay = (e, i) => {
@@ -95,7 +93,7 @@ export default function HomePage(props) {
           >
             <FloatingTypography variant="h1" text="Paul Gan" />
             <HackerTypography
-              text="software engineer"
+              text="Software Engineer"
               variant="h5"
               style={{
                 width: 'fit-content',
@@ -167,13 +165,9 @@ export default function HomePage(props) {
           item
           container
           alignItems="center"
-          style={{ flexFlow: 'column nowrap', gap: '16px' }}
+          style={{ flexFlow: 'column nowrap', gap: '24px' }}
         >
-          <GridGlass
-            ref={ref3}
-            className={'container ' + anim('fade', inView3)}
-            style={animDelay(0.5)}
-          >
+          <GridGlass item container ref={ref3}>
             <Typography variant="h4">Bio</Typography>
             <Typography variant="body1">
               Hello and welcome to my website! I am a graduate of UCLA’s class
@@ -208,11 +202,7 @@ export default function HomePage(props) {
               to succeed.
             </Typography>
           </GridGlass>
-          <GridGlass
-            className={'container ' + anim('fade', inView4)}
-            style={animDelay(0.7)}
-            ref={ref4}
-          >
+          <GridGlass item container ref={ref4}>
             <Typography variant="h4">skills</Typography>
             <ul className="ul-unindented">
               {[
