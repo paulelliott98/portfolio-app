@@ -13,6 +13,7 @@ export default function Project({ techStack, name, dx, gitUrl, ...props }) {
       style={{
         flexFlow: 'column nowrap',
         gap: '8px',
+        marginTop: '24px',
         ...props.style,
       }}
       {...props}
