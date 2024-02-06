@@ -1,15 +1,16 @@
 import React from 'react';
 import StyledChip from './StyledChip';
 import { Grid, Typography } from '@mui/material';
+import GridGlass from './GridGlass';
 
 // reusable component for projects
 export default function Project({ techStack, name, dx, gitUrl, ...props }) {
   return (
-    <Grid
+    <GridGlass
       item
       container
+      direction="column"
       style={{
-        display: 'flex',
         flexFlow: 'column nowrap',
         gap: '8px',
         ...props.style,
@@ -21,7 +22,11 @@ export default function Project({ techStack, name, dx, gitUrl, ...props }) {
 
       <Grid item container style={{ gap: '12px', margin: '8px 0 12px 0' }}>
         {techStack.map((item, i) => (
-          <StyledChip key={i} label={item} />
+          <StyledChip
+            key={i}
+            label={item}
+            style={{ backdropFilter: 'none', background: 'none' }}
+          />
         ))}
       </Grid>
 
@@ -37,6 +42,6 @@ export default function Project({ techStack, name, dx, gitUrl, ...props }) {
           </a>
         </Grid>
       )}
-    </Grid>
+    </GridGlass>
   );
 }

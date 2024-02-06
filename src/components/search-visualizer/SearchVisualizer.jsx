@@ -410,7 +410,12 @@ export default function SearchVisualizer(props) {
   ]);
 
   return (
-    <Grid item container alignItems="center">
+    <Grid
+      item
+      container
+      alignItems="center"
+      style={{ animation: 'scaleIn 200ms ease' }}
+    >
       <Grid
         item
         container

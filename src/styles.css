@@ -314,18 +314,6 @@ canvas {
   line-height: 16px;
 }
 
-/* Transitions */
-.fade-enter,
-.fade-exit {
-  opacity: 0;
-}
-
-.fade-enter-active,
-.fade-exit-active {
-  opacity: 1;
-  transition: opacity 0.4s ease-in;
-}
-
 .prevent-select {
   user-select: none; /* Standard syntax */
   -webkit-user-select: none; /* Safari */
@@ -575,7 +563,7 @@ li {
 }
 
 .project-container {
-  width: 65%;
+  flex: 1;
 }
 
 .github-button {
@@ -710,21 +698,26 @@ footer {
   font-size: 12px;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    visibility: hidden;
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.2);
+    -webkit-transform: scale(0.2);
   }
-
-  to {
-    opacity: 1;
-    visibility: visible;
+  100% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
   }
 }
 
-.fadeIn {
-  animation: fadeIn 0.5s;
-  animation-fill-mode: both;
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 
 @keyframes fadeOut {
@@ -739,9 +732,34 @@ footer {
   }
 }
 
-.fadeOut {
-  animation: fadeOut 0.5s;
-  animation-fill-mode: both;
+@keyframes backdropFilterIn {
+  from {
+    backdrop-filter: blur(0px);
+  }
+  to {
+    backdrop-filter: blur(6px);
+  }
+}
+
+/* Transitions */
+.fade-enter {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  animation: scaleIn 200ms ease;
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  animation: scaleIn 200ms ease;
 }
 
 /* narrow screens */

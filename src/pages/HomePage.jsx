@@ -3,7 +3,6 @@ import '../styles.css';
 import Project from '../components/Project';
 import Snake from '../components/Snake';
 import FlipCard from '../components/FlipCard';
-import { CSSTransition } from 'react-transition-group';
 import { useInView } from 'react-intersection-observer';
 import projects from '../content/Projects';
 import 'animate.css';
@@ -16,7 +15,6 @@ const utils = require('../utils');
 
 export default function HomePage(props) {
   const [active, setActive] = useState(0);
-  const [animate, setAnimate] = useState(false);
   const [ref, inView] = useInView({ triggerOnce: true }); // intro
   const [ref2, inView2] = useInView({ triggerOnce: true }); // projects
   const [ref3, inView3] = useInView({ triggerOnce: true }); // about bio
@@ -67,7 +65,8 @@ export default function HomePage(props) {
   const handleDisplay = (e, i) => {
     e.preventDefault();
     if (active !== i) {
-      setAnimate(!animate);
+      const newAnimate = projects.map(() => false);
+      newAnimate[i] = true;
       setActive(i);
     }
   };
@@ -148,28 +147,14 @@ export default function HomePage(props) {
           </div>
           <div
             className={'project-container ' + anim('fade', inView2)}
-            style={{ ...animDelay(0.8), padding: '8px' }}
+            style={{ ...animDelay(0.8) }}
           >
-            {projects
-              .filter((_, index) => {
-                return index === active;
-              })
-              .map((p, i) => (
-                <CSSTransition
-                  key={i}
-                  in={animate}
-                  timeout={400}
-                  classNames="fade"
-                >
-                  <Project
-                    key={`project_${i}`}
-                    techStack={p.techStack}
-                    name={p.name}
-                    dx={p.dx}
-                    gitUrl={p.gitUrl}
-                  />
-                </CSSTransition>
-              ))}
+            <Project
+              techStack={projects[active].techStack}
+              name={projects[active].name}
+              dx={projects[active].dx}
+              gitUrl={projects[active].gitUrl}
+            />
           </div>
         </Grid>
       </section>
