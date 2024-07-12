@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { randChoice, randInt } from '../utils';
+import { randChoice, randInt } from '../../utils';
 
 // const getDisassembleAnimations = (animationProperties) => {
 //   const obj = {};

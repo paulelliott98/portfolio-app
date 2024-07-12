@@ -8,14 +8,13 @@ import projects from '../content/Projects';
 import 'animate.css';
 import { Typography, Grid } from '@mui/material';
 import GridGlass from '../components/GridGlass';
-import HackerTypography from '../components/HackerTypography';
-import FloatingTypography from '../components/FloatingTypography';
+import AnimateFlowInText from '../components/Typography/AnimateFlyIn';
 
 const utils = require('../utils');
 
 export default function HomePage(props) {
   const [active, setActive] = useState(0);
-  const [ref, inView] = useInView({ triggerOnce: true }); // intro
+  const [ref] = useInView({ triggerOnce: true }); // intro
   const [ref2, inView2] = useInView({ triggerOnce: true }); // projects
   const [ref3] = useInView({ triggerOnce: true }); // about bio
   const [ref4] = useInView({ triggerOnce: true }); // about skills
@@ -82,7 +81,7 @@ export default function HomePage(props) {
           item
           container
           justifyContent="space-evenly"
-          style={{ flexFlow: 'row nowrap', gap: '8px' }}
+          sx={{ flexFlow: 'row nowrap', gap: '8px' }}
         >
           <Grid
             item
@@ -91,21 +90,44 @@ export default function HomePage(props) {
             style={{ flexFlow: 'column nowrap', marginTop: '48px' }}
             className="intro"
           >
-            <FloatingTypography variant="h1" text="Paul Gan" />
-            <HackerTypography
-              text="Software Engineer"
-              variant="h5"
-              style={{
-                width: 'fit-content',
-                marginTop: '16px',
-                fontWeight: '600',
+            <Typography
+              variant="h1"
+              sx={{
+                opacity: 0,
+                animation: 'slideLeft 0.6s ease forwards',
               }}
-            />
+            >
+              Paul Gan
+            </Typography>
+            <AnimateFlowInText
+              animationDelayMs={400}
+              animationDurationMsTotal={1000}
+              style={{ marginTop: '16px' }}
+            >
+              <Typography
+                variant="h3"
+                style={{
+                  fontSize: '24px',
+                  fontWeight: 400,
+                  lineHeight: 1.8,
+                  display: 'inline-flex',
+                }}
+              >
+                I am a full stack developer who loves creating pixel-perfect
+                digital experiences
+              </Typography>
+            </AnimateFlowInText>
           </Grid>
           {props.isMobile ? null : (
-            <div className={'snake ' + anim('fade', inView)}>
+            <Grid
+              sx={{
+                opacity: 0,
+                animation: 'slideLeft 0.6s ease forwards',
+                animationDelay: '1.6s',
+              }}
+            >
               <Snake w={362} h={362} />
-            </div>
+            </Grid>
           )}
         </Grid>
       </section>

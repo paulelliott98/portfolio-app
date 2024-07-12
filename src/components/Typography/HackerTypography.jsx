@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Typography } from '@mui/material';
-import { randInt } from '../utils';
+import { randInt } from '../../utils';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789()%-+@#';
 

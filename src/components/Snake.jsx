@@ -1,33 +1,34 @@
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
-var profanity = require("@2toad/profanity").profanity;
-const utils = require("../utils");
+import React, { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
+import { Grid } from '@mui/material';
+var profanity = require('@2toad/profanity').profanity;
+const utils = require('../utils');
 
 const fruits = [
-  "🍒",
-  "🍑",
-  "🍎",
-  "🍓",
-  "🍇",
-  "🍉",
-  "🍊",
-  "🍋",
-  "🍍",
-  "🍏",
-  "🍐",
-  "🥝",
-  "🥭",
-  "🍅",
-  "🫐",
-  "🍌",
-  "🍈",
+  '🍒',
+  '🍑',
+  '🍎',
+  '🍓',
+  '🍇',
+  '🍉',
+  '🍊',
+  '🍋',
+  '🍍',
+  '🍏',
+  '🍐',
+  '🥝',
+  '🥭',
+  '🍅',
+  '🫐',
+  '🍌',
+  '🍈',
 ];
 
 var axiosInstance = axios.create({
   baseURL:
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:8081"
-      : "https://snake-backend.fly.dev",
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8081'
+      : 'https://snake-backend.fly.dev',
   timeout: 5000,
 });
 
@@ -66,7 +67,7 @@ export default function Snake(props) {
   const [dir, setDir] = useState(startDir);
   const nextDir = useRef(startDir);
   const [fruit, setFruit] = useState(utils.randChoice(fruits));
-  const [playerName, setPlayerName] = useState("");
+  const [playerName, setPlayerName] = useState('');
 
   var a = createArena(nRows, nCols);
   a = addSnake(startLen, pos, a);
@@ -79,9 +80,9 @@ export default function Snake(props) {
   // difficulty settings and frame rate
   const isSafari =
     /^((?!chrome|android).)*safari/i.test(navigator.userAgent) &&
-    typeof CSS !== "undefined" &&
+    typeof CSS !== 'undefined' &&
     /webkit/i.test(navigator.userAgent);
-  const isFirefox = navigator.userAgent.indexOf("Firefox") !== -1;
+  const isFirefox = navigator.userAgent.indexOf('Firefox') !== -1;
 
   const k = 14;
   var updateInterval = 1000 / 200; // fps
@@ -98,7 +99,7 @@ export default function Snake(props) {
   const [fps, setfps] = useState(updateInterval);
 
   // set which page is shown on screen
-  const [page, setPage] = useState("homeScreen");
+  const [page, setPage] = useState('homeScreen');
 
   const [highScores, setHighScores] = useState([]);
   const [isHighScore, setIsHighScore] = useState(false);
@@ -114,12 +115,12 @@ export default function Snake(props) {
 
     // for i: 9,8, ... , 0
     for (let i = highScores.length - 1; i >= 0; i--) {
-      if (highScores[i].Date === "-") continue;
+      if (highScores[i].Date === '-') continue;
       // Date: '2023-02-18', Time: '10:28:35'
-      const [y, m, d] = highScores[i].Date.split("-").map((item) => {
+      const [y, m, d] = highScores[i].Date.split('-').map((item) => {
         return parseInt(item);
       });
-      const [hr, min, sec] = highScores[i].Time.split(":").map((item) => {
+      const [hr, min, sec] = highScores[i].Time.split(':').map((item) => {
         return parseInt(item);
       });
       const dateObj = new Date(y, m - 1, d, hr, min, sec);
@@ -179,10 +180,10 @@ export default function Snake(props) {
             onClick={(e) => {
               e.preventDefault();
               if (playerName) {
-                setPage("game");
+                setPage('game');
                 setGameState(-1);
               } else {
-                setPage("enterNameScreen");
+                setPage('enterNameScreen');
               }
             }}
           >
@@ -195,7 +196,7 @@ export default function Snake(props) {
             onClick={(e) => {
               e.preventDefault();
               getHighScoresData();
-              setPage("highScoresScreen");
+              setPage('highScoresScreen');
             }}
           >
             <span>📊 High Scores</span>
@@ -206,7 +207,7 @@ export default function Snake(props) {
             rel="noopener noreferrer"
             onClick={(e) => {
               e.preventDefault();
-              setPage("instructionsScreen");
+              setPage('instructionsScreen');
             }}
           >
             <span>📜 Instructions</span>
@@ -218,7 +219,7 @@ export default function Snake(props) {
             rel="noopener noreferrer"
             onClick={(e) => {
               e.preventDefault();
-              setPage("setDifficultyScreen");
+              setPage('setDifficultyScreen');
             }}
           >
             <span>⏩ Change Difficulty</span>
@@ -231,7 +232,7 @@ export default function Snake(props) {
               onClick={(e) => {
                 e.preventDefault();
                 setIsChangePlayer(true);
-                setPage("enterNameScreen");
+                setPage('enterNameScreen');
               }}
             >
               <span>🏷️ Change Player</span>
@@ -260,7 +261,7 @@ export default function Snake(props) {
               id="name"
               name="name"
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === 'Enter') {
                   const inp = e.target.value.trim();
                   if (inp) {
                     if (profanity.exists(inp)) {
@@ -272,13 +273,13 @@ export default function Snake(props) {
                       setNameErrorTimeout(timeout);
                       return;
                     } else setPlayerName(inp);
-                  } else setPlayerName("");
+                  } else setPlayerName('');
 
                   if (isChangePlayer) {
-                    setPage("homeScreen");
+                    setPage('homeScreen');
                     setGameState(-2);
                   } else if (!profanity.exists(inp)) {
-                    setPage("game");
+                    setPage('game');
                     setGameState(-1);
                   }
                 }
@@ -310,7 +311,7 @@ export default function Snake(props) {
           rel="noopener noreferrer"
           onClick={(e) => {
             e.preventDefault();
-            setPage("game");
+            setPage('game');
             setGameState(-1);
             resetArena();
           }}
@@ -324,7 +325,7 @@ export default function Snake(props) {
           onClick={(e) => {
             e.preventDefault();
             resetArena();
-            setPage("homeScreen");
+            setPage('homeScreen');
             setGameState(-2);
           }}
         >
@@ -379,16 +380,16 @@ export default function Snake(props) {
       }
     } else {
       rows = highScores.map((row, i) => {
-        var dateString = "-";
-        if (row.Date !== "-") {
-          const [y, m, d] = row.Date.split("-");
-          dateString = `${("0" + m).slice(-2)}-${("0" + d).slice(-2)}-${y}`;
+        var dateString = '-';
+        if (row.Date !== '-') {
+          const [y, m, d] = row.Date.split('-');
+          dateString = `${('0' + m).slice(-2)}-${('0' + d).slice(-2)}-${y}`;
         }
         return (
           <tr
             key={i + 1}
             className={
-              isHighScore && i === getPlayerRank() ? "text-green-400" : ""
+              isHighScore && i === getPlayerRank() ? 'text-green-400' : ''
             }
           >
             <style>{keyframes}</style>
@@ -448,19 +449,19 @@ export default function Snake(props) {
 
   // current displayed page on canvas
   const getPage = () => {
-    if (page === "homeScreen") return homeScreen();
-    else if (page === "enterNameScreen") return enterNameScreen();
-    else if (page === "playAgainScreen") return playAgainScreen();
-    else if (page === "instructionsScreen") return instructionsScreen();
-    else if (page === "highScoresScreen") return highScoresScreen();
-    else if (page === "setDifficultyScreen") return setDifficultyScreen();
-    else if (page === "game") return null;
+    if (page === 'homeScreen') return homeScreen();
+    else if (page === 'enterNameScreen') return enterNameScreen();
+    else if (page === 'playAgainScreen') return playAgainScreen();
+    else if (page === 'instructionsScreen') return instructionsScreen();
+    else if (page === 'highScoresScreen') return highScoresScreen();
+    else if (page === 'setDifficultyScreen') return setDifficultyScreen();
+    else if (page === 'game') return null;
   };
 
   // return the right element to display in snake bottom bar, right side
   const getDisplayText = () => {
     if (gameState === 1) {
-      return "You win!";
+      return 'You win!';
     } else if (gameState === 0) {
       if (isHighScore)
         return (
@@ -474,7 +475,7 @@ export default function Snake(props) {
             <p>Game Over!</p>
           </div>
         );
-    } else if (gameState === -2 && page === "homeScreen") {
+    } else if (gameState === -2 && page === 'homeScreen') {
       return null;
     } else {
       return (
@@ -485,7 +486,7 @@ export default function Snake(props) {
             rel="noopener noreferrer"
             onClick={(e) => {
               e.preventDefault();
-              if (page === "game" && score > 0) {
+              if (page === 'game' && score > 0) {
                 postScores(playerName, score, difficulty, new Date())
                   .then((d) => {
                     setLastPostDate(d);
@@ -493,16 +494,16 @@ export default function Snake(props) {
                   })
                   .catch((e) => console.log(e));
 
-                setPage("highScoresScreen");
+                setPage('highScoresScreen');
                 setGameState(0);
               } else {
-                setPage("homeScreen");
+                setPage('homeScreen');
                 setGameState(-2);
                 resetArena();
               }
             }}
           >
-            {page === "game" ? <span>End Game</span> : <span>Main Menu</span>}
+            {page === 'game' ? <span>End Game</span> : <span>Main Menu</span>}
           </a>
         </div>
       );
@@ -512,18 +513,18 @@ export default function Snake(props) {
   async function getHighScoresData() {
     var scores = [];
     await axiosInstance
-      .get("/high-score")
+      .get('/high-score')
       .then((r) => {
         scores = r.data;
         var numEmptyRows = 10;
         if (scores) numEmptyRows = 10 - scores.length;
         for (let i = 0; i < numEmptyRows; i++) {
-          scores.push({ Name: "-", Score: "-", Date: "-", Time: "-" });
+          scores.push({ Name: '-', Score: '-', Date: '-', Time: '-' });
         }
         setHighScores(scores);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         setHighScores([]);
       });
   }
@@ -537,7 +538,7 @@ export default function Snake(props) {
       d.getSeconds(),
     ];
     await axiosInstance
-      .post("/high-score", {
+      .post('/high-score', {
         name: playerName,
         score: score,
         difficulty: difficulty,
@@ -566,7 +567,7 @@ export default function Snake(props) {
         const arr = arena;
 
         // draw fruit
-        ctx.font = "20px sans-serif";
+        ctx.font = '20px sans-serif';
         ctx.fillText(
           fruit,
           gap + fruitPos[1] * (blockDim + gap) + 0.2 * blockDim,
@@ -743,7 +744,7 @@ export default function Snake(props) {
         const offsetY = 3; // distance between eyes
 
         const radius = 1; // eye radius
-        ctx.fillStyle = "#000000"; // eye color
+        ctx.fillStyle = '#000000'; // eye color
 
         ctx.translate(row, col);
         ctx.rotate(angle);
@@ -776,8 +777,8 @@ export default function Snake(props) {
               gap + j * (blockDim + gap),
               gap + i * (blockDim + gap),
             ];
-            ctx.fillStyle = "red";
-            ctx.font = "10px sans-serif";
+            ctx.fillStyle = 'red';
+            ctx.font = '10px sans-serif';
             ctx.fillText(arena[j][i], c + 0.4 * blockDim, r + 0.6 * blockDim);
           }
         }
@@ -786,11 +787,11 @@ export default function Snake(props) {
       // return color of block based on int value in arena array
       function getFillColor(n) {
         // head
-        if (n === len) return "#fff";
+        if (n === len) return '#fff';
         // fruit
-        else if (n === -1) return "#c792e9";
+        else if (n === -1) return '#c792e9';
         // background
-        else if (n === 0) return "#1f234177";
+        else if (n === 0) return '#1f234177';
         // body
         else return getBodyColor(n);
       }
@@ -1068,7 +1069,7 @@ export default function Snake(props) {
       }
 
       function handleKeyDown(e) {
-        if (gameState !== -1 && page !== "highScoresScreen") return;
+        if (gameState !== -1 && page !== 'highScoresScreen') return;
 
         e.preventDefault();
 
@@ -1149,7 +1150,7 @@ export default function Snake(props) {
             .catch((e) => console.log(e));
 
           setGameState(1);
-          setPage("highScoresScreen");
+          setPage('highScoresScreen');
           return;
         }
 
@@ -1192,7 +1193,7 @@ export default function Snake(props) {
             .catch((e) => console.log(e));
 
           setGameState(0);
-          setPage("highScoresScreen");
+          setPage('highScoresScreen');
           return;
         }
 
@@ -1226,16 +1227,16 @@ export default function Snake(props) {
         let cv = canvasRef.current;
         cv.width = w * scale;
         cv.height = h * scale;
-        cv.style.width = w + "px";
-        cv.style.height = h + "px";
-        cv.getContext("2d").scale(scale, scale);
+        cv.style.width = w + 'px';
+        cv.style.height = h + 'px';
+        cv.getContext('2d').scale(scale, scale);
         return cv;
       }
 
-      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener('keydown', handleKeyDown);
 
       const canvas = createHiPPICanvas(adjustedW, adjustedH);
-      const context = canvas.getContext("2d");
+      const context = canvas.getContext('2d');
 
       const fpsCheckInterval = 1000;
       const t = new Date();
@@ -1255,7 +1256,7 @@ export default function Snake(props) {
 
       return () => {
         clearTimeout(interval);
-        window.removeEventListener("keydown", handleKeyDown);
+        window.removeEventListener('keydown', handleKeyDown);
       };
     },
     // dependencies
@@ -1294,9 +1295,10 @@ export default function Snake(props) {
   );
 
   return (
-    <div
-      className="flex flex-col snake-container"
-      style={{
+    <Grid
+      className="snake-container"
+      sx={{
+        flexFlow: 'column nowrap',
         width: canvasRef.current ? canvasRef.current.style.width : adjustedW,
       }}
     >
@@ -1314,7 +1316,7 @@ export default function Snake(props) {
                       rel="noopener noreferrer"
                       onClick={(e) => {
                         e.preventDefault();
-                        setPage("homeScreen");
+                        setPage('homeScreen');
                         setGameState(-2);
                         resetArena();
                       }}
@@ -1329,7 +1331,7 @@ export default function Snake(props) {
                       rel="noopener noreferrer"
                       onClick={(e) => {
                         e.preventDefault();
-                        setPage("game");
+                        setPage('game');
                         setGameState(-1);
                         resetArena();
                       }}
@@ -1370,18 +1372,18 @@ export default function Snake(props) {
                       highScores
                         .slice()
                         .reverse()
-                        .find((item) => item.Score !== "-") || null;
+                        .find((item) => item.Score !== '-') || null;
                     var lowest = lowestItem ? lowestItem.Score : 0;
                     if (
                       highScores.length > 0 &&
-                      highScores[highScores.length - 1].Score === "-"
+                      highScores[highScores.length - 1].Score === '-'
                     )
                       lowest = 0;
                     if (score > lowest && gameState === -1) {
                       if (!isHighScore) setIsHighScore(true);
                       return {
-                        color: "#c792e9",
-                        animation: "pulse 0.8s linear infinite",
+                        color: '#c792e9',
+                        animation: 'pulse 0.8s linear infinite',
                       };
                     } else return {};
                   })()}
@@ -1399,12 +1401,12 @@ export default function Snake(props) {
           </div>
         </div>
       </div>
-    </div>
+    </Grid>
   );
 }
 
 function rgb(r, g, b) {
-  return ["rgb(", r, ",", g, ",", b, ")"].join("");
+  return ['rgb(', r, ',', g, ',', b, ')'].join('');
 }
 
 // returns array containing coords of right, bottom, left, and top cells

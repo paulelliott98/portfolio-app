@@ -153,7 +153,7 @@ const SortingVisualizer = () => {
       item
       container
       alignItems="center"
-      style={{ animation: 'scaleIn 200ms ease' }}
+      sx={{ opacity: 0, animation: 'slideBottom 400ms ease forwards' }}
     >
       <Grid
         item

@@ -1,8 +1,8 @@
 import { React, useEffect } from 'react';
-import SearchVisualizer from '../components/search-visualizer/SearchVisualizer';
+import SearchVisualizer from '../components/SearchVisualizer/SearchVisualizer';
 import '../styles.css';
 import { Typography } from '@mui/material';
-import SortingVisualizer from '../components/sorting-visualizer/SortingVisualizer';
+import SortingVisualizer from '../components/SortingVisualizer/SortingVisualizer';
 
 const utils = require('../utils');
 

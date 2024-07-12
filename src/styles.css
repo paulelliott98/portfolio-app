@@ -778,10 +778,6 @@ footer {
     font-size: 16px;
   }
 
-  .snake {
-    display: none;
-  }
-
   .nav-area {
     height: 3em;
     justify-content: center;
@@ -851,4 +847,47 @@ footer {
   .navbar a {
     font-size: 12px;
   }
+}
+
+@keyframes slideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes flowIn {
+  0% {
+    opacity: 0;
+    transform: translate(0, 20px);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(0, -1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+.flowInText {
+  white-space: pre;
+  opacity: 0;
+  animation: flowIn 0.8s ease forwards;
 }

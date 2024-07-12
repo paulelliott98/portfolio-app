@@ -8,7 +8,7 @@ const StyledGridGlass = styled(Grid)({
   gap: '8px',
   backgroundColor: 'rgba(255, 255, 255, 0.05)',
   backdropFilter: 'blur(6px)',
-  boxShadow: '0 0 16px 4px rgba(255,255,255,0.06)',
+  boxShadow: '0 0 8px 4px rgba(255,255,255,0.06)',
   WebkitBackdropFilter: 'blur(6px)',
   outline: '1.5px solid rgba(255, 255, 255, 0.1)',
   borderRadius: '24px',

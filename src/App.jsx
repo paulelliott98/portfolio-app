@@ -210,7 +210,9 @@ export default function App() {
       container
       style={{
         flexFlow: 'column nowrap',
-        paddingBlockStart: `${navRef.current?.clientHeight || 0}px`,
+        paddingBlockStart: getComputedStyle(document.body).getPropertyValue(
+          '--nav-height'
+        ),
       }}
     >
       <ThemeProvider theme={theme}>
