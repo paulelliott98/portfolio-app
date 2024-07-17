@@ -30,6 +30,7 @@ const projects = [
     dx: [
       'As part of an effort to create pigeon art in Dr. Blaisdell’s lab at UCLA, this project showcases an implementation of the algorithm for extracting the regions of a planar graph described in a ',
       <a
+        key="polygon-detection"
         className="link"
         target="_blank"
         rel="noopener noreferrer"
@@ -58,6 +59,7 @@ const projects = [
       '\n',
       ' Check it out ',
       <a
+        key="prime-spiral"
         className="link"
         target="_blank"
         rel="noopener noreferrer"

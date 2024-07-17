@@ -1,5 +1,5 @@
-import blocks from "./blocks";
-const utils = require("../../utils");
+import blocks from './blocks';
+const utils = require('../../utils');
 
 // const blocks = require("./blocks");
 
@@ -139,7 +139,7 @@ export function carveMainPath(start, direction, grid, nCorridors) {
   let prevEnd;
 
   for (let i = 0; i < nCorridors; i++) {
-    if (end !== null && typeof end !== "undefined") prevEnd = [...end];
+    if (end !== null && typeof end !== 'undefined') prevEnd = [...end];
 
     end = makeCorridor(end, dir, grid);
     dir = getNewDirection(end, dir, grid);
@@ -188,7 +188,7 @@ export function carveSidePaths(startPos, grid) {
   let isCarvable = false;
 
   for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid.length; j++) {
+    for (let j = 0; j < grid[0].length; j++) {
       if (
         isInMaze(i, j, grid) &&
         grid[i][j] === blocks.empty &&
@@ -301,7 +301,7 @@ export function makeCorridor(st, direction, grid, isDeadEnd = false) {
 // return { nTraversable, path }
 export function shortestPathToEdge(prevCoord, coord, grid) {
   let res = { nTraversable: -1, path: null };
-  if (coord === null || typeof coord === "undefined") return res;
+  if (coord === null || typeof coord === 'undefined') return res;
 
   let visited = JSON.parse(JSON.stringify(grid));
   if (prevCoord !== null) visited[prevCoord.r][prevCoord.c] = blocks.empty;
@@ -316,7 +316,7 @@ export function shortestPathToEdge(prevCoord, coord, grid) {
 
   // map for backtracking
   let prev = new Map();
-  prev.set(coord.r + "," + coord.c, null);
+  prev.set(coord.r + ',' + coord.c, null);
 
   let queue = [coord];
 
@@ -335,7 +335,7 @@ export function shortestPathToEdge(prevCoord, coord, grid) {
       // if we found edge, set isReachable to true
       if (!isInMaze(next.r, next.c, grid)) {
         isReachable = true;
-        prev.set(next.r + "," + next.c, curr);
+        prev.set(next.r + ',' + next.c, curr);
 
         if (res.path === null) {
           let currCoord = prev.get(`${next.r},${next.c}`);
@@ -356,7 +356,7 @@ export function shortestPathToEdge(prevCoord, coord, grid) {
         queue.push({ r: next.r, c: next.c });
         visited[next.r][next.c] = blocks.empty; // set to visited
         area++;
-        prev.set(next.r + "," + next.c, curr);
+        prev.set(next.r + ',' + next.c, curr);
       }
     }
   }

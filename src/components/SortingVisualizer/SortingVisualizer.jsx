@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Grid,
   FormControl,
@@ -10,10 +10,9 @@ import {
   Button,
   Typography,
 } from '@mui/material';
-import GridGlass from '../GridGlass';
 import * as utils from '../../utils';
 import { drawToCanvas, makeBarData, makeShuffledArray } from './drawUtils';
-import Stopwatch, { makeTimeString } from '../Stopwatch';
+import Stopwatch, { makeTimeString } from './Stopwatch';
 import bubbleSort from './algorithms/bubbleSort';
 import quickSort from './algorithms/quickSort';
 import insertionSort from './algorithms/insertionSort';
@@ -30,8 +29,10 @@ const sortFunctions = {
   heapSort,
 };
 
-const SortingVisualizer = () => {
-  const canvasRef = useRef(null);
+const SortingVisualizer = ({ ...props }) => {
+  const canvasRef = useRef();
+  const canvasContainerRef = useRef();
+
   const [render, setRender] = useState(false);
   const [algorithm, setAlgorithm] = useState('bubbleSort');
   const [algorithmRunning, setAlgorithmRunning] = useState(false);
@@ -52,16 +53,15 @@ const SortingVisualizer = () => {
     setTime(stopwatch.current.elapsed);
   }, []);
 
-  // initialize variables. Re-run when variables are changed on the control panel
-  useEffect(() => {
+  const tick = useCallback(() => {
     const [w, h] = [
-      canvasRef.current.scrollWidth,
-      canvasRef.current.scrollHeight,
+      canvasContainerRef.current?.clientWidth,
+      canvasContainerRef.current?.clientHeight,
     ];
     const scale = window.devicePixelRatio || 1;
     const canvas = utils.createHiPPICanvas(w, h, canvasRef, scale);
     const context = canvas.getContext('2d');
-    const barData = makeBarData(arr.current.length, h);
+    const barData = makeBarData(arraySize, h);
     const barGap = 1;
     drawData.current = {
       ...drawData.current,
@@ -75,21 +75,21 @@ const SortingVisualizer = () => {
       maxSpeed,
     };
     drawToCanvas(arr.current, drawData.current);
-  }, [arraySize, render]);
+  }, [canvasContainerRef, arraySize]);
 
-  // ---------- make canvas responsive ----------
-  function handleResize() {
-    canvasRef.current.style.width = '100%';
-    canvasRef.current.style.height = '100%';
-  }
-
+  // ---------- make canvas responsive to resize ----------
   useEffect(() => {
+    function handleResize() {
+      tick();
+    }
+
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  });
-  // ---------- make canvas responsive ----------
+  }, [tick]);
+  // ---------- make canvas responsive to resize ----------
 
   function isRunning(algorithm) {
     return drawData.current.run[algorithm];
@@ -136,7 +136,7 @@ const SortingVisualizer = () => {
     resetTimer();
 
     arr.current = [...arrCopy.current];
-    setRender((prev) => !prev);
+    setRender(() => !render);
   }
 
   function shuffleArray() {
@@ -145,15 +145,19 @@ const SortingVisualizer = () => {
 
     arr.current = makeShuffledArray(arraySize);
     arrCopy.current = [...arr.current];
-    setRender((prev) => !prev);
+    setRender(() => !render);
   }
 
   return (
     <Grid
       item
       container
-      alignItems="center"
-      sx={{ opacity: 0, animation: 'slideBottom 400ms ease forwards' }}
+      className="slide-bottom"
+      sx={{
+        // animation: 'slideBottom 400ms ease forwards',
+        height: '100%',
+        backgroundColor: 'var(--bg-color-2)',
+      }}
     >
       <Grid
         item
@@ -161,24 +165,32 @@ const SortingVisualizer = () => {
         justifyContent="center"
         sx={{
           flexFlow: 'row nowrap',
-          gap: '16px',
-          minHeight: '600px',
-          maxHeight: '75vh',
-          flex: 1,
-          margin: '16px',
+          height: '100%',
         }}
       >
-        <GridGlass item container sx={{ flex: '1 1 auto', padding: '16px' }}>
+        <Grid
+          ref={canvasContainerRef}
+          item
+          container
+          sx={{ flex: '1 1 auto', height: '100%' }}
+        >
           <canvas
             ref={canvasRef}
-            style={{
-              width: '100%',
-              height: '100%',
-              background: 'rgba(0,0,0,0.25)',
-            }}
+            style={{ maxWidth: '100%', maxHeight: '100%' }}
           />
-        </GridGlass>
-        <GridGlass item container sx={{ flex: '1 0 350px', padding: '1em' }}>
+        </Grid>
+        <Grid
+          item
+          container
+          sx={{
+            flexFlow: 'column nowrap',
+            gap: '2em',
+            flex: '0 0 350px',
+            padding: '2em',
+            borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
+            overflow: 'hidden auto',
+          }}
+        >
           <FormControl>
             <FormLabel>Sorting Algorithm</FormLabel>
             <RadioGroup
@@ -253,20 +265,6 @@ const SortingVisualizer = () => {
             <Grid
               item
               container
-              alignItems="center"
-              justifyContent="center"
-              sx={{ flex: '1 1 auto' }}
-            >
-              <Typography
-                variant="subtitle1"
-                sx={{ fontFamily: 'Space Mono', fontSize: '20px' }}
-              >
-                {makeTimeString(time)}
-              </Typography>
-            </Grid>
-            <Grid
-              item
-              container
               sx={{
                 flex: '0 1 auto',
                 flexFlow: 'column nowrap',
@@ -288,8 +286,26 @@ const SortingVisualizer = () => {
                 {algorithmRunning ? 'Sorting...' : `Run ${algorithm}`}
               </Button>
             </Grid>
+            <Grid
+              item
+              container
+              alignItems="center"
+              justifyContent="center"
+              sx={{ flex: '1 1 auto' }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  fontFamily: 'Space Mono',
+                  fontSize: '20px',
+                  paddingTop: '1em',
+                }}
+              >
+                {makeTimeString(time)}
+              </Typography>
+            </Grid>
           </Grid>
-        </GridGlass>
+        </Grid>
       </Grid>
     </Grid>
   );

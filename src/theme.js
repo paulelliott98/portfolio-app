@@ -7,15 +7,20 @@ export const colors = {
 };
 
 const theme = createTheme({
+  palette: {},
   components: {
     MuiTypography: {
       styleOverrides: {
         root: {
-          fontFamily: 'DM Sans, Helvetica',
+          fontFamily: 'Nunito Sans, Helvetica',
           color: 'rgba(255,255,255,1)',
+          position: 'relative',
+          zIndex: 10,
         },
         body1: {
           fontSize: '16px',
+          fontWeight: 600,
+          lineHeight: 2,
         },
         h1: {
           background: `linear-gradient(${colors.neonGreen}, ${colors.neonBlue}, ${colors.neonPink})`,
@@ -25,15 +30,21 @@ const theme = createTheme({
           fontFamily: "'Poppins', sans-serif",
           fontStyle: 'normal',
           fontWeight: '400',
-          fontSize: '80px',
+          fontSize: '100px',
           marginInlineStart: '-5px',
           alignItems: 'center',
           letterSpacing: '-0.05em',
           whiteSpace: 'nowrap',
           textShadow: '0 0 25px rgb(65, 231, 150)',
-          '@media (min-width: 600px)': {
-            fontSize: '112px',
+          '@media (max-width: 900px)': {
+            fontSize: '64px',
           },
+        },
+        h2: {
+          fontFamily: 'Nunito Sans, sans-serif',
+          fontSize: '24px',
+          fontWeight: 500,
+          lineHeight: 2,
         },
         h4: {
           color: colors.neonPink,
@@ -41,11 +52,21 @@ const theme = createTheme({
           fontWeight: '500',
           textShadow: '0 0 10px #902cce',
           textTransform: 'lowercase',
-          letterSpacing: '0.04em',
+          letterSpacing: '0em',
           width: 'fit-content',
         },
         h5: {
-          font: '400 28px "Noto Sans Mono"',
+          font: '800 20px "Nunito Sans"',
+        },
+        gutterBottom: {
+          marginBottom: '1.5rem',
+        },
+      },
+    },
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          padding: '0 2px',
         },
       },
     },
@@ -88,6 +109,13 @@ const theme = createTheme({
           '&.Mui-disabled': {
             color: 'rgba(255,255,255,0.3)',
           },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: '#fff',
         },
       },
     },

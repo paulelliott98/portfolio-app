@@ -1,7 +1,8 @@
 const Routes = {
   homePage: '/',
-  searchVisualizer: '/visualize/search',
-  sortingVisualizer: '/visualize/sorting',
+  searchVisualizer: '/sandbox/search',
+  sortingVisualizer: '/sandbox/sorting',
+  snake: '/snake',
 };
 
 export default Routes;

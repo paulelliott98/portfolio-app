@@ -1,38 +1,42 @@
 import React from 'react';
 import StyledChip from './StyledChip';
 import { Grid, Typography } from '@mui/material';
-import GridGlass from './GridGlass';
 
 // reusable component for projects
 export default function Project({ techStack, name, dx, gitUrl, ...props }) {
   return (
-    <GridGlass
+    <Grid
       item
       container
       direction="column"
+      {...props}
       style={{
         flexFlow: 'column nowrap',
         gap: '8px',
-        marginTop: '24px',
+        marginTop: '16px',
         ...props.style,
       }}
-      {...props}
     >
-      <Typography variant="h4">{name}</Typography>
-      <Typography variant="body1">{dx}</Typography>
+      <Typography className="slide-bottom" variant="h4">
+        {name}
+      </Typography>
+      <Typography className="slide-bottom" variant="body1">
+        {dx}
+      </Typography>
 
-      <Grid item container style={{ gap: '12px', margin: '8px 0 12px 0' }}>
+      <Grid
+        className="slide-bottom-no-fade"
+        item
+        container
+        style={{ gap: '12px', margin: '8px 0 12px 0' }}
+      >
         {techStack.map((item, i) => (
-          <StyledChip
-            key={i}
-            label={item}
-            style={{ backdropFilter: 'none', background: 'none' }}
-          />
+          <StyledChip key={i} label={item} />
         ))}
       </Grid>
 
       {!gitUrl ? null : (
-        <Grid item container>
+        <Grid item container className="slide-bottom">
           <a href={gitUrl} target="_blank" rel="noopener noreferrer">
             <img
               className="github-logo"
@@ -43,6 +47,6 @@ export default function Project({ techStack, name, dx, gitUrl, ...props }) {
           </a>
         </Grid>
       )}
-    </GridGlass>
+    </Grid>
   );
 }

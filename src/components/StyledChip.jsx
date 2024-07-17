@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import { colors } from '../theme';
 import GridGlass from './GridGlass';
 
-const StyledChip = ({ ...props }) => {
+const StyledChip = ({ label, ...props }) => {
   return (
     <GridGlass
       item
@@ -11,28 +11,28 @@ const StyledChip = ({ ...props }) => {
       alignItems="center"
       justifyContent="center"
       {...props}
-      style={{
-        padding: '4px 12px',
+      sx={{
+        padding: '8px 12px',
         borderRadius: '24px',
         width: 'fit-content',
         maxWidth: '50vw',
+        background: 'rgb(67 67 67 / 30%)',
+        backdropFilter: 'blur(8px)',
         ...props.style,
       }}
     >
-      {/* <Tooltip title={props.label} disableInteractive> */}
       <Typography
         noWrap
         style={{
           color: colors.neonBlue,
-          textShadow: `0 0 2px ${colors.neonBlue}`,
           padding: 0,
           maxWidth: '100%',
           fontSize: '14px',
+          lineHeight: 1,
         }}
       >
-        {props.label}
+        {label}
       </Typography>
-      {/* </Tooltip> */}
     </GridGlass>
   );
 };

@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
 import './algoVisualizer.css';
 import * as algorithms from './algorithms';
 import * as mg from './mazeGenerator';
@@ -10,88 +16,63 @@ import {
   FormControlLabel,
   FormLabel,
   Grid,
+  IconButton,
   Radio,
   RadioGroup,
   Slider,
   Typography,
 } from '@mui/material';
-import GridGlass from '../GridGlass';
-import { colors } from '../../theme';
+import HelpOutline from '@mui/icons-material/Help';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {
+  blockColors,
+  blockOpacity,
+  drawGrid,
+  initializeGrid,
+} from './drawUtils';
 
-const DEBUG = false;
+export default function SearchVisualizer({ ...props }) {
+  const canvasRef = useRef();
+  const canvasContainerRef = useRef();
 
-const blockColors = {
-  source: '#d21f3c',
-  sink: '#1aa7ec',
-  visited: colors.neonPink,
-  empty: '#ffffff',
-  wall: '#444444',
-  path: '#ffff00',
-};
-const blockOpacity = 'BB';
-
-export default function SearchVisualizer(props) {
-  const randomInteger = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  const canvasRef = useRef(null);
   const scale = window.devicePixelRatio || 1;
 
   const [minBlockScale, maxBlockScale] = [1, 3];
   const defaultBlockScale = minBlockScale;
   const baseBlockSize = 7;
   const base = 2;
-  let blockScale = useRef(defaultBlockScale);
-  let blockSize = useRef(baseBlockSize * Math.pow(base, blockScale.current));
-  let [nRows, nCols] = [
-    useRef(Math.floor(props.h / blockSize.current)),
-    useRef(Math.floor(props.w / blockSize.current)),
-  ];
+  const blockScale = useRef(defaultBlockScale);
+  const blockSize = useRef(baseBlockSize * Math.pow(base, blockScale.current));
 
-  let gap = useRef((props.h % blockSize.current) / (nCols.current + 1)); // gap size
+  const [canvasDimensions, setCanvasDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
+
+  const gap = useRef(0.5);
 
   const [result, setResult] = useState('-');
   const [algorithm, setAlgorithm] = useState('bfsShortestPath');
-  let run = useRef(false);
+  const run = useRef(false);
 
   const [sliderMin, sliderMax] = [0, 100];
   const defaultSpeed = 99;
   const speed = useRef(defaultSpeed);
 
   // mouse data
-  const [mousePos, setMousePos] = useState({ x: -1, y: -1 });
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   let [isLeftMouseDown, isRightMouseDown, isShiftDown] = [
     useRef(false),
     useRef(false),
     useRef(false),
   ];
 
-  let [hoverRow, hoverCol] = [useRef(-1), useRef(-1)];
-  let isEventListenersAttached = useRef(false);
-
-  // initialize random start and end positions
-  let _start = {
-    r: randomInteger(0, Math.floor((nRows.current - 1) / 2)),
-    c: randomInteger(0, nCols.current - 1),
-  };
-  let _end = {
-    r: randomInteger(
-      Math.floor((nRows.current - 1) / 2) + 1,
-      nRows.current - 1
-    ),
-    c: randomInteger(0, nCols.current - 1),
-  };
-
-  const [startPos, setStartPos] = useState(_start);
-  const [endPos, setEndPos] = useState(_end);
-
-  let tempGrid = utils.createArray(nRows.current, nCols.current);
-  tempGrid[_start.r][_start.c] = 2;
-  tempGrid[_end.r][_end.c] = 3;
+  let [hoverRow, hoverCol] = [useRef(0), useRef(0)];
 
   // array to store block states
-  let [grid, setGrid] = useState(tempGrid);
+  const [grid, setGrid] = useState([[]]);
+  const [startPos, setStartPos] = useState({ r: 0, c: 0 });
+  const [endPos, setEndPos] = useState({ r: 0, c: 0 });
 
   const [showInstructions, setShowInstructions] = useState(false);
 
@@ -118,149 +99,142 @@ export default function SearchVisualizer(props) {
     setResult('-');
   }
 
-  useEffect(() => {
-    // handles logic for user interactions
-    function updateGrid() {
-      if (hoverRow.current === -1 || hoverCol.current === -1) return;
+  const updateGrid = useCallback(() => {
+    if (hoverRow.current === -1 || hoverCol.current === -1) return;
 
-      let n; // type of block we want to add to grid
+    let n; // type of block we want to add to grid
 
-      if (isLeftMouseDown.current) {
-        if (result !== '-') setResult('-');
-        // if shift is pressed, we are adding wall (n = 4)
-        if (isShiftDown.current) n = blocks.wall;
-        else n = blocks.source; // source block
-      } else if (isRightMouseDown.current) {
-        if (result !== '-') setResult('-');
-        if (isShiftDown.current) n = blocks.empty;
-        else n = blocks.sink; // sink block
-      } else {
-        return;
-      }
-
-      const hovered = grid[hoverRow.current][hoverCol.current];
-
-      // if same -> return
-      if (n === hovered) return;
-
-      // if clearing start point -> return
-      if (hovered === blocks.source || hovered === blocks.sink) return;
-
-      // if attempting to place start/end point on wall -> return
-      if ((n === blocks.source || n === blocks.sink) && hovered === blocks.wall)
-        return;
-
-      if (hovered === blocks.source) setStartPos({ r: -1, c: -1 });
-      if (hovered === blocks.sink) setEndPos({ r: -1, c: -1 });
-
-      // if setting start/end point, remove other start/end points from grid, and set startPos
-      if (n === blocks.source) {
-        utils.changeAll(n, blocks.empty, grid);
-        setStartPos({ r: hoverRow.current, c: hoverCol.current });
-      } else if (n === blocks.sink) {
-        utils.changeAll(n, blocks.empty, grid);
-        setEndPos({ r: hoverRow.current, c: hoverCol.current });
-      }
-
-      // update grid with new value, and trigger a rerender
-      let newGrid = [...grid];
-      newGrid[hoverRow.current][hoverCol.current] = n;
-      utils.changeAll(blocks.visited, blocks.empty, newGrid); // clear all visited blocks in grid
-      utils.changeAll(blocks.path, blocks.empty, newGrid); // clear all path blocks in grid
-      setGrid(newGrid);
-      run.current = false; // stop currently running algorithms
+    if (isLeftMouseDown.current) {
+      if (result !== '-') setResult('-');
+      // if shift is pressed, we are adding wall (n = 4)
+      if (isShiftDown.current) n = blocks.wall;
+      else n = blocks.source; // source block
+    } else if (isRightMouseDown.current) {
+      if (result !== '-') setResult('-');
+      if (isShiftDown.current) n = blocks.empty;
+      else n = blocks.sink; // sink block
+    } else {
+      return;
     }
 
-    // check if mouse is hovering over rect
-    const isMouseOverBlock = (r, c) => {
-      return (
-        mousePos.x >= c - 0.5 * gap.current &&
-        mousePos.x < c + blockSize.current + 0.5 * gap.current &&
-        mousePos.y >= r - 0.5 * gap.current &&
-        mousePos.y < r + blockSize.current + 0.5 * gap.current
-      );
-    };
+    const hovered = grid[hoverRow.current][hoverCol.current];
 
-    // return color based on value of grid[j][i]
-    const getFillColor = (j, i) => {
-      var color = '';
-      // unvisited block
-      if (grid[j][i] === blocks.empty) {
-        color = blockColors.empty;
-      }
-      // visited block
-      else if (grid[j][i] === blocks.visited) {
-        color = blockColors.visited;
-      }
-      // start block
-      else if (grid[j][i] === blocks.source) {
-        color = blockColors.source;
-      }
-      // end block
-      else if (grid[j][i] === blocks.sink) {
-        color = blockColors.sink;
-      }
-      // wall block
-      else if (grid[j][i] === blocks.wall) {
-        color = blockColors.wall;
-      }
-      // path block
-      else if (grid[j][i] === blocks.path) {
-        color = blockColors.path;
-      }
+    // if same -> return
+    if (n === hovered) return;
 
-      return color.concat(blockOpacity);
-    };
+    // if clearing start point -> return
+    if (hovered === blocks.source || hovered === blocks.sink) return;
 
-    const drawGrid = (ctx, canvas) => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      let [hoverR, hoverC, fillColor] = [null, null, null];
+    // if attempting to place start/end point on wall -> return
+    if ((n === blocks.source || n === blocks.sink) && hovered === blocks.wall)
+      return;
 
-      for (let j = 0; j < nRows.current; j++) {
-        for (let i = 0; i < nCols.current; i++) {
-          const [r, c] = [
-            j * (blockSize.current + gap.current),
-            i * (blockSize.current + gap.current),
-          ];
+    if (hovered === blocks.source) setStartPos({ r: -1, c: -1 });
+    if (hovered === blocks.sink) setEndPos({ r: -1, c: -1 });
 
-          ctx.beginPath();
+    // if setting start/end point, remove other start/end points from grid, and set startPos
+    if (n === blocks.source) {
+      utils.changeAll(n, blocks.empty, grid);
+      setStartPos({ r: hoverRow.current, c: hoverCol.current });
+    } else if (n === blocks.sink) {
+      utils.changeAll(n, blocks.empty, grid);
+      setEndPos({ r: hoverRow.current, c: hoverCol.current });
+    }
 
-          if (isMouseOverBlock(r, c)) {
-            [hoverR, hoverC, fillColor] = [r, c, getFillColor(j, i)];
-          } else {
-            ctx.fillStyle = getFillColor(j, i);
-            ctx.rect(c, r, blockSize.current, blockSize.current);
-            ctx.fill();
+    // update grid with new value, and trigger a rerender
+    let newGrid = [...grid];
+    newGrid[hoverRow.current][hoverCol.current] = n;
+    utils.changeAll(blocks.visited, blocks.empty, newGrid); // clear all visited blocks in grid
+    utils.changeAll(blocks.path, blocks.empty, newGrid); // clear all path blocks in grid
+    setGrid(newGrid);
+    run.current = false; // stop currently running algorithms
+  }, [
+    grid,
+    hoverCol,
+    hoverRow,
+    isLeftMouseDown,
+    isRightMouseDown,
+    isShiftDown,
+    result,
+  ]);
+
+  const createNewGrid = (lastGrid) => {
+    if (
+      canvasDimensions.width < blockSize.current ||
+      canvasDimensions.height < blockSize.current
+    )
+      return;
+    let [newGrid, newStartPos, newEndPos] = initializeGrid(
+      canvasDimensions,
+      gap.current,
+      blockSize.current
+    );
+    if (lastGrid && lastGrid.length && lastGrid[0].length) {
+      for (let i = 0; i < lastGrid.length; i++) {
+        for (let j = 0; j < lastGrid[i].length; j++) {
+          if (i >= newGrid.length || j >= newGrid[0].length) continue;
+          const block = lastGrid[i][j];
+
+          // Update newStartPos and newEndPos if we encounter them, and erase the old one from newGrid
+          if (block === blocks.source) {
+            utils.changeAll(block, blocks.empty, newGrid);
+            newStartPos = { r: i, c: j };
+          } else if (block === blocks.sink) {
+            utils.changeAll(block, blocks.empty, newGrid);
+            newEndPos = { r: i, c: j };
           }
 
-          if (DEBUG) {
-            ctx.font = '10px Arial';
-            ctx.fillStyle = '#000';
-            ctx.fillText(String(grid[j][i]), c + 7, r + 14);
-          }
+          newGrid[i][j] = block;
         }
       }
+    }
 
-      if (hoverR !== null) {
-        const lineThickness = Math.min(2, blockSize.current / 10);
-        ctx.fillStyle = fillColor;
-        ctx.beginPath();
-        ctx.rect(
-          hoverC + 0.5 * lineThickness,
-          hoverR + 0.5 * lineThickness,
-          blockSize.current - lineThickness,
-          blockSize.current - lineThickness
-        );
-        ctx.fill();
+    newGrid[newStartPos.r][newStartPos.c] = blocks.source;
+    newGrid[newEndPos.r][newEndPos.c] = blocks.sink;
+    setGrid(newGrid);
+    setStartPos(newStartPos);
+    setEndPos(newEndPos);
+  };
 
-        ctx.lineWidth = lineThickness;
-        ctx.strokeStyle = '#00ff00ff';
-        ctx.stroke();
-      }
+  // when canvas dimensions change on resize, create new grid only if nCols or nRows changes
+  useEffect(() => {
+    if (canvasDimensions.width && canvasDimensions.height) {
+      createNewGrid(grid);
+    } else {
+      createNewGrid();
+    }
+  }, [canvasDimensions]); //eslint-disable-line
+
+  useEffect(() => {
+    function handleResize() {
+      const [width, height] = [
+        canvasContainerRef.current?.clientWidth || 0,
+        canvasContainerRef.current?.clientHeight || 0,
+      ];
+
+      setCanvasDimensions({ width, height });
+    }
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
     };
+  }, []);
 
-    function handleMouseMove(e, canvas) {
+  // Attach event listeners
+  useEffect(() => {
+    const canvas = utils.createHiPPICanvas(
+      canvasDimensions.width,
+      canvasDimensions.height,
+      canvasRef,
+      scale
+    );
+
+    const handleMouseMove = (canvas) => (e) => {
       const rect = canvas.getBoundingClientRect();
+      const [nRows, nCols] = [grid.length, grid[0].length];
+
       const [relX, relY] = [
         Math.floor(e.clientX - rect.left),
         Math.floor(e.clientY - rect.top),
@@ -275,7 +249,7 @@ export default function SearchVisualizer(props) {
       r = Math.floor(relY / (blockSize.current + gap.current));
       c = Math.floor(relX / (blockSize.current + gap.current));
 
-      if (r < 0 || c < 0 || r >= nRows.current || c >= nCols.current) {
+      if (r < 0 || c < 0 || r >= nRows || c >= nCols) {
         hoverRow.current = -1;
         hoverCol.current = -1;
         return;
@@ -283,9 +257,9 @@ export default function SearchVisualizer(props) {
 
       hoverRow.current = r;
       hoverCol.current = c;
-    }
+    };
 
-    function handleKeyDown(e, canvas) {
+    function handleKeyDown(e) {
       if (e.keyCode === 16) {
         isShiftDown.current = true;
         updateGrid();
@@ -318,7 +292,7 @@ export default function SearchVisualizer(props) {
       setMousePos({ x: currX, y: currY });
     }
 
-    function handleKeyRelease(e, canvas) {
+    function handleKeyRelease(e) {
       if (e.keyCode === 16) {
         isShiftDown.current = false;
         updateGrid();
@@ -344,214 +318,204 @@ export default function SearchVisualizer(props) {
       }
     }
 
-    const canvas = utils.createHiPPICanvas(props.w, props.h, canvasRef, scale);
-    const context = canvas.getContext('2d');
-
-    if (!isEventListenersAttached.current) {
-      window.addEventListener('mousemove', (e) => {
-        handleMouseMove(e, canvas);
-      });
-
-      window.addEventListener('contextmenu', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        if (
-          e.clientX >= rect.left &&
-          e.clientX <= rect.right &&
-          e.clientY >= rect.top &&
-          e.clientY <= rect.bottom
-        ) {
-          e.preventDefault();
-        }
-      });
-      window.addEventListener('mousedown', (e) => {
-        handleKeyDown(e, canvas);
-      });
-      window.addEventListener('keydown', (e) => {
-        handleKeyDown(e, canvas);
-      });
-      window.addEventListener('mouseup', (e) => {
-        handleKeyRelease(e, canvas);
-      });
-      window.addEventListener('keyup', (e) => {
-        handleKeyRelease(e, canvas);
-      });
+    function handleContextMenu(e) {
+      const rect = canvas.getBoundingClientRect();
+      if (
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom
+      ) {
+        e.preventDefault();
+      }
     }
 
-    isEventListenersAttached.current = true;
-    updateGrid();
-    drawGrid(context, canvas);
+    const tick = () => {
+      const [width, height] = [
+        canvasContainerRef.current?.clientWidth,
+        canvasContainerRef.current?.clientHeight,
+      ];
+
+      const canvas = utils.createHiPPICanvas(width, height, canvasRef, scale);
+      const context = canvas.getContext('2d');
+
+      // Center-align canvas grid inside canvas element
+      const canvasOnlyDimensions = {
+        width: grid[0].length * (blockSize.current + gap.current) + gap.current,
+        height: grid.length * (blockSize.current + gap.current) + gap.current,
+      };
+
+      context.translate(
+        (canvasDimensions.width - canvasOnlyDimensions.width) / 2,
+        (canvasDimensions.height - canvasOnlyDimensions.height) / 2
+      );
+
+      updateGrid();
+      drawGrid(
+        context,
+        grid,
+        blockSize.current,
+        gap.current,
+        canvasDimensions,
+        mousePos
+      );
+    };
+
+    tick();
+
+    const mouseMoveHandler = handleMouseMove(canvas);
+    window.addEventListener('mousemove', mouseMoveHandler);
+    window.addEventListener('contextmenu', handleContextMenu);
+    window.addEventListener('mousedown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('mouseup', handleKeyRelease);
+    window.addEventListener('keyup', handleKeyRelease);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousemove', mouseMoveHandler);
+      window.removeEventListener('contextmenu', handleContextMenu);
       window.removeEventListener('mousedown', handleKeyDown);
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('contextmenu', handleKeyDown);
       window.removeEventListener('mouseup', handleKeyRelease);
       window.removeEventListener('keyup', handleKeyRelease);
     };
   }, [
-    props,
-    nRows,
-    nCols,
-    scale,
+    canvasDimensions,
     grid,
-    blockSize,
-    blockScale,
-    algorithm,
-    mousePos,
-    hoverRow,
     hoverCol,
+    hoverRow,
     isLeftMouseDown,
     isRightMouseDown,
     isShiftDown,
-    result,
-    speed,
-    gap,
+    mousePos,
+    scale,
+    updateGrid,
   ]);
+
+  const tileDetails = useMemo(() => {
+    const tileData = [
+      {
+        color: blockColors.source,
+        text: 'Source – Left Click',
+      },
+      {
+        color: blockColors.sink,
+        text: 'Destination – Right Click',
+      },
+      {
+        color: blockColors.wall,
+        text: 'Wall – Shift + Left Click',
+      },
+      {
+        color: blockColors.empty,
+        text: 'Empty – Shift + Right Click',
+      },
+      {
+        color: blockColors.visited,
+        text: 'Visited',
+      },
+      {
+        color: blockColors.path,
+        text: 'Path',
+      },
+    ];
+
+    return tileData.map((item, index) => (
+      <Grid
+        key={index}
+        item
+        container
+        alignItems="center"
+        sx={{ gap: '1em', animation: 'slideBottom 400ms ease forwards' }}
+      >
+        <div
+          style={{
+            width: '24px',
+            height: '24px',
+            backgroundColor: `${item.color}${blockOpacity}`,
+          }}
+        />
+        <Typography>{item.text}</Typography>
+      </Grid>
+    ));
+  }, []);
 
   return (
     <Grid
       item
       container
       alignItems="center"
-      sx={{ opacity: 0, animation: 'slideBottom 400ms ease forwards' }}
+      sx={{
+        height: '100%',
+        backgroundColor: 'var(--bg-color-2)',
+      }}
     >
       <Grid
         item
         container
         justifyContent="center"
-        sx={{ flexFlow: 'row nowrap', gap: '16px', height: 'min-content' }}
+        sx={{ flexFlow: 'row nowrap', height: '100%' }}
       >
         <Grid
+          className="slide-bottom"
+          ref={canvasContainerRef}
           item
           container
-          justifyContent="center"
-          sx={{ flexFlow: 'column nowrap', width: 'fit-content' }}
+          sx={{ flex: '1 1 auto', maxHeight: '100%', maxWidth: '100%' }}
         >
-          <canvas className="bfs-canvas" ref={canvasRef} {...props} />
-          <div
-            className="flex justify-between"
-            style={{ width: `${props.w}px` }}
-          >
-            <div>
-              <Typography variant="body1">
-                {hoverRow.current !== -1
-                  ? `${hoverRow.current}, ${hoverCol.current}`
-                  : null}
-              </Typography>
-            </div>
-            <a
-              href="/#"
-              rel="noopener noreferrer"
-              className=""
-              onClick={(e) => e.preventDefault()}
-              onMouseOver={() => {
-                setShowInstructions(true);
-              }}
-              onMouseLeave={() => {
-                setShowInstructions(false);
-              }}
-            >
-              Help
-            </a>
-          </div>
+          <canvas
+            className="bfs-canvas"
+            ref={canvasRef}
+            style={{ maxHeight: '100%', maxWidth: '100%' }}
+          />
         </Grid>
-
         <Grid
           item
           container
-          style={{ height: `${props.h}px`, flex: '0 1 350px' }}
+          style={{
+            height: `100%`,
+            flex: '0 0 350px',
+            padding: '2em',
+            borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
+            overflow: 'hidden auto',
+          }}
         >
           {showInstructions ? (
-            <GridGlass item container style={{ padding: '1em' }}>
-              <div className="flex gap-4">
-                <div
-                  style={{
-                    width: '24px',
-                    height: '24px',
-                    minWidth: '24px',
-                    minHeight: '24px',
-                    backgroundColor: `${blockColors.source}${blockOpacity}`,
-                  }}
-                />
-                <Typography>Source – Left Click</Typography>
-              </div>
+            <Grid
+              item
+              container
+              className="slide-bottom"
+              sx={{
+                flexDirection: 'column',
+              }}
+            >
+              <Grid item sx={{ paddingBottom: '2em' }}>
+                <IconButton
+                  onClick={() => setShowInstructions(false)}
+                  sx={{ padding: 0 }}
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+              </Grid>
 
-              <div className="flex gap-4">
-                <div
-                  style={{
-                    width: '24px',
-                    height: '24px',
-                    minWidth: '24px',
-                    minHeight: '24px',
-                    backgroundColor: `${blockColors.sink}${blockOpacity}`,
-                  }}
-                />
-                <Typography>Destination – Right Click</Typography>
-              </div>
-
-              <div className="flex gap-4">
-                <div
-                  style={{
-                    width: '24px',
-                    height: '24px',
-                    minWidth: '24px',
-                    minHeight: '24px',
-                    backgroundColor: `${blockColors.wall}${blockOpacity}`,
-                  }}
-                />
-                <Typography>Wall – Shift + Left Click</Typography>
-              </div>
-
-              <div className="flex gap-4">
-                <div
-                  style={{
-                    width: '24px',
-                    height: '24px',
-                    minWidth: '24px',
-                    minHeight: '24px',
-                    backgroundColor: `${blockColors.empty}${blockOpacity}`,
-                  }}
-                />
-                <Typography>Empty – Shift + Right Click</Typography>
-              </div>
-
-              <div className="flex gap-4">
-                <div
-                  style={{
-                    width: '24px',
-                    height: '24px',
-                    minWidth: '24px',
-                    minHeight: '24px',
-                    backgroundColor: `${blockColors.visited}${blockOpacity}`,
-                  }}
-                />
-                <Typography>Visited</Typography>
-              </div>
-
-              <div className="flex gap-4">
-                <div
-                  style={{
-                    width: '24px',
-                    height: '24px',
-                    minWidth: '24px',
-                    minHeight: '24px',
-                    backgroundColor: `${blockColors.path}${blockOpacity}`,
-                  }}
-                />
-                <Typography>Path</Typography>
-              </div>
-            </GridGlass>
+              <Grid item container sx={{ direction: 'column', gap: '4px' }}>
+                {tileDetails}
+              </Grid>
+            </Grid>
           ) : (
             <Grid
               item
               container
-              style={{ flexFlow: 'column nowrap', gap: '16px' }}
+              sx={{
+                flexFlow: 'column nowrap',
+                gap: '16px',
+              }}
             >
-              <GridGlass
+              <Grid
                 item
                 container
-                style={{ flex: '1 1 auto', padding: '1em' }}
+                style={{ flex: '0 1 auto' }}
+                className="slide-bottom"
               >
                 <Grid
                   item
@@ -560,7 +524,7 @@ export default function SearchVisualizer(props) {
                   style={{
                     flex: '1 1 auto',
                     flexFlow: 'column nowrap',
-                    gap: '16px',
+                    gap: '2em',
                   }}
                 >
                   <FormControl>
@@ -609,38 +573,7 @@ export default function SearchVisualizer(props) {
                         setResult('-');
 
                         blockSize.current = baseBlockSize * Math.pow(base, val);
-                        nRows.current = Math.floor(props.h / blockSize.current);
-                        nCols.current = Math.floor(props.w / blockSize.current);
-                        gap.current =
-                          (props.h % blockSize.current) / (nCols.current + 1);
-
-                        // initialize random start and end positions
-                        _start = {
-                          r: randomInteger(
-                            0,
-                            Math.floor((nRows.current - 1) / 2)
-                          ),
-                          c: randomInteger(0, nCols.current - 1),
-                        };
-
-                        _end = {
-                          r: randomInteger(
-                            Math.floor((nRows.current - 1) / 2) + 1,
-                            nRows.current - 1
-                          ),
-                          c: randomInteger(0, nCols.current - 1),
-                        };
-
-                        let tempGrid = utils.createArray(
-                          nRows.current,
-                          nCols.current
-                        );
-                        tempGrid[_start.r][_start.c] = blocks.source;
-                        tempGrid[_end.r][_end.c] = blocks.sink;
-
-                        setStartPos(_start);
-                        setEndPos(_end);
-                        setGrid(tempGrid);
+                        createNewGrid(grid);
                       }}
                     />
                   </FormControl>
@@ -667,13 +600,20 @@ export default function SearchVisualizer(props) {
                     />
                   </FormControl>
 
+                  <Button
+                    sx={{ color: 'white', width: 'fit-content', padding: 0 }}
+                    startIcon={<HelpOutline />}
+                    onClick={() => setShowInstructions(true)}
+                  >
+                    Help
+                  </Button>
+
                   <Grid
                     item
                     container
                     style={{
-                      flex: '1 1 auto',
+                      flex: '0 1 auto',
                       flexFlow: 'column nowrap',
-                      justifyContent: 'flex-end',
                       gap: '8px',
                     }}
                   >
@@ -693,11 +633,8 @@ export default function SearchVisualizer(props) {
                       variant="outlined"
                       onClick={() => {
                         resetVisited();
-
-                        const obj = mg.generateMaze(
-                          nRows.current,
-                          nCols.current
-                        );
+                        const [nRows, nCols] = [grid.length, grid[0].length];
+                        const obj = mg.generateMaze(nRows, nCols);
 
                         setStartPos(obj.startPos);
                         setEndPos(obj.endPos);
@@ -723,48 +660,46 @@ export default function SearchVisualizer(props) {
                     </Button>
                   </Grid>
                 </Grid>
-              </GridGlass>
-              <GridGlass item container style={{ padding: '1em' }}>
-                <Typography variant="subtitle1">
-                  {algorithm === 'bfsShortestPath'
-                    ? `Shortest Path: ${result}${
-                        isNaN(result) ? '' : ' blocks'
-                      }`
-                    : `Path Exists: ${result}`}
-                </Typography>
-              </GridGlass>
+              </Grid>
+
+              <Grid
+                className="slide-bottom"
+                item
+                container
+                sx={{ flex: '1 1 auto' }}
+              >
+                <Grid item sx={{ width: '100%' }}>
+                  <Grid
+                    sx={{
+                      background: 'rgb(255 255 255 / 5%)',
+                      width: '100%',
+                      borderRadius: '4px',
+                      padding: '6px 10px',
+                      position: 'relative',
+                      marginTop: '1em',
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: '12px',
+                        lineHeight: 1,
+                        opacity: 0.9,
+                        position: 'absolute',
+                      }}
+                    >
+                      {algorithm === 'bfsShortestPath'
+                        ? `Shortest Path`
+                        : 'Path Exists'}
+                    </Typography>
+                    <Typography sx={{ paddingTop: '1em', lineHeight: 1 }}>
+                      {`${result}${isNaN(result) ? '' : ' blocks'}`}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
             </Grid>
           )}
         </Grid>
-
-        {DEBUG === false ? null : (
-          <div className="mx-3 w-70">
-            <div>
-              <div>
-                Keys Down:
-                {` ${String(isLeftMouseDown.current)}, ${String(
-                  isRightMouseDown.current
-                )}, ${String(isShiftDown.current)}`}
-              </div>
-              <div>
-                Grid Val:
-                {hoverRow.current !== -1 &&
-                hoverRow.current < nRows.current &&
-                hoverCol.current < nCols.current
-                  ? ` ${grid[hoverRow.current][hoverCol.current]}, (${
-                      hoverRow.current
-                    }, ${hoverCol.current})`
-                  : ''}
-              </div>
-              <div>nRows, nCols: {`(${nRows.current}, ${nCols.current})`}</div>
-              <div>
-                Grid Dimensions: {`(${grid.length}, ${grid[0].length})`}
-              </div>
-              <div>Block Scale: {blockScale.current}</div>
-              <div>Block Size: {blockSize.current}</div>
-            </div>
-          </div>
-        )}
       </Grid>
     </Grid>
   );
