@@ -130,8 +130,8 @@ export default function HomePage({ isSmallScreen, ...props }) {
                   display: 'inline-flex',
                 }}
               >
-                I am a full stack developer with a passion for creating
-                beautiful, pixel-perfect digital experiences
+                I am a web developer with a passion for creating beautiful,
+                pixel-perfect digital experiences
               </Typography>
             </AnimateFlowInText>
           </Grid>
