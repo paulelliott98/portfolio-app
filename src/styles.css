@@ -459,7 +459,6 @@ canvas {
   background-color: var(--bg-color-2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   animation: fadeInCustom 0.4s ease forwards;
-  animation-delay: 0.4s;
 }
 
 .navbar {
