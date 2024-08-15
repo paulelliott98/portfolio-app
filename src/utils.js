@@ -17,6 +17,22 @@ function createArray(r, c, placeholder = 0) {
   return arr;
 }
 
+function arraysShallowEqual(arr1, arr2) {
+  // Check if the arrays have the same length
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  // Check if each element in the arrays is equal
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 function isInBounds(r, c, grid) {
   if (r >= 0 && r < grid.length && c >= 0 && c < grid[0].length) return true;
   return false;
@@ -110,6 +126,7 @@ function parseList(s) {
 module.exports = {
   sleep,
   createArray,
+  arraysShallowEqual,
   isInBounds,
   changeAll,
   randInt,

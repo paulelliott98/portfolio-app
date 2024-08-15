@@ -103,29 +103,30 @@ export default function HomePage({ isSmallScreen, ...props }) {
     <Grid
       item
       container
-      className="content"
+      className='content'
       sx={{ flexFlow: 'column nowrap', alignItems: 'center' }}
     >
       <Planet />
-      <section key="0" className="scroll-window-full" id="home">
+      <section key='0' className='scroll-window-full' id='home'>
         <Grid item container sx={{ flexFlow: 'row nowrap', gap: '8px' }}>
-          <Grid item container className="intro-container" ref={ref}>
+          <Grid item container className='intro-container' ref={ref}>
             <Typography
-              variant="h1"
+              variant='h1'
               sx={{
                 opacity: 0,
                 animation: 'slideLeft 0.6s ease forwards',
+                animationDelay: '0.4s',
               }}
             >
               Paul Gan
             </Typography>
             <AnimateFlowInText
-              animationDelayMs={400}
-              animationDurationMsTotal={1000}
+              animationDelayMs={1200}
+              animationDurationMsTotal={1400}
               style={{ marginTop: '16px' }}
             >
               <Typography
-                variant="h2"
+                variant='h2'
                 style={{
                   display: 'inline-flex',
                 }}
@@ -137,18 +138,18 @@ export default function HomePage({ isSmallScreen, ...props }) {
           </Grid>
         </Grid>
       </section>
-      <section key="projects" className="scroll-window" id="projects">
-        <div className="section-title">
+      <section key='projects' className='scroll-window' id='projects'>
+        <div className='section-title'>
           <h4>projects</h4>
         </div>
         <Grid
           item
           container
-          justifyContent="center"
+          justifyContent='center'
           ref={ref2}
           sx={{ gap: '32px', marginTop: '48px' }}
         >
-          <div className="projects-list">
+          <div className='projects-list'>
             {projects.map((p, index) => (
               <a
                 key={index}
@@ -160,8 +161,8 @@ export default function HomePage({ isSmallScreen, ...props }) {
                   },
                   ...animDelay(0.3 + index * 0.1),
                 }}
-                href="/#"
-                rel="noopener noreferrer"
+                href='/#'
+                rel='noopener noreferrer'
                 onClick={(e) => handleDisplay(e, index)}
               >
                 <div>
@@ -179,8 +180,8 @@ export default function HomePage({ isSmallScreen, ...props }) {
         </Grid>
       </section>
 
-      <section key="about" className="scroll-window" id="about">
-        <div className="section-title">
+      <section key='about' className='scroll-window' id='about'>
+        <div className='section-title'>
           <h4>about me</h4>
         </div>
         <Grid item container ref={ref3}>
@@ -222,16 +223,16 @@ export default function HomePage({ isSmallScreen, ...props }) {
               }}
             >
               <ListItem>
-                <ListItemText primary="Full stack web development" />
+                <ListItemText primary='Full stack web development' />
               </ListItem>
               <ListItem>
-                <ListItemText primary="Data science and deep learning" />
+                <ListItemText primary='Data science and deep learning' />
               </ListItem>
               <ListItem>
-                <ListItemText primary="Web scraping and browser automation" />
+                <ListItemText primary='Web scraping and browser automation' />
               </ListItem>
               <ListItem>
-                <ListItemText primary="Game development" />
+                <ListItemText primary='Game development' />
               </ListItem>
             </List>
           </Grid>
@@ -242,16 +243,16 @@ export default function HomePage({ isSmallScreen, ...props }) {
         </Grid>
       </section>
       <section
-        key="technical-skills"
-        className="scroll-window"
-        id="technical-skills"
+        key='technical-skills'
+        className='scroll-window'
+        id='technical-skills'
       >
-        <div className="section-title">
+        <div className='section-title'>
           <h4>technical skills</h4>
         </div>
         <Grid ref={ref4} container sx={{ flexDirection: 'column', gap: '3em' }}>
           <Grid item container>
-            <Typography gutterBottom variant="h5">
+            <Typography gutterBottom variant='h5'>
               Data Science and Machine Learning
             </Typography>
             {renderChips(
@@ -261,7 +262,7 @@ export default function HomePage({ isSmallScreen, ...props }) {
             )}
           </Grid>
           <Grid item container>
-            <Typography gutterBottom variant="h5">
+            <Typography gutterBottom variant='h5'>
               Full Stack
             </Typography>
             {renderChips(
@@ -271,13 +272,13 @@ export default function HomePage({ isSmallScreen, ...props }) {
             )}
           </Grid>
           <Grid item container>
-            <Typography gutterBottom variant="h5">
+            <Typography gutterBottom variant='h5'>
               Databases
             </Typography>
             {renderChips(parseList(`PostgreSQL, MongoDB, MySQL`))}
           </Grid>
           <Grid item container>
-            <Typography gutterBottom variant="h5">
+            <Typography gutterBottom variant='h5'>
               CI/CD
             </Typography>
             {renderChips(parseList(`Git, Jenkins`))}
@@ -285,65 +286,65 @@ export default function HomePage({ isSmallScreen, ...props }) {
         </Grid>
       </section>
 
-      <section key="3" className="scroll-window" id="contact">
-        <div className="section-title">
+      <section key='3' className='scroll-window' id='contact'>
+        <div className='section-title'>
           <h4>get in touch</h4>
         </div>
         <div ref={ref5}></div>
-        <div className="flip-card-container">
+        <div className='flip-card-container'>
           <FlipCard
-            key="0"
+            key='0'
             classes={anim('slideLeft', inView5)}
             style={{
               opacity: 0,
               animationDelay: '0.2s',
             }}
-            href="https://github.com/paulgan98"
-            title="github"
+            href='https://github.com/paulgan98'
+            title='github'
             path={require('../images/github-mark-white.png')}
-            alt="github logo"
+            alt='github logo'
           />
           <FlipCard
-            key="1"
+            key='1'
             classes={anim('slideLeft', inView5)}
             style={{
               opacity: 0,
               animationDelay: '0.4s',
             }}
-            href="https://www.linkedin.com/in/paul-gan-85781b18b/"
-            title="linkedin"
+            href='https://www.linkedin.com/in/paul-gan-85781b18b/'
+            title='linkedin'
             path={require('../images/linkedin-logo.png')}
-            alt="linkedin logo"
+            alt='linkedin logo'
           />
           <FlipCard
-            key="2"
+            key='2'
             classes={anim('slideLeft', inView5)}
             style={{
               opacity: 0,
               animationDelay: '0.6s',
             }}
-            href="https://www.instagram.com/paulypavilion/"
-            title="instagram"
+            href='https://www.instagram.com/paulypavilion/'
+            title='instagram'
             path={require('../images/instagram-logo.png')}
-            alt="instagram logo"
+            alt='instagram logo'
           />
           <FlipCard
-            key="3"
+            key='3'
             classes={anim('slideLeft', inView5)}
             style={{
               opacity: 0,
               animationDelay: '0.8s',
             }}
-            href="mailto:paulgan98@gmail.com"
-            title="email"
+            href='mailto:paulgan98@gmail.com'
+            title='email'
             path={require('../images/email-logo.png')}
-            alt="email logo"
+            alt='email logo'
           />
         </div>
       </section>
       <footer>
-        <Grid item container justifyContent="center">
-          <Typography variant="body1" sx={{ fontSize: 'inherit' }}>
+        <Grid item container justifyContent='center'>
+          <Typography variant='body1' sx={{ fontSize: 'inherit' }}>
             A React app designed and built by Paul Gan
           </Typography>
         </Grid>

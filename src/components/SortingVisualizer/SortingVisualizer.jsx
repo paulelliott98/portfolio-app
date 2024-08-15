@@ -29,23 +29,31 @@ const sortFunctions = {
   heapSort,
 };
 
+const initialDrawDataRun = {};
+for (const key of Object.keys(sortFunctions)) {
+  initialDrawDataRun[key] = false;
+}
+
 const SortingVisualizer = ({ ...props }) => {
   const canvasRef = useRef();
   const canvasContainerRef = useRef();
 
-  const [render, setRender] = useState(false);
   const [algorithm, setAlgorithm] = useState('bubbleSort');
-  const [algorithmRunning, setAlgorithmRunning] = useState(false);
+  const [isRunAlgorithm, setIsRunAlgorithm] = useState(false); // updated on user input
+  const [isAlgorithmStopped, setIsAlgorithmStopped] = useState(true); // updated when algo actually stops running
+  const [, setRender] = useState(false);
   const [arraySize, setArraySize] = useState(50); // n items in array
   const [time, setTime] = useState({ m: 0, s: 0, ms: 0 });
   const stopwatch = useRef(null);
-  const arr = useRef(makeShuffledArray(arraySize)); // array to sort
-  const arrCopy = useRef([...arr.current]); // store copy of arr to allow reset
+
+  const initialArray = makeShuffledArray(arraySize);
+  const [array, setArray] = useState(initialArray); // array to sort
+  const [arrayCopy, setArrayCopy] = useState([...initialArray]); // store copy of arr to allow reset
   const minSpeed = 1;
   const maxSpeed = 100;
   const speed = useRef(maxSpeed);
   const drawData = useRef({
-    run: { bubbleSort: false, quickSort: false },
+    run: initialDrawDataRun,
   }); // all variables not part of the algorithm itself used in rendering
 
   useEffect(() => {
@@ -70,12 +78,12 @@ const SortingVisualizer = ({ ...props }) => {
       w,
       h,
       barGap,
-      barWidth: (w - (arr.current.length - 1) * barGap) / arr.current.length,
+      barWidth: (w - (array.length - 1) * barGap) / array.length,
       speed, // ref; access using speed.current
       maxSpeed,
     };
-    drawToCanvas(arr.current, drawData.current);
-  }, [canvasContainerRef, arraySize]);
+    drawToCanvas(array, drawData.current);
+  }, [canvasContainerRef, arraySize, array]);
 
   // ---------- make canvas responsive to resize ----------
   useEffect(() => {
@@ -106,55 +114,57 @@ const SortingVisualizer = ({ ...props }) => {
     stopwatch.current.reset();
   }
 
-  // Stop running all algorithms
-  function stopAlgorithms() {
+  // Procedures for when command is given to stop algorithm (but it may still be running)
+  function onAlgorithmStop() {
     for (const func in sortFunctions) {
       drawData.current.run[func] = false;
     }
-    stopTimer();
-    setAlgorithmRunning(() => false);
-    drawToCanvas(arr.current, drawData.current);
+    setIsRunAlgorithm(false);
   }
 
   async function runAlgorithm() {
     if (!Object.keys(sortFunctions).includes(algorithm) || isRunning(algorithm))
       return;
 
-    setAlgorithmRunning(() => true);
+    setIsRunAlgorithm(true);
+    setIsAlgorithmStopped(false);
     drawData.current.run[algorithm] = true;
     stopwatch.current.start();
-    await sortFunctions[algorithm](arr.current, drawData.current);
-    drawData.current.run[algorithm] = false;
-    stopwatch.current.stop();
-
-    drawToCanvas(arr.current, drawData.current);
-    stopAlgorithms();
+    await sortFunctions[algorithm](array, drawData.current).then(() => {
+      // Define actions for after the algorithms have actually stopped here
+      stopTimer();
+      setIsAlgorithmStopped(true);
+      onAlgorithmStop();
+    });
   }
 
   function resetArray() {
-    stopAlgorithms();
+    onAlgorithmStop();
     resetTimer();
-
-    arr.current = [...arrCopy.current];
-    setRender(() => !render);
+    setArray(() => [...arrayCopy]);
   }
 
   function shuffleArray() {
-    stopAlgorithms();
+    onAlgorithmStop();
     resetTimer();
 
-    arr.current = makeShuffledArray(arraySize);
-    arrCopy.current = [...arr.current];
-    setRender(() => !render);
+    const newArray = makeShuffledArray(arraySize);
+    setArray(() => newArray);
+    setArrayCopy(() => [...newArray]);
   }
+
+  useEffect(() => {
+    if (isAlgorithmStopped) {
+      drawToCanvas(array, drawData.current);
+    }
+  }, [isAlgorithmStopped, array]);
 
   return (
     <Grid
       item
       container
-      className="slide-bottom"
+      className='slide-bottom'
       sx={{
-        // animation: 'slideBottom 400ms ease forwards',
         height: '100%',
         backgroundColor: 'var(--bg-color-2)',
       }}
@@ -162,7 +172,7 @@ const SortingVisualizer = ({ ...props }) => {
       <Grid
         item
         container
-        justifyContent="center"
+        justifyContent='center'
         sx={{
           flexFlow: 'row nowrap',
           height: '100%',
@@ -196,7 +206,7 @@ const SortingVisualizer = ({ ...props }) => {
             <RadioGroup
               row
               onChange={(e) => {
-                stopAlgorithms();
+                onAlgorithmStop();
                 resetArray();
                 setAlgorithm(e.target.value);
               }}
@@ -216,19 +226,21 @@ const SortingVisualizer = ({ ...props }) => {
           <FormControl>
             <FormLabel>{`List Size: ${arraySize}`}</FormLabel>
             <Slider
-              aria-label="size"
+              aria-label='size'
               value={arraySize}
               getAriaValueText={() => arraySize}
-              valueLabelDisplay="auto"
+              valueLabelDisplay='auto'
               min={10}
               max={500}
               step={1}
               onChange={(e) => {
-                stopAlgorithms();
+                onAlgorithmStop();
 
                 setArraySize(() => e.target.value);
-                arr.current = makeShuffledArray(e.target.value);
-                arrCopy.current = [...arr.current];
+
+                const newArray = makeShuffledArray(e.target.value);
+                setArray(newArray);
+                setArrayCopy([...newArray]);
               }}
             />
           </FormControl>
@@ -238,20 +250,19 @@ const SortingVisualizer = ({ ...props }) => {
               {`Speed: ${speed.current === maxSpeed ? 'Max' : speed.current}`}
             </FormLabel>
             <Slider
-              aria-label="Speed"
+              aria-label='Speed'
               value={speed.current}
               getAriaValueText={() => speed.current}
-              valueLabelDisplay="auto"
+              valueLabelDisplay='auto'
               min={minSpeed}
               max={maxSpeed}
               step={1}
               onChange={(e) => {
                 speed.current = e.target.value;
-                drawData.current.speed.current = e.target.value;
 
                 // Re-render only if algorithm isn't running,
                 // since forcing re-render when it is already happening will make the draws lag
-                if (!algorithmRunning) setRender((b) => !b);
+                if (!isRunAlgorithm) setRender((b) => !b);
               }}
             />
           </FormControl>
@@ -259,7 +270,7 @@ const SortingVisualizer = ({ ...props }) => {
           <Grid
             item
             container
-            justifyContent="space-between"
+            justifyContent='space-between'
             sx={{ flexFlow: 'column nowrap', flex: '1 1 auto' }}
           >
             <Grid
@@ -272,29 +283,33 @@ const SortingVisualizer = ({ ...props }) => {
                 gap: '8px',
               }}
             >
-              <Button variant="outlined" onClick={shuffleArray}>
+              <Button variant='outlined' onClick={shuffleArray}>
                 Shuffle
               </Button>
-              <Button variant="outlined" onClick={resetArray}>
+              <Button
+                variant='outlined'
+                disabled={utils.arraysShallowEqual(array, arrayCopy)}
+                onClick={resetArray}
+              >
                 Reset
               </Button>
               <Button
-                disabled={algorithmRunning}
-                variant="contained"
+                disabled={!isAlgorithmStopped}
+                variant='contained'
                 onClick={runAlgorithm}
               >
-                {algorithmRunning ? 'Sorting...' : `Run ${algorithm}`}
+                {!isAlgorithmStopped ? 'Sorting...' : `Run ${algorithm}`}
               </Button>
             </Grid>
             <Grid
               item
               container
-              alignItems="center"
-              justifyContent="center"
+              alignItems='center'
+              justifyContent='center'
               sx={{ flex: '1 1 auto' }}
             >
               <Typography
-                variant="subtitle1"
+                variant='subtitle1'
                 sx={{
                   fontFamily: 'Space Mono',
                   fontSize: '20px',

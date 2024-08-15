@@ -66,6 +66,8 @@ body {
 /* Planet */
 .planet {
   animation: slideInPlanet 0.6s ease-out forwards;
+  animation-delay: 0.4s;
+  visibility: hidden;
   transform-origin: bottom center;
   pointer-events: none;
   position: fixed;
@@ -73,32 +75,6 @@ body {
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  /* background: radial-gradient(
-      50% 50% at 50% 50%,
-      rgba(255, 255, 255, 0) 81%,
-      rgba(255, 255, 255, 0.2) 100%
-    ),
-    radial-gradient(
-      50% 50% at 50% 50%,
-      rgba(255, 255, 255, 0) 85%,
-      rgba(255, 255, 255, 0.14) 100%
-    ),
-    radial-gradient(
-      49.87% 49.87% at 49.87% 50.13%,
-      rgba(255, 255, 255, 0) 90%,
-      rgba(255, 255, 255, 0.245) 100%
-    ),
-    radial-gradient(
-      100% 100% at 0% 50.13%,
-      #ee84ff 0%,
-      #ca74ff 41.8%,
-      #5dd2b6 100%
-    );
-  box-shadow: 0px 0px 48px 64px rgba(198, 115, 249, 0.25),
-    0px 0px 48px 20px rgba(255, 255, 255, 0.4),
-    0px 0px 48px 24px rgba(21, 255, 199, 0.28);
-    */
-  /* Ellipse 20 */
   background: radial-gradient(
       50% 50% at 50% 50%,
       rgba(255, 255, 255, 0) 81%,
@@ -135,15 +111,17 @@ body {
 @keyframes slideInPlanet {
   0% {
     transform: translate3d(200px, 0, 0);
+    visibility: visible;
   }
   60% {
-    transform: translate3d(0, 0, 0) skewX(10deg);
+    transform: translate3d(0, 0, 0) skewX(8deg);
   }
-  80% {
-    transform: skewX(-2deg);
+  90% {
+    transform: skewX(-1deg);
   }
   100% {
     transform: skewX(0deg);
+    visibility: visible;
   }
 }
 
@@ -466,6 +444,7 @@ canvas {
 }
 
 .nav-area {
+  visibility: hidden;
   position: fixed;
   width: 100%;
   height: var(--nav-height);
@@ -479,6 +458,8 @@ canvas {
   backdrop-filter: blur(12px);
   background-color: var(--bg-color-2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  animation: fadeInCustom 0.4s ease forwards;
+  animation-delay: 0.4s;
 }
 
 .navbar {
@@ -579,7 +560,7 @@ canvas {
 
 .nav-item:focus-within > .navbar-dropdown,
 .nav-item:hover > .navbar-dropdown {
-  animation: fadeIn 0.1s;
+  animation: fadeInCustom 0.1s ease;
   transform: scale(1);
   opacity: 1;
   visibility: visible;
@@ -775,7 +756,8 @@ footer {
   }
 }
 
-@keyframes fadeIn {
+/* Don't use fadeIn since animate.css uses it */
+@keyframes fadeInCustom {
   0% {
     opacity: 0;
     visibility: hidden;
