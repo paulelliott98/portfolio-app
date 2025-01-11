@@ -118,7 +118,7 @@ export default function HomePage({ isSmallScreen, ...props }) {
                 animationDelay: '0.4s',
               }}
             >
-              Paul Gan
+              Paul Elliott
             </Typography>
             <AnimateFlowInText
               animationDelayMs={1200}
@@ -345,7 +345,7 @@ export default function HomePage({ isSmallScreen, ...props }) {
       <footer>
         <Grid item container justifyContent='center'>
           <Typography variant='body1' sx={{ fontSize: 'inherit' }}>
-            A React app designed and built by Paul Gan
+            A React app designed and built by Paul Elliott
           </Typography>
         </Grid>
       </footer>
