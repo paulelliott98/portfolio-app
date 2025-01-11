@@ -299,7 +299,7 @@ export default function HomePage({ isSmallScreen, ...props }) {
               opacity: 0,
               animationDelay: '0.2s',
             }}
-            href='https://github.com/paulgan98'
+            href='https://github.com/paulelliott98'
             title='github'
             path={require('../images/github-mark-white.png')}
             alt='github logo'
@@ -311,7 +311,7 @@ export default function HomePage({ isSmallScreen, ...props }) {
               opacity: 0,
               animationDelay: '0.4s',
             }}
-            href='https://www.linkedin.com/in/paul-gan-85781b18b/'
+            href='https://www.linkedin.com/in/paul-elliott-85781b18b/'
             title='linkedin'
             path={require('../images/linkedin-logo.png')}
             alt='linkedin logo'
@@ -335,7 +335,7 @@ export default function HomePage({ isSmallScreen, ...props }) {
               opacity: 0,
               animationDelay: '0.8s',
             }}
-            href='mailto:paulgan98@gmail.com'
+            href='mailto:realpaulelliott@gmail.com'
             title='email'
             path={require('../images/email-logo.png')}
             alt='email logo'
