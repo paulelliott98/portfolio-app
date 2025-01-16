@@ -43,7 +43,6 @@ export default function AnimateFlowInText({
               ...children.props.style,
             },
           },
-          //   text === ' ' ? <>&nbsp;</> : text
           index < textContentArray.length ? `${text} ` : text
         );
       })}

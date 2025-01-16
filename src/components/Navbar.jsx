@@ -47,7 +47,7 @@ export default function Navbar({ getNavRef }) {
     element.style.width = `${
       projectsRef.current.getBoundingClientRect().width
     }px`;
-  }, [projectsDropdownRef.current, projectsRef.current]);
+  });
 
   return (
     <>
