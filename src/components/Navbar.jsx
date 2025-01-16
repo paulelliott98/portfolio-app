@@ -123,9 +123,7 @@ export default function Navbar({ getNavRef }) {
           onMouseEnter={openDropdown}
           onMouseLeave={closeDropdown}
           sx={{
-            zIndex: 101,
             position: 'fixed',
-            top: 0,
           }}
         >
           <List>

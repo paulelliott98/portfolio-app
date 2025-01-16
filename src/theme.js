@@ -74,7 +74,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           fontSize: '12px',
-          lineHeight: '20px',
+          lineHeight: '28px',
           background: 'none',
           color: '#ffffffcc',
         },
