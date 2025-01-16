@@ -29,7 +29,7 @@ export default function AnimateFlowInText({
     animationDurationMsTotal / textContentArray.length;
 
   return (
-    <span {...props}>
+    <span {...props} aria-label={textContent}>
       {textContentArray.map((text, index) => {
         return React.createElement(
           children.type,
@@ -38,8 +38,9 @@ export default function AnimateFlowInText({
             ...children.props,
             className: 'flowInText',
             style: {
-              animationDelay: `${index * animationIntervalMs +
-                animationDelayMs}ms`,
+              animationDelay: `${
+                index * animationIntervalMs + animationDelayMs
+              }ms`,
               ...children.props.style,
             },
           },
