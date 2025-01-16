@@ -63,6 +63,42 @@ const theme = createTheme({
         },
       },
     },
+    MuiList: {
+      styleOverrides: {
+        root: {
+          paddingBlock: '12px',
+        },
+      },
+    },
+    MuiListSubheader: {
+      styleOverrides: {
+        root: {
+          fontSize: '12px',
+          lineHeight: '20px',
+          background: 'none',
+          color: '#ffffffcc',
+        },
+      },
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          transitionDuration: '0s',
+          fontSize: '14px',
+          paddingBlock: '8px',
+          borderRadius: '8px',
+          color: '#ffffff77',
+          '&:hover': {
+            background: '#ffffff11',
+            color: '#fff',
+          },
+        },
+      },
+      defaultProps: {
+        disableRipple: true,
+        draggable: false,
+      },
+    },
     MuiListItem: {
       styleOverrides: {
         root: {

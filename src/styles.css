@@ -10,8 +10,9 @@
 
 :root {
   --bg-color-main: #090a0f;
-  --bg-color-2: #090a0faa;
+  --bg-color-2: rgba(9, 10, 15, 0.67);
   --bg-color-3: #282c3cee;
+  --bg-color-navbar-dropdown-container: #090a0ffd;
   --text-color-main: #fff;
   --text-color-grey: #dcdaff90;
   --heading-color-name: rgb(221, 254, 144);
@@ -21,6 +22,10 @@
   --nav-height: 56px;
   --doc-height: 100%;
   --scrollbar-width: 8px;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 html {
@@ -63,12 +68,24 @@ body {
   overflow-y: hidden;
 }
 
+/* , 60s rotate 1s linear infinite */
+@keyframes scaleInPlanet {
+  0% {
+    transform: scale(0.2);
+    visibility: hidden;
+  }
+  100% {
+    transform: scale(1);
+    visibility: visible;
+  }
+}
+
 /* Planet */
 .planet {
-  animation: slideInPlanet 0.6s ease-out forwards;
-  animation-delay: 0.4s;
+  animation: 0.8s scaleInPlanet 0.4s cubic-bezier(0.075, 0.82, 0.165, 1)
+    forwards;
   visibility: hidden;
-  transform-origin: bottom center;
+  transform-origin: center center;
   pointer-events: none;
   position: fixed;
   right: 15vw;
@@ -444,7 +461,6 @@ canvas {
 }
 
 .nav-area {
-  visibility: hidden;
   position: fixed;
   width: 100%;
   height: var(--nav-height);
@@ -453,38 +469,38 @@ canvas {
   display: flex;
   justify-content: flex-end;
   z-index: 100;
-  transform: translateY(0);
   align-items: center;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(24px);
   background-color: var(--bg-color-2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  animation: fadeInCustom 0.4s ease forwards;
+  visibility: hidden;
+  opacity: 0;
+  animation: fadeInCustom 1s ease forwards;
 }
 
 .navbar {
   display: flex;
-  gap: 4em;
-  padding-block: 4px;
-  padding-inline: 50px;
+  gap: 32px;
   height: 100%;
+  padding-right: 16px;
 }
 
 .navbar a,
-.navbar .nav-item {
+.navbar > .nav-item {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  padding-inline: 0.3em;
+  padding-inline: 8px;
   height: 100%;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 16px;
   text-transform: capitalize;
 }
 
 .navbar > a:hover,
 .navbar > .nav-item:hover > a,
-.navbar-dropdown > a:hover,
+.navbar-dropdown-container > a:hover,
 .game-options a:hover,
 .main-menu a:hover,
 .pink-on-hover a:hover {
@@ -508,64 +524,38 @@ canvas {
 
 /* navbar dropdown menu */
 .arrow {
-  width: 0.5em;
-  height: 0.5em;
+  width: 0.4em;
+  height: 0.4em;
   display: inline-block;
   vertical-align: middle;
-  border-left: 0.15em solid currentColor;
-  border-bottom: 0.15em solid currentColor;
+  border-left: 0.1em solid currentColor;
+  border-bottom: 0.1em solid currentColor;
   transform: rotate(-45deg);
   margin-left: 0.38em;
   margin-top: -0.25em;
   transition-duration: 0.2s;
 }
 
-.navbar-dropdown {
-  position: absolute;
-  z-index: 10;
+.navbar-dropdown-container {
+  position: fixed;
+  z-index: 99;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  top: 92%;
+  top: calc(var(--nav-height) - 2px);
+  height: calc(100vh - var(--nav-height));
+  left: 0;
+  width: 100%;
   overflow: auto;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  background-color: var(--bg-color-3);
-  box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.03);
-  transition-duration: 0.1s;
-  transform: scale(1);
-  padding: 4px;
-}
-
-.navbar-dropdown a {
-  display: flex;
-  justify-content: flex-start;
-  padding: 0.5em 2em;
-  font-size: 14px;
-  border-radius: 6px;
-  background-color: none;
-}
-
-.navbar-dropdown a:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.nav-item > .navbar-dropdown {
-  animation: fadeOut;
-  transform: scale(0.7);
-  opacity: 0;
+  transition-duration: 0.25s;
+  background: var(--bg-color-2);
   visibility: hidden;
+  opacity: 0;
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
 }
 
-.nav-item:focus-within > .navbar-dropdown,
-.nav-item:hover > .navbar-dropdown {
-  animation: fadeInCustom 0.1s ease;
-  transform: scale(1);
-  opacity: 1;
-  visibility: visible;
-}
-
-.nav-item:hover > .arrow {
+.nav-item:hover .arrow {
   transform: rotate(-225deg);
   margin-top: 4px;
   color: var(--heading-color-main);
@@ -967,6 +957,15 @@ footer {
 
 .slide-bottom-no-fade {
   animation: slideBottomNoFade 400ms ease forwards;
+}
+
+@keyframes blurInBackdrop {
+  0% {
+    backdrop-filter: blur(0px);
+  }
+  100% {
+    backdrop-filter: initial;
+  }
 }
 
 @keyframes blurIn {
