@@ -53,21 +53,7 @@ export default function Navbar({ getNavRef }) {
     if (!element) return;
     element.style.left = getElementLeftById('nav-item-projects');
     element.style.width = getElementWidthById('nav-item-projects');
-  }, []);
-
-  // useEffect(() => {
-  //   const element = elementRef.current;
-
-  //   // Get computed style for visibility
-  //   const visibility = window.getComputedStyle(element)?.visibility;
-  //   console.log(visibility);
-
-  //   if (visibility === 'hidden') {
-  //     document.documentElement.style.overflowY = 'auto';
-  //   } else {
-  //     document.documentElement.style.overflowY = 'hidden';
-  //   }
-  // }, [elementRef.current?.style.visibility]);
+  });
 
   return (
     <>
