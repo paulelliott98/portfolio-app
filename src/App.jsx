@@ -2,11 +2,7 @@ import HomePage from './pages/HomePage';
 import AlgorithmVisualizerPage from './pages/AlgorithmVisualizerPage';
 import Navbar from './components/Navbar';
 
-import {
-  Route,
-  Routes,
-  useLocation,
-} from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Grid, ThemeProvider } from '@mui/material';
 import theme from './theme';
@@ -176,7 +172,7 @@ export default function App() {
               <AlgorithmVisualizerPage
                 isMobile={isSmallScreen.current}
                 getDocumentHeight={getDocumentHeight}
-                render="search"
+                render='search'
               />
             }
           />
@@ -186,7 +182,7 @@ export default function App() {
               <AlgorithmVisualizerPage
                 isMobile={isSmallScreen.current}
                 getDocumentHeight={getDocumentHeight}
-                render="sorting"
+                render='sorting'
               />
             }
           />

@@ -1,4 +1,4 @@
-import { React, useEffect, useRef } from 'react';
+import { React, useEffect, useRef, useState } from 'react';
 import { Link, Link as RouterLink } from 'react-router-dom';
 import { default as AppRoutes } from '../Routes';
 import { Grid, List, ListItemButton, ListSubheader } from '@mui/material';
@@ -35,19 +35,34 @@ export default function Navbar({ getNavRef }) {
     getNavRef(navRef.current);
   }, [getNavRef]);
 
-  const projectsRef = useRef(null);
-  const projectsDropdownRef = useRef(null);
-  useEffect(() => {
-    // place projects dropdown under Projects nav item
-    const element = projectsDropdownRef.current;
-    if (!element || !projectsRef.current) return;
-    element.style.left = `${
-      projectsRef.current.getBoundingClientRect().left
-    }px`;
-    element.style.width = `${
-      projectsRef.current.getBoundingClientRect().width
-    }px`;
+  const projectsRef = useRef(null); // projects link in navbar
+  const [navItemData, setNavItemData] = useState({
+    projects: {
+      left: 0,
+      width: 0,
+    },
   });
+  useEffect(() => {
+    const updateNavItemData = () => {
+      if (projectsRef.current) {
+        setNavItemData({
+          projects: {
+            left: projectsRef.current.getBoundingClientRect().left,
+            width: projectsRef.current.getBoundingClientRect().width,
+          },
+        });
+      }
+    };
+
+    // Call initially to set the state on mount
+    updateNavItemData();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', updateNavItemData);
+
+    // Cleanup event listener on unmount
+    return () => window.removeEventListener('resize', updateNavItemData);
+  }, []);
 
   return (
     <>
@@ -114,11 +129,12 @@ export default function Navbar({ getNavRef }) {
       >
         <Grid
           id='projects-dropdown'
-          ref={projectsDropdownRef}
           onMouseEnter={openDropdown}
           onMouseLeave={closeDropdown}
           sx={{
             position: 'fixed',
+            left: navItemData.projects.left,
+            width: navItemData.projects.width,
           }}
         >
           <List>
