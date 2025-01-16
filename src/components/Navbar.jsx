@@ -26,7 +26,7 @@ export default function Navbar({ getNavRef }) {
   };
 
   const openDropdown = () => {
-    // if (!navbarDropdownContainerRef.current) return;
+    if (!navbarDropdownContainerRef.current) return;
     navbarDropdownContainerRef.current.style.opacity = 1;
     navbarDropdownContainerRef.current.style.visibility = 'visible';
   };
@@ -35,25 +35,19 @@ export default function Navbar({ getNavRef }) {
     getNavRef(navRef.current);
   }, [getNavRef]);
 
-  const getElementLeftById = (id) => {
-    const element = document.getElementById(id);
-    if (!element) return '';
-    return `${element.getBoundingClientRect().left}px`;
-  };
-
-  const getElementWidthById = (id) => {
-    const element = document.getElementById(id);
-    if (!element) return '';
-    return `${element.getBoundingClientRect().width}px`;
-  };
-
+  const projectsRef = useRef(null);
+  const projectsDropdownRef = useRef(null);
   useEffect(() => {
     // place projects dropdown under Projects nav item
-    const element = document.getElementById('projects-dropdown');
-    if (!element) return;
-    element.style.left = getElementLeftById('nav-item-projects');
-    element.style.width = getElementWidthById('nav-item-projects');
-  });
+    const element = projectsDropdownRef.current;
+    if (!element || !projectsRef.current) return;
+    element.style.left = `${
+      projectsRef.current.getBoundingClientRect().left
+    }px`;
+    element.style.width = `${
+      projectsRef.current.getBoundingClientRect().width
+    }px`;
+  }, [projectsDropdownRef.current, projectsRef.current]);
 
   return (
     <>
@@ -74,7 +68,7 @@ export default function Navbar({ getNavRef }) {
             id='nav-item-projects'
             onMouseEnter={openDropdown}
             onMouseLeave={closeDropdown}
-            style={{ boxSizing: 'content-box' }}
+            ref={projectsRef}
           >
             <RouterLink
               to='/#projects'
@@ -120,6 +114,7 @@ export default function Navbar({ getNavRef }) {
       >
         <Grid
           id='projects-dropdown'
+          ref={projectsDropdownRef}
           onMouseEnter={openDropdown}
           onMouseLeave={closeDropdown}
           sx={{
