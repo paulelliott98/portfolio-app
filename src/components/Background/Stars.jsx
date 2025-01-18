@@ -1,7 +1,5 @@
 import React, { useState, useMemo } from 'react';
 
-const utils = require('../../utils');
-
 const initialPosition = 0;
 
 export default function Stars() {

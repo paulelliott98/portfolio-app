@@ -46,6 +46,7 @@ export default function Navbar({ getNavRef }) {
     const updateNavItemData = () => {
       if (projectsRef.current) {
         setNavItemData({
+          ...navItemData,
           projects: {
             left: projectsRef.current.getBoundingClientRect().left,
             width: projectsRef.current.getBoundingClientRect().width,
@@ -55,14 +56,14 @@ export default function Navbar({ getNavRef }) {
     };
 
     // Call initially to set the state on mount
-    updateNavItemData();
+    document.fonts.ready.then(updateNavItemData);
 
     // Add event listener for window resize
     window.addEventListener('resize', updateNavItemData);
 
     // Cleanup event listener on unmount
     return () => window.removeEventListener('resize', updateNavItemData);
-  }, []);
+  }, []); //eslint-disable-line
 
   return (
     <>
