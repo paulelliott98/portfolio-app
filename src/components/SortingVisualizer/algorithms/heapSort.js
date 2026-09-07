@@ -22,7 +22,6 @@ async function heapSortUtils(arr, end, drawData) {
 async function buildMaxHeap(arr, end, drawData) {
   for (let i = Math.floor((end + 1) / 2) - 1; i >= 0; i--) {
     if (!drawData.run.heapSort) return;
-    await drawToCanvas(arr, drawData);
 
     await heapify(arr, i, end, drawData);
   }
@@ -43,7 +42,7 @@ async function heapify(arr, i, n, drawData) {
 
   if (largest !== i) {
     swap(largest, i, arr);
-    drawToCanvas(arr, drawData);
+    await drawToCanvas(arr, drawData);
 
     await heapify(arr, largest, n, drawData);
   }

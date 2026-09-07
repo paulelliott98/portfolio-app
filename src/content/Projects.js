@@ -21,7 +21,7 @@ const projects = [
     ],
     dx:
       "A full-stack JavaScript snake game that utilizes HTML canvas and interpolation to create fluid movement. In addition, the game has a leaderboard that displays the top 10 players' high scores. The scores are stored in and retrieved from a PostgreSQL database, allowing players to compete with each other for the top spot. ",
-    gitUrl: 'https://github.com/paulgan98/portfolio-app',
+    gitUrl: 'https://github.com/paulelliott98/portfolio-app',
   },
   {
     listName: 'polygon detection',
@@ -40,7 +40,7 @@ const projects = [
       </a>,
       ' by  X.Y. Jiang and H. Bunke (1993). Polygons are filled in with various colors as intersecting line segments are drawn onto the canvas.',
     ],
-    gitUrl: 'https://github.com/paulgan98/polygon-detection',
+    gitUrl: 'https://github.com/paulelliott98/polygon-detection',
   },
   {
     listName: 'browser game bot',
@@ -63,13 +63,13 @@ const projects = [
         className="link"
         target="_blank"
         rel="noopener noreferrer"
-        href="https://paulgan98.github.io/prime-spiral/"
+        href="https://paulelliott98.github.io/prime-spiral/"
       >
         here
       </a>,
       '!',
     ],
-    gitUrl: 'https://github.com/paulgan98/prime-spiral',
+    gitUrl: 'https://github.com/paulelliott98/prime-spiral',
   },
   {
     listName: 'connect four',
@@ -77,7 +77,7 @@ const projects = [
     techStack: ['Python'],
     dx:
       'A console game with AI opponent implementing the minimax algorithm with alpha-beta pruning. While not completely unbeatable, the AI is capable of putting up a very good fight. The game is entirely rendered with text and made for the MacOS terminal.',
-    gitUrl: 'https://github.com/paulgan98/connect4',
+    gitUrl: 'https://github.com/paulelliott98/connect4',
   },
 ];
 

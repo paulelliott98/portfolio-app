@@ -186,12 +186,12 @@ export default function HomePage({ isSmallScreen, ...props }) {
         </div>
         <Grid item container ref={ref3}>
           <Typography gutterBottom>
-            Hello and welcome to my space on the internet! (Get it?) Through my
+            Hello and welcome to my space on the internet! :) Through my
             website, I hope to convey my love for and, ideally, expertise in
             building awesome web apps and software development in general. My
             aim is to improve upon this website with each update as I take my
-            design and web dev skills to the next level. Oh, and if you notice
-            any typos, my cats did it. 😀
+            design and web dev skills to the next level. If you happen to notice
+            any typos, blame my cats 😀
           </Typography>
           <Typography gutterBottom>
             I graduated UCLA in 2022 with a molecular, cell, and development

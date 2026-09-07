@@ -42,7 +42,7 @@ const SortingVisualizer = ({ ...props }) => {
   const [isRunAlgorithm, setIsRunAlgorithm] = useState(false); // updated on user input
   const [isAlgorithmStopped, setIsAlgorithmStopped] = useState(true); // updated when algo actually stops running
   const [, setRender] = useState(false);
-  const [arraySize, setArraySize] = useState(50); // n items in array
+  const [arraySize, setArraySize] = useState(150); // n items in array
   const [time, setTime] = useState({ m: 0, s: 0, ms: 0 });
   const stopwatch = useRef(null);
 
