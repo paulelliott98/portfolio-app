@@ -66,6 +66,7 @@ const theme = createTheme({
     MuiList: {
       styleOverrides: {
         root: {
+          width: 'max-content',
           paddingBlock: '12px',
         },
       },
@@ -73,9 +74,17 @@ const theme = createTheme({
     MuiListSubheader: {
       styleOverrides: {
         root: {
+          userSelect: 'none',
           fontSize: '12px',
           lineHeight: '28px',
-          background: 'none',
+          backgroundColor: 'transparent',
+          color: '#ffffffcc',
+        },
+        sticky: {
+          userSelect: 'none',
+          fontSize: '12px',
+          lineHeight: '28px',
+          backgroundColor: 'transparent',
           color: '#ffffffcc',
         },
       },
@@ -88,6 +97,9 @@ const theme = createTheme({
           paddingBlock: '8px',
           borderRadius: '8px',
           color: '#ffffff77',
+          whiteSpace: 'nowrap',
+          minWidth: 'fit-content',
+          width: '100%',
           '&:hover': {
             background: '#ffffff11',
             color: '#fff',

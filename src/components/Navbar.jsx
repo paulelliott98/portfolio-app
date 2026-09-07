@@ -2,6 +2,7 @@ import { React, useEffect, useRef, useState } from 'react';
 import { Link, Link as RouterLink } from 'react-router-dom';
 import { default as AppRoutes } from '../Routes';
 import { Grid, List, ListItemButton, ListSubheader } from '@mui/material';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 // navbar component
 export default function Navbar({ getNavRef }) {
@@ -135,10 +136,10 @@ export default function Navbar({ getNavRef }) {
           sx={{
             position: 'fixed',
             left: navItemData.projects.left,
-            width: navItemData.projects.width,
+            // width: navItemData.projects.width,
           }}
         >
-          <List>
+          <List sx={{ width: '100%' }}>
             <ListSubheader>Sandboxes</ListSubheader>
             <ListItemButton
               component={Link}
@@ -155,8 +156,21 @@ export default function Navbar({ getNavRef }) {
               Search
             </ListItemButton>
           </List>
-          <List>
+          <List sx={{ width: '100%' }}>
             <ListSubheader>Games</ListSubheader>
+            <ListItemButton
+              component='a'
+              href='https://connectfour3d.app'
+              target='_blank'
+              rel='noopener noreferrer'
+              onClick={closeDropdown}
+            >
+              3D Connect 4
+              <OpenInNewIcon
+                sx={{ ml: 1, fontSize: 'inherit' }}
+                aria-hidden='true'
+              />
+            </ListItemButton>
             <ListItemButton
               component={Link}
               to={AppRoutes.snake}

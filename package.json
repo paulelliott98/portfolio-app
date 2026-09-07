@@ -1,6 +1,5 @@
 {
   "name": "portfolio-app",
-  "homepage": "https://paulgan98.github.io/",
   "version": "0.1.0",
   "private": false,
   "dependencies": {
@@ -8,10 +7,10 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-modules-commonjs": "^7.16.7",
     "@babel/runtime": "^7.24.8",
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
-    "@mui/icons-material": "^5.16.1",
-    "@mui/material": "^5.16.1",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^5.18.0",
+    "@mui/material": "^5.18.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -30,6 +29,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "dev": "GENERATE_SOURCEMAP=false react-scripts start",
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
